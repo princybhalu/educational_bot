@@ -1,17 +1,36 @@
-import NotificationWrapper from './components/notifiction/Notifiction';
+// import React, { Suspense } from 'react';
+// import { useRoutes, BrowserRouter } from 'react-router-dom';
+// import routes from './routes/routes';
+// import NotificationWrapper from './components/notifiction/Notifiction';
 
-function App() {
-  console.log('hi');
-  console.log(process.env);
+// const App: React.FC = () => {
+//   const element = useRoutes(routes);
 
-  console.log(process.env.REACT_APP_API_BASIC_URL);
+//   return (<>
+//     <BrowserRouter>
+//       <Suspense fallback={<div>Loading...</div>}>
+//         {element}
+//       </Suspense>
+//     </BrowserRouter>
+//     <NotificationWrapper />
+//     </>
+//   );
+// };
 
+// export default App;
+
+// src/App.tsx
+
+import React, { Suspense } from 'react';
+import { useRoutes, BrowserRouter } from 'react-router-dom';
+import { Router } from './routes/routes';
+
+const App: React.FC = () => {
   return (
-    <>
-      <div className="App">eduction ai</div>
-      <NotificationWrapper />
-    </>
+    <BrowserRouter>
+      <Router />
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
