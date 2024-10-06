@@ -21,6 +21,8 @@ module.exports = {
     'react/react-in-jsx-scope': 'off', // React 17 doesn't require import of React
     '@typescript-eslint/no-unused-vars': 'warn',
     'prettier/prettier': 'warn',
+    '@typescript-eslint/ban-ts-comment': 'off',
+    '@typescript-eslint/no-explicit-any': ['off'],
   },
   settings: {
     react: {
