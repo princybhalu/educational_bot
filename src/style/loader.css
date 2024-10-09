@@ -1,0 +1,71 @@
+
+  .loading-div  {
+    position: relative;
+    width: 600px;  /* Shrink the canvas to bring points closer */
+    height: 600px;
+    background: radial-gradient(circle at center, #000033, #000000 90%);
+  }
+  
+  #loader {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+  
+  .dot {
+    fill: white;
+    stroke: #fff;
+    stroke-width: 1;
+    animation: blink 1s infinite ease-in-out;  /* Add blinking animation */
+  }
+  
+  #dot1 {
+    fill: red;  /* Make one point red */
+    stroke: red;
+  }
+  
+  line {
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0;
+    stroke: white;
+  }
+  
+  @keyframes blink {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+  }
+  
+  @keyframes drawLine {
+    0% { stroke: transparent; opacity: 0; }
+    50% { stroke: white; opacity: 1; }
+    100% { stroke: transparent; opacity: 0; }
+  }
+  
+  /* Line animations in a loop */
+  #loader #line1 {
+    animation: drawLine 4s linear infinite;
+  }
+  #loader #line2 {
+    animation: drawLine 4s linear infinite 0.5s;
+  }
+  #loader #line3 {
+    animation: drawLine 4s linear infinite 1s;
+  }
+  #loader #line4 {
+    animation: drawLine 4s linear infinite 1.5s;
+  }
+  #loader #line5 {
+    animation: drawLine 4s linear infinite 2s;
+  }
+  #loader #line6 {
+    animation: drawLine 4s linear infinite 2.5s;
+  }
+
+  @keyframes rotate {
+    0% { transform: translate(-50%, -50%) rotate(0); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+  

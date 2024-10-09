@@ -1,0 +1,52 @@
+.background-0 {
+  background: radial-gradient(circle at left bottom, #63B761 0%, transparent 40%), radial-gradient(circle at right top, #F6A322 0%, transparent 40%), #002E4D;
+}
+
+.background-1 {
+  /* background: rgb(52, 180, 0);
+  background: -moz-linear-gradient(
+    139deg,
+    rgba(52, 180, 0, 1) 0%,
+    rgba(9, 9, 121, 1) 51%,
+    rgba(255, 184, 0, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    139deg,
+    rgba(52, 180, 0, 1) 0%,
+    rgba(9, 9, 121, 1) 51%,
+    rgba(255, 184, 0, 1) 100%
+  );
+  background: linear-gradient(
+    139deg,
+    rgba(52, 180, 0, 1) 0%,
+    rgba(9, 9, 121, 1) 51%,
+    rgba(255, 184, 0, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#34b400",endColorstr="#ffb800",GradientType=1); */
+  background: radial-gradient(circle at left bottom,#F6A322 0%, transparent 40%), radial-gradient(circle at right top, #63B761 0%, transparent 40%), #002E4D;
+}
+
+.background-2 {
+  background: radial-gradient(circle at left top,#F6A322 0%, transparent 40%), radial-gradient(circle at right bottom, #63B761 0%, transparent 40%), #002E4D;
+}
+
+.background-3 {
+  background: radial-gradient(circle at left top, #63B761 0%, transparent 40%), radial-gradient(circle at right bottom, #F6A322 0%, transparent 40%), #002E4D;
+}
+
+.background-4 {
+  background: radial-gradient(circle at left bottom,#63B761 0%, transparent 40%), radial-gradient(circle at right top, #F6A322 0%, transparent 40%), #002E4D;
+}
+
+.background-5 {
+  background: radial-gradient(circle at left bottom, #F6A322 0%, transparent 40%), radial-gradient(circle at right top, #63B761 0%, transparent 40%), #002E4D;
+}
+
+.background-6 {
+  background: radial-gradient(circle at left top, #63B761 0%, transparent 40%), radial-gradient(circle at right bottom, #F6A322 0%, transparent 40%), #002E4D;
+}
+
+.slick-dots li.slick-active div {
+  background-color: rgb(247, 247, 245); 
+}
+
