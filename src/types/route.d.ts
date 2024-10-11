@@ -4,7 +4,7 @@ export interface RouteConfig {
   path: string;
   element: ComponentType;
   key: string;
-  layout?: ComponentType;
+  islayout?: boolean;
   isProtected?: boolean;
   isProfilingRequired?: boolean;
 }
