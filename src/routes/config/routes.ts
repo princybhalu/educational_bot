@@ -1,7 +1,6 @@
 import { lazy } from 'react';
 import { RouteConfig } from '../../types/route';
-import { AuthLayout } from '../../layouts/AuthLayout';
-import { ProfilingCheck } from '../../layouts/ProfilingCheck';
+import  Layouts  from '../../layouts/layouts';
 
 // Lazy load components
 const Landing = lazy(() => import('../../pages/Landing'));
@@ -9,6 +8,7 @@ const Login = lazy(() => import('../../pages/Login'));
 const Register = lazy(() => import('../../pages/Register'));
 const Dashboard = lazy(() => import('../../pages/Dashboard'));
 const Profiling = lazy(() => import('../../pages/Profiling'));
+const StudyPlannerDashboard = lazy(() => import('../../pages/study-planner'));
 
 export const routes: RouteConfig[] = [
   {
@@ -32,13 +32,21 @@ export const routes: RouteConfig[] = [
     isProtected: true,
     isProfilingRequired: true,
     element: Dashboard,
-    layout: AuthLayout,
+    islayout: true,
   },
   {
     path: '/profiling',
     key: 'profiling',
     isProtected: true,
     element: Profiling,
-    layout: AuthLayout,
+    islayout: true,
+  },
+  {
+    path: '/study-planner',
+    key: 'studyPlanner',
+    isProtected: true,
+    isProfilingRequired: true,
+    element: StudyPlannerDashboard,
+    islayout: true,
   },
 ];

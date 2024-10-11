@@ -8,8 +8,9 @@ interface AuthStore {
 }
 
 export const useAuth = create<AuthStore>((set) => ({
-  isAuthenticated: false,
-  isProfilingComplete: false,
+  //TODO : set here logic of routes checking
+  isAuthenticated: true,
+  isProfilingComplete: true,
   setAuth: (value) => set({ isAuthenticated: value }),
   setProfiling: (value) => set({ isProfilingComplete: value }),
 }));
