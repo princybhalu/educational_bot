@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import '../style/auth.css';
+import { LoginApiCall } from '../services/api/auth';
 
 // Validation schema
 const validationSchema = Yup.object().shape({
@@ -29,9 +30,14 @@ const Login: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const onSubmit = (data: FormData) => {
-    console.log('Login Data', data);
-    // Handle login logic here
+  const onSubmit = async (data: FormData) => {
+    try {
+      console.log('Login Data', data);
+      const res = await LoginApiCall(data);
+      navigate('/dashboard');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (

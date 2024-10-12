@@ -4,9 +4,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import '../style/auth.css';
+import { RegisterApiCall } from '../services/api/auth';
 
 // Validation schema
 const validationSchema = Yup.object().shape({
+  name: Yup.string().required('Name is required'),
   email: Yup.string().email('Invalid email').required('Email is required'),
   password: Yup.string()
     .min(6, 'Password must be at least 6 characters')
@@ -14,6 +16,7 @@ const validationSchema = Yup.object().shape({
 });
 
 interface FormData {
+  name: string;
   email: string;
   password: string;
 }
@@ -29,15 +32,34 @@ const Register: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const onSubmit = (data: FormData) => {
-    console.log('Register Data', data);
-    // Handle registration logic here
+  const onSubmit = async (data: FormData) => {
+    try {
+      console.log('Login Data', data);
+      const res = await RegisterApiCall(data);
+      navigate('/profiling');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
     <div className="register-container">
       <h2 className="register-heading">Register</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="register-form">
+        <div className="form-group">
+          <label htmlFor="name" className="form-label">
+            Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            {...register('name')}
+            className={`form-input ${errors.name ? 'input-error' : ''}`}
+          />
+          {errors.name && (
+            <span className="form-error">{errors.name.message}</span>
+          )}
+        </div>
         <div className="form-group">
           <label htmlFor="email" className="form-label">
             Email
