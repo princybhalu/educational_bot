@@ -1,0 +1,26 @@
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .calendar-table table {
+    width: 100%;
+    border: 1px solid #ccc;
+  }
+  
+  .calendar-table th, .calendar-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .time-cell {
+    background-color: #f0f0f0;
+    font-weight: bold;
+  }
+  
+  .event-cell {
+    height: 50px;
+    /* Add styles for event cells or background color */
+  }
+  
