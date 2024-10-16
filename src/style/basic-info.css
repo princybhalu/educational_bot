@@ -1,0 +1,86 @@
+/* Form container styles */
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f3f4f6; /* light gray */
+  }
+  
+  /* Form element styles */
+  .form {
+    width: 100%;
+    max-width: 500px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Form group styles */
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+  
+  /* Focus styles */
+  .form-group input:focus {
+    outline: none;
+    border-color: #003366; /* Navy blue */
+    box-shadow: 0 0 5px rgba(0, 51, 102, 0.5); /* Navy blue shadow */
+  }
+  
+  /* Error message styles */
+  .error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
+  /* Submit button styles */
+  .submit-button {
+    width: 100%;
+    background-color: #FF6600; /* Saffron */
+    color: white;
+    font-size: 16px;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #e65c00; /* Darker saffron */
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 600px) {
+    .form {
+      padding: 15px;
+    }
+  
+    .form-group input {
+      font-size: 14px;
+    }
+  
+    .submit-button {
+      font-size: 14px;
+    }
+  }
+  
