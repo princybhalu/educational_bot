@@ -1,0 +1,43 @@
+.login-container,
+.register-container {
+  @apply flex flex-col items-center justify-center min-h-screen bg-gray-100;
+}
+
+.login-heading,
+.register-heading {
+  @apply text-2xl font-bold mb-4;
+}
+
+.login-form,
+.register-form {
+  @apply bg-white p-6 rounded-lg shadow-md w-full max-w-md;
+}
+
+.form-group {
+  @apply mb-4;
+}
+
+.form-label {
+  @apply block text-gray-700 font-semibold mb-2;
+}
+
+.form-input {
+  @apply w-full p-3 border border-gray-300 rounded-lg;
+}
+
+.input-error {
+  @apply border-red-500;
+}
+
+.form-error {
+  @apply text-red-500 text-sm;
+}
+
+.btn-submit,
+.btn-google {
+  @apply w-full py-3 mt-4 bg-blue-500 text-white font-semibold rounded-lg;
+}
+
+.btn-google {
+  @apply mt-2 bg-red-500;
+}

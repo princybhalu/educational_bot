@@ -179,6 +179,8 @@ const Http = async (apiDataProps: IAPIOptions) => {
       return http.post(apiUrl, apiData, apiConfig);
     case 'put':
       return http.put(apiUrl, apiData, apiConfig);
+    case 'patch':
+      return http.patch(apiUrl, apiData, apiConfig);
     case 'delete':
       return http.delete(apiUrl, apiConfig);
     default:
@@ -216,6 +218,20 @@ Http.put = ({ url, data, config, messageSettings }: PutRequestInterface): any =>
     config,
     messageSettings: { ...defaultSettings, ...messageSettings },
     method: 'put',
+  });
+
+Http.patch = ({
+  url,
+  data,
+  config,
+  messageSettings,
+}: PutRequestInterface): any =>
+  Http({
+    url,
+    data,
+    config,
+    messageSettings: { ...defaultSettings, ...messageSettings },
+    method: 'patch',
   });
 
 Http.delete = ({ url, config, messageSettings }: DeleteRequestInterface): any =>
