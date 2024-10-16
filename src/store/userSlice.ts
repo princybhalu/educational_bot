@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// Define the types for your user object
+// TODO: Define the types for your user object
 interface User {
   id: string;
   name: string;
   email: string;
+  hasCompletedProfiling: boolean;
   // Add more fields if needed
 }
 
@@ -55,9 +56,6 @@ export const { loginSuccess, logout, loginFailure } = authSlice.actions;
 // Export the reducer to configure the store
 export default authSlice.reducer;
 
-
-
-
-// use logout this way 
+// use logout this way
 // Dispatch the logout action
-// dispatch(logout());
+// dispatch(logout())
