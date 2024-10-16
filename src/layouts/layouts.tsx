@@ -1,7 +1,11 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom'; // To render child routes
 
-const Layout: React.FC = () => {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps>  = ({ children }) => {
   return (
     <div>
       <header>
@@ -9,7 +13,7 @@ const Layout: React.FC = () => {
         <h1>Educational Bot</h1>
       </header>
       <main>
-        <Outlet /> {/* This renders the matching child route */}
+        {children} {/* This renders the matching child route */}
       </main>
     </div>
   );
