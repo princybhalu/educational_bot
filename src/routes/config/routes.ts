@@ -34,6 +34,7 @@ export const routes: RouteConfig[] = [
     element: Dashboard,
     islayout: true,
   },
+  // teacher tailer route
   {
     path: '/profiling',
     key: 'profiling',

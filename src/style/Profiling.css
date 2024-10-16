@@ -1,0 +1,138 @@
+/* FocusCheck.css */
+.focus-check-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.icons-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+/* Heading Styles */
+.main-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #000000;
+}
+
+.sub-heading {
+  background-color: #f9e4d8;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #000000;
+  margin-top: 1rem;
+}
+
+/* Responsive Styles */
+@media (min-width: 640px) {
+  .icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .main-heading {
+    font-size: 2.5rem;
+  }
+
+  .sub-heading {
+    font-size: 1.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .main-heading {
+    font-size: 3rem;
+  }
+
+  .sub-heading {
+    font-size: 2rem;
+  }
+}
+
+/* Accordion.css */
+
+.accordion-container {
+  @apply block sm:hidden; /* Only visible on phone and tab views */
+  padding: 1rem;
+}
+
+.category-section {
+  @apply mb-4;
+}
+
+.category-heading {
+  @apply flex justify-between items-center bg-gray-100 p-3 rounded-md cursor-pointer font-bold text-lg;
+}
+
+.arrow-icon {
+  @apply text-gray-600;
+}
+
+.questions-list {
+  @apply mt-2;
+}
+
+.question-item {
+  @apply flex items-center p-3 cursor-pointer border-t border-gray-300;
+}
+
+.question-item.completed {
+  @apply text-gray-500 font-semibold;
+}
+
+.bullet-icon {
+  @apply mr-2;
+}
+
+.question-text {
+  @apply text-gray-800;
+}
+
+.question-item.completed .bullet-icon {
+  @apply text-green-500;
+}
+
+.question-item.completed .question-text {
+  @apply text-green-600;
+}
+
+/* LearningGroove.css */
+.category-header {
+  @apply flex overflow-x-auto py-2 px-4 bg-gray-100;
+}
+
+.category-tab {
+  @apply cursor-pointer px-6 py-2 bg-blue-500 text-white rounded-md mx-2 transition-all duration-200;
+}
+
+.category-tab.active {
+  @apply bg-blue-700;
+}
+
+.questions-list {
+  @apply mt-4;
+}
+
+.question-item {
+  @apply mb-4;
+}
+
+.complete-btn {
+  @apply mt-2 bg-green-500 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-green-600;
+}
