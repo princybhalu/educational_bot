@@ -9,6 +9,7 @@ const Login = lazy(() => import('../../pages/Login'));
 const Register = lazy(() => import('../../pages/Register'));
 const Dashboard = lazy(() => import('../../pages/Dashboard'));
 const Profiling = lazy(() => import('../../pages/Profiling'));
+const BasicInfo = lazy(() => import('../../pages/BasicInfo'));
 
 export const routes: RouteConfig[] = [
   {
@@ -25,6 +26,12 @@ export const routes: RouteConfig[] = [
     path: '/register',
     key: 'register',
     element: Register,
+  },
+  {
+    path: '/basic-info',
+    key: 'basic-info',
+    element: BasicInfo,
+    isProtected: true,
   },
   {
     path: '/dashboard',

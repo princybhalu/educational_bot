@@ -4,8 +4,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import '../style/auth.css';
-import { LoginApiCall } from '../services/api/auth';
+import { GetOAuthUrlApiCall, LoginApiCall } from '../services/api/auth';
+import { useDispatch } from 'react-redux';
+import { loginSuccess, logout, loginFailure } from '../store/userSlice';
 
+// TODO: css Remaining
 // Validation schema
 const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
@@ -29,12 +32,25 @@ const Login: React.FC = () => {
   });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const onSubmit = async (data: FormData) => {
     try {
       console.log('Login Data', data);
-      const res = await LoginApiCall(data);
+      const response = await LoginApiCall(data);
+      console.log('login data : ', response);
+      dispatch(loginSuccess(response.data));
       navigate('/dashboard');
+    } catch (err) {
+      console.log(err);
+      // If there's an error, dispatch loginFailure with the error message
+      dispatch(loginFailure('Login failed, please try again.'));
+    }
+  };
+
+  const handleLoginByGoogle = async () => {
+    try {
+      await GetOAuthUrlApiCall();
     } catch (err) {
       console.log(err);
     }
@@ -77,7 +93,11 @@ const Login: React.FC = () => {
         <button type="submit" className="btn-submit">
           Login
         </button>
-        <button type="button" className="btn-google">
+        <button
+          type="button"
+          className="btn-google"
+          onClick={handleLoginByGoogle}
+        >
           Login with Google
         </button>
 

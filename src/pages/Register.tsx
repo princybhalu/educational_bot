@@ -4,8 +4,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import '../style/auth.css';
-import { RegisterApiCall } from '../services/api/auth';
+import { GetOAuthUrlApiCall, RegisterApiCall } from '../services/api/auth';
+import { loginFailure, loginSuccess } from 'store/userSlice';
+import { useDispatch } from 'react-redux';
 
+// TODO : css remaning
 // Validation schema
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -31,14 +34,27 @@ const Register: React.FC = () => {
   });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const onSubmit = async (data: FormData) => {
     try {
       console.log('Login Data', data);
-      const res = await RegisterApiCall(data);
+      const response = await RegisterApiCall(data);
+      console.log('register data : ', response);
+      dispatch(loginSuccess(response.data));
       navigate('/profiling');
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const handleRegisterByGoogle = async () => {
+    try {
+      await GetOAuthUrlApiCall();
+    } catch (err) {
+      console.log(err);
+      // If there's an error, dispatch loginFailure with the error message
+      dispatch(loginFailure('Regitser failed, please try again.'));
     }
   };
 
@@ -93,7 +109,11 @@ const Register: React.FC = () => {
         <button type="submit" className="btn-submit">
           Register
         </button>
-        <button type="button" className="btn-google">
+        <button
+          type="button"
+          className="btn-google"
+          onClick={handleRegisterByGoogle}
+        >
           Register with Google
         </button>
 
