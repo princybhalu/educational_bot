@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 import { RouteConfig } from '../../types/route';
-import  Layouts  from '../../layouts/layouts';
+import Layouts from '../../layouts/layouts';
 
 // Lazy load components
 const Landing = lazy(() => import('../../pages/Landing'));
@@ -45,7 +45,7 @@ export const routes: RouteConfig[] = [
   {
     path: '/profiling',
     key: 'profiling',
-    isProtected: true,
+    // isProtected: true,
     element: Profiling,
     islayout: true,
   },

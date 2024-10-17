@@ -8,7 +8,8 @@ import ProfilingTitle3 from '../assets/image/profiling_title_3.gif';
 import ProfilingTitle4 from '../assets/image/profiling_title_4.gif';
 import TimeLIneSetion from '../components/profiling/TimeLineSection';
 import TimeLIneSetion1 from '../components/profiling/TimeLineSection1';
-
+// import QuestionCard from '../components/profiling/QuestionScreen';
+import QuestionCard from '../components/profiling/Question1';
 
 const data = [
   {
@@ -87,7 +88,7 @@ const data = [
     sequence: 12,
   },
 ];
-
+let nextIndex = 0;
 interface Question {
   category_key: string;
   question: string;
@@ -102,18 +103,27 @@ export default function Profiling() {
   );
   const [profileData, setProfileData] = useState(null);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setScreenName(ProfileScreenName.TIMELINE);
-      setCurrentQuestion({
-        category_key: 'hobby',
-        question:
-          'What hobbies do you regularly engage in during your free time?',
-        sequence: 1,
-      });
-      setCurrentCategoryKey('academic_confidence');
-    }, 1000);
-  });
+  const handleAskQuetion = async (body: any) => {
+    try {
+      // const res = await  AskQuetionApiCall(body);
+      // console.log(res);
+      // if(res.data.nextQuestion) {
+      //   setCurrentQuestion(res.data.nextQuestion);
+      // }
+      // if(res.data.profileData){
+      //   setProfileData(res.data.profileData);
+      // }
+      setCurrentQuestion(data[nextIndex++]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const questions = [
+    { id: 1, question: 'How Do You Handle Stress?' },
+    { id: 2, question: 'What Motivates You the Most?' },
+    { id: 3, question: 'What Are Your Hobbies?' },
+  ];
 
   return (
     <>
@@ -125,7 +135,8 @@ export default function Profiling() {
 
       {/* Title Of Screen */}
       {(screenName === ProfileScreenName.ONLY_AVATAR ||
-        screenName === ProfileScreenName.TIMELINE) && (
+        screenName === ProfileScreenName.TIMELINE ||
+        screenName === ProfileScreenName.QUESTION) && (
         <>
           <div className="focus-check-container">
             <div className="icons-container">
@@ -140,6 +151,22 @@ export default function Profiling() {
         </>
       )}
 
+      {/* Only avatar screen */}
+      {screenName === ProfileScreenName.ONLY_AVATAR && (
+        <>
+          <button
+            className="btn  btn-primary"
+            onClick={async () => {
+              await handleAskQuetion(null);
+              setScreenName(ProfileScreenName.QUESTION);
+            }}
+          >
+            {' '}
+            Lets Start Quetions{' '}
+          </button>
+        </>
+      )}
+
       {/* Time Line section */}
       {screenName === ProfileScreenName.TIMELINE &&
         currentCategoryKey !== null && (
@@ -151,6 +178,19 @@ export default function Profiling() {
             />
 
             <TimeLIneSetion1 data={data} currentCategory={currentCategoryKey} />
+          </>
+        )}
+
+      {/* question screen */}
+      {screenName === ProfileScreenName.QUESTION &&
+        currentQuestion !== null && (
+          <>
+            {/* <QuestionScreen data={data} currentCategory={currentCategoryKey} currentQuestion={currentQuestion} /> */}
+            {/* <QuestionCard 
+         //@ts-ignore
+         question={currentQuestion} handleAskQuetion={handleAskQuetion} />
+        </>} */}
+            <QuestionCard questions={questions} />
           </>
         )}
     </>
