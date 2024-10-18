@@ -25,7 +25,6 @@
 }
 
 .sub-heading {
-  background-color: #f9e4d8;
   display: inline-block;
   padding: 0.5rem 1rem;
   font-size: 1.5rem;
@@ -63,53 +62,6 @@
   .sub-heading {
     font-size: 2rem;
   }
-}
-
-/* Accordion.css */
-
-.accordion-container {
-  @apply block sm:hidden; /* Only visible on phone and tab views */
-  padding: 1rem;
-}
-
-.category-section {
-  @apply mb-4;
-}
-
-.category-heading {
-  @apply flex justify-between items-center bg-gray-100 p-3 rounded-md cursor-pointer font-bold text-lg;
-}
-
-.arrow-icon {
-  @apply text-gray-600;
-}
-
-.questions-list {
-  @apply mt-2;
-}
-
-.question-item {
-  @apply flex items-center p-3 cursor-pointer border-t border-gray-300;
-}
-
-.question-item.completed {
-  @apply text-gray-500 font-semibold;
-}
-
-.bullet-icon {
-  @apply mr-2;
-}
-
-.question-text {
-  @apply text-gray-800;
-}
-
-.question-item.completed .bullet-icon {
-  @apply text-green-500;
-}
-
-.question-item.completed .question-text {
-  @apply text-green-600;
 }
 
 /* LearningGroove.css */
@@ -212,4 +164,9 @@
   font-size: 14px;
   cursor: pointer;
   text-align: left;
+}
+
+/* navigation-headline */
+.navigation-headline {
+  font-size: 1.2rem;
 }

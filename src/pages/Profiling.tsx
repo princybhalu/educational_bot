@@ -1,93 +1,67 @@
 import React, { useEffect, useState } from 'react';
 import { AskQuetionApiCall } from '../services/api/profiling';
-import { ProfileScreenName } from '../utils/enums';
+import { ProfileScreenName, QuestionStatus } from '../utils/enums';
 import '../style/Profiling.css';
 import ProfilingTitle1 from '../assets/image/profiling_title_1.gif';
 import ProfilingTitle2 from '../assets/image/profiling_title_2.gif';
 import ProfilingTitle3 from '../assets/image/profiling_title_3.gif';
 import ProfilingTitle4 from '../assets/image/profiling_title_4.gif';
 import TimeLIneSetion from '../components/profiling/TimeLineSection';
-import TimeLIneSetion1 from '../components/profiling/TimeLineSection1';
+import TimeLIneSetionOfWeb from '../components/profiling/TimeLineSectionOFWeb';
 // import QuestionCard from '../components/profiling/QuestionScreen';
 import QuestionCard from '../components/profiling/Question1';
 
 const data = [
   {
+    _id: {
+      $oid: '670ce43d52efc71e620c5067',
+    },
     category_key: 'hobby',
     question: 'What hobbies do you regularly engage in during your free time?',
     sequence: 1,
-    isCompleted: true,
+    status: QuestionStatus.COMPLETED,
   },
   {
+    _id: {
+      $oid: '670ce43d52efc71e620c5068',
+    },
     category_key: 'hobby',
     question: 'How do your hobbies help you relax or recharge?',
     sequence: 2,
-    isCompleted: true,
+    status: QuestionStatus.COMPLETED,
   },
   {
+    _id: {
+      $oid: '670ce43d52efc71e620c5069',
+    },
     category_key: 'learning_style',
     question:
       'Do you prefer to learn through visual aids, hands-on activities, or reading?',
     sequence: 3,
-    isCompleted: true,
+    status: QuestionStatus.ACTIVE,
   },
   {
+    _id: {
+      $oid: '670ce43d52efc71e620c506a',
+    },
     category_key: 'learning_style',
     question:
       'When learning new concepts, do you focus more on the details or the overall picture?',
     sequence: 4,
-    isCompleted: true,
+    status: QuestionStatus.DISABLE,
   },
   {
+    _id: {
+      $oid: '670ce43d52efc71e620c506b',
+    },
     category_key: 'academic_confidence',
     question:
       'How confident do you feel when approaching challenging academic topics?',
     sequence: 5,
-    isCompleted: true,
-  },
-  {
-    category_key: 'academic_confidence',
-    question:
-      'What strategies do you use to boost your academic confidence in areas where you feel less strong?',
-    sequence: 6,
-    isCompleted: true,
-  },
-  {
-    category_key: 'exam_preparation_style',
-    question: 'How do you usually prepare for exams or important tests?',
-    sequence: 7,
-  },
-  {
-    category_key: 'exam_preparation_style',
-    question:
-      'Do you prefer studying for exams over a long period or cramming closer to the test date?',
-    sequence: 8,
-  },
-  {
-    category_key: 'study_style',
-    question:
-      'Do you prefer studying alone, in groups, or with a study partner?',
-    sequence: 9,
-  },
-  {
-    category_key: 'study_style',
-    question:
-      'What is your preferred study environment (e.g., quiet, with background music, etc.)?',
-    sequence: 10,
-  },
-  {
-    category_key: 'emotional_motivation',
-    question:
-      'What keeps you emotionally motivated during long or difficult study sessions?',
-    sequence: 11,
-  },
-  {
-    category_key: 'emotional_motivation',
-    question:
-      'Do you find your emotions influencing how well you study or work on academic tasks?',
-    sequence: 12,
+    status: QuestionStatus.DISABLE,
   },
 ];
+
 let nextIndex = 0;
 interface Question {
   category_key: string;
@@ -102,6 +76,8 @@ export default function Profiling() {
     null
   );
   const [profileData, setProfileData] = useState(null);
+  // when apicall to set this then also add status fields in data bcz from backend it is not come
+  const [questionList, setQuestionList] = useState(data);
 
   const handleAskQuetion = async (body: any) => {
     try {
@@ -113,6 +89,9 @@ export default function Profiling() {
       // if(res.data.profileData){
       //   setProfileData(res.data.profileData);
       // }
+      // questionList[nextIndex].status =  QuestionStatus.COMPLETED;
+      // questionList[nextIndex + 1].status =  QuestionStatus.ACTIVE;
+      // setQuestionList([...questionList]);
       setCurrentQuestion(data[nextIndex++]);
     } catch (err) {
       console.log(err);
@@ -130,7 +109,71 @@ export default function Profiling() {
       {/* Navigation Header */}
       {(screenName === ProfileScreenName.QUESTION ||
         screenName === ProfileScreenName.TIMELINE) && (
-        <> navigation header which is fix {screenName} </>
+        <>
+          {' '}
+          <div className="flex justify-between mx-5">
+            {screenName === ProfileScreenName.QUESTION && (
+              <>
+                <div
+                  className="flex"
+                  onClick={() => {
+                    setScreenName(ProfileScreenName.TIMELINE);
+                    setCurrentCategoryKey('hobby');
+                  }}
+                >
+                  <div className="my-auto mr-3">
+                    <svg
+                      width="16"
+                      height="8"
+                      viewBox="0 0 16 8"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M15 3.5C15.2761 3.5 15.5 3.72386 15.5 4C15.5 4.27614 15.2761 4.5 15 4.5L15 3.5ZM0.646446 4.35355C0.451184 4.15829 0.451184 3.84171 0.646446 3.64645L3.82843 0.464465C4.02369 0.269203 4.34027 0.269203 4.53553 0.464465C4.7308 0.659727 4.7308 0.97631 4.53553 1.17157L1.70711 4L4.53553 6.82843C4.7308 7.02369 4.7308 7.34027 4.53553 7.53553C4.34027 7.7308 4.02369 7.7308 3.82843 7.53553L0.646446 4.35355ZM15 4.5L1 4.5L1 3.5L15 3.5L15 4.5Z"
+                        fill="#003366"
+                      />
+                    </svg>
+                  </div>
+                  <span className="text-[#405E7F] navigation-headline ">
+                    {' '}
+                    Back To Timeline{' '}
+                  </span>
+                </div>
+              </>
+            )}
+            {screenName === ProfileScreenName.TIMELINE && (
+              <>
+                {' '}
+                <div
+                  className="flex"
+                  onClick={() => {
+                    setScreenName(ProfileScreenName.QUESTION);
+                  }}
+                >
+                  <div className="my-auto mr-3">
+                    <svg
+                      width="16"
+                      height="8"
+                      viewBox="0 0 16 8"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M15 3.5C15.2761 3.5 15.5 3.72386 15.5 4C15.5 4.27614 15.2761 4.5 15 4.5L15 3.5ZM0.646446 4.35355C0.451184 4.15829 0.451184 3.84171 0.646446 3.64645L3.82843 0.464465C4.02369 0.269203 4.34027 0.269203 4.53553 0.464465C4.7308 0.659727 4.7308 0.97631 4.53553 1.17157L1.70711 4L4.53553 6.82843C4.7308 7.02369 4.7308 7.34027 4.53553 7.53553C4.34027 7.7308 4.02369 7.7308 3.82843 7.53553L0.646446 4.35355ZM15 4.5L1 4.5L1 3.5L15 3.5L15 4.5Z"
+                        fill="#003366"
+                      />
+                    </svg>
+                  </div>
+                  <span className="text-[#405E7F] navigation-headline ">
+                    {' '}
+                    Back To Question{' '}
+                  </span>
+                </div>
+              </>
+            )}
+          </div>{' '}
+        </>
       )}
 
       {/* Title Of Screen */}
@@ -146,7 +189,9 @@ export default function Profiling() {
               <img src={ProfilingTitle4} alt="Icon 4" className="icon" />
             </div>
             <h1 className="main-heading">Quick Check On</h1>
-            <h2 className="sub-heading">Your Focus & Well-Being!</h2>
+            <h2 className="sub-heading bg-[#CEE6FF]">
+              Your Focus & Well-Being!
+            </h2>
           </div>
         </>
       )}
@@ -171,13 +216,8 @@ export default function Profiling() {
       {screenName === ProfileScreenName.TIMELINE &&
         currentCategoryKey !== null && (
           <>
-            <TimeLIneSetion
-              data={data}
-              currentCategoryKey={currentCategoryKey}
-              currentQuestion={currentQuestion}
-            />
-
-            <TimeLIneSetion1 data={data} currentCategory={currentCategoryKey} />
+            <TimeLIneSetion questionList={questionList} />
+            {/* <TimeLIneSetionOfWeb questionList={questionList} /> */}
           </>
         )}
 
