@@ -11,6 +11,7 @@ const Profiling = lazy(() => import('../../pages/Profiling'));
 const BasicInfo = lazy(() => import('../../pages/BasicInfo'));
 const StudyPlannerDashboard = lazy(() => import('../../pages/study-planner'));
 const LearningPathDashboard = lazy(() => import('../../pages/learning-path'));
+const ChatBot = lazy(() => import('../../pages/ChatBot'));
 
 export const routes: RouteConfig[] = [
   {
@@ -63,6 +64,13 @@ export const routes: RouteConfig[] = [
     isProtected: true,
     // isProfilingRequired: true,
     element: LearningPathDashboard,
+  },
+  {
+    path: '/chat-bot',
+    key: 'chatBot',
+    // isProtected: true,
+    // isProfilingRequired: true,
+    element: ChatBot,
     islayout: true,
   },
 ];

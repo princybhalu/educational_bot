@@ -1,9 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer utilities {
-    .ring-theme-color-navy-blue {
-      --tw-ring-color: #001f3f; /* Example navy blue color */
-    }
+  .ring-theme-color-navy-blue {
+    --tw-ring-color: #001f3f;
+    /* Example navy blue color */
   }
-  
+}
