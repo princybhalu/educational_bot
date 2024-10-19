@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { AskQuetionApiCall } from '../services/api/profiling';
+import {
+  AskQuetionApiCall,
+  GetAllQuestionListApiCall,
+  CreateProfileApiCall,
+} from '../services/api/profiling';
 import { ProfileScreenName, QuestionStatus } from '../utils/enums';
 import '../style/Profiling.css';
 import ProfilingTitle1 from '../assets/image/profiling_title_1.gif';
@@ -8,101 +12,148 @@ import ProfilingTitle3 from '../assets/image/profiling_title_3.gif';
 import ProfilingTitle4 from '../assets/image/profiling_title_4.gif';
 import TimeLIneSetion from '../components/profiling/TimeLineSection';
 import TimeLIneSetionOfWeb from '../components/profiling/TimeLineSectionOFWeb';
-// import QuestionCard from '../components/profiling/QuestionScreen';
-import QuestionCard from '../components/profiling/Question1';
+import QuestionSection from '../components/profiling/QuestionSection';
+import { useSelector } from 'react-redux';
 
 const data = [
   {
-    _id: {
-      $oid: '670ce43d52efc71e620c5067',
-    },
+    question_id: '670ce43d52efc71e620c5067',
     category_key: 'hobby',
     question: 'What hobbies do you regularly engage in during your free time?',
     sequence: 1,
-    status: QuestionStatus.COMPLETED,
+    status: QuestionStatus.ACTIVE,
+    answer: '',
   },
   {
-    _id: {
-      $oid: '670ce43d52efc71e620c5068',
-    },
+    question_id: '670ce43d52efc71e620c5068',
     category_key: 'hobby',
     question: 'How do your hobbies help you relax or recharge?',
     sequence: 2,
-    status: QuestionStatus.COMPLETED,
+    status: QuestionStatus.DISABLE,
+    answer: '',
   },
   {
-    _id: {
-      $oid: '670ce43d52efc71e620c5069',
-    },
+    question_id: '670ce43d52efc71e620c5069',
     category_key: 'learning_style',
     question:
       'Do you prefer to learn through visual aids, hands-on activities, or reading?',
     sequence: 3,
-    status: QuestionStatus.ACTIVE,
+    status: QuestionStatus.DISABLE,
+    answer: '',
   },
   {
-    _id: {
-      $oid: '670ce43d52efc71e620c506a',
-    },
+    question_id: '670ce43d52efc71e620c506a',
     category_key: 'learning_style',
     question:
       'When learning new concepts, do you focus more on the details or the overall picture?',
     sequence: 4,
     status: QuestionStatus.DISABLE,
+    answer: '',
   },
   {
-    _id: {
-      $oid: '670ce43d52efc71e620c506b',
-    },
+    question_id: '670ce43d52efc71e620c506b',
     category_key: 'academic_confidence',
     question:
       'How confident do you feel when approaching challenging academic topics?',
     sequence: 5,
     status: QuestionStatus.DISABLE,
+    answer: '',
   },
 ];
 
-let nextIndex = 0;
 interface Question {
+  question_id: string;
   category_key: string;
   question: string;
   sequence: number;
+  answer: string;
+  generated_question?: string;
+  status: string;
 }
 
 export default function Profiling() {
+  const user = useSelector((state: any) => state.auth.user);
+  console.log({ user });
   const [screenName, setScreenName] = useState(ProfileScreenName.ONLY_AVATAR);
-  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const [displayQuestionIndex, setDisplayQuestionIndex] = useState<number>(0);
   const [currentCategoryKey, setCurrentCategoryKey] = useState<string | null>(
     null
   );
-  const [profileData, setProfileData] = useState(null);
   // when apicall to set this then also add status fields in data bcz from backend it is not come
   const [questionList, setQuestionList] = useState(data);
+  const [isCalledCreateProfile, setIsCalledCreateProfile] = useState(false);
 
-  const handleAskQuetion = async (body: any) => {
+  const handleAskQuetion = async (body: any, nextIndex: number) => {
     try {
-      // const res = await  AskQuetionApiCall(body);
-      // console.log(res);
-      // if(res.data.nextQuestion) {
-      //   setCurrentQuestion(res.data.nextQuestion);
+      // for future addition
+      // if (!questionList) {
+      //   try {
+      //     const res = await GetAllQuestionListApiCall();
+      //     setQuestionList(res.data);
+      //   } catch (err) {
+      //     console.log(err);
+      //   }
       // }
-      // if(res.data.profileData){
-      //   setProfileData(res.data.profileData);
-      // }
-      // questionList[nextIndex].status =  QuestionStatus.COMPLETED;
-      // questionList[nextIndex + 1].status =  QuestionStatus.ACTIVE;
-      // setQuestionList([...questionList]);
-      setCurrentQuestion(data[nextIndex++]);
+
+      // create profile question
+      if (!isCalledCreateProfile) {
+        try {
+          await CreateProfileApiCall(user.id);
+          setIsCalledCreateProfile(true);
+        } catch (err) {
+          console.log('err in get profile : ', err);
+        }
+      }
+
+      if (isCalledCreateProfile) {
+        // this real logic
+        const res = await AskQuetionApiCall(body);
+        console.log(res);
+
+        if (res.data.is_profile_completed) {
+          setScreenName(ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER);
+          return;
+        }
+
+        //  checking profile is completed or not
+        if (
+          res.data.profile_data.length === questionList.length &&
+          res.data.profile_data[res.data.profile_data.length - 1].answer
+        ) {
+          setScreenName(ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER);
+          return;
+        }
+
+        // logic of create question list
+        const resProfileData = res.data.profile_data;
+        const resNextQuestion = res.data.next_question;
+        resProfileData.splice(0, 1);
+        const newQuestionListData = [...resProfileData];
+        setDisplayQuestionIndex(newQuestionListData.length);
+        newQuestionListData.push({
+          ...resNextQuestion,
+          status: QuestionStatus.ACTIVE,
+          answer: '',
+        });
+        // add disable questions
+        questionList.splice(0, newQuestionListData.length);
+        console.log({ questionList, newQuestionListData });
+        setQuestionList([...newQuestionListData, ...questionList]);
+
+        // without api call need to call
+        // if(!nextIndex) return null;
+        // questionList[nextIndex].status =  QuestionStatus.COMPLETED;
+        // questionList[nextIndex + 1].status =  QuestionStatus.ACTIVE;
+        // setQuestionList([...questionList]);
+      }
     } catch (err) {
       console.log(err);
     }
   };
 
-  const questions = [
-    { id: 1, question: 'How Do You Handle Stress?' },
-    { id: 2, question: 'What Motivates You the Most?' },
-    { id: 3, question: 'What Are Your Hobbies?' },
-  ];
+  useEffect(() => {
+    handleAskQuetion(null, 0).then();
+  }, [isCalledCreateProfile]);
 
   return (
     <>
@@ -181,7 +232,7 @@ export default function Profiling() {
         screenName === ProfileScreenName.TIMELINE ||
         screenName === ProfileScreenName.QUESTION) && (
         <>
-          <div className="focus-check-container">
+          <div className="focus-check-container ">
             <div className="icons-container">
               <img src={ProfilingTitle1} alt="Icon 1" className="icon" />
               <img src={ProfilingTitle2} alt="Icon 2" className="icon" />
@@ -202,7 +253,7 @@ export default function Profiling() {
           <button
             className="btn  btn-primary"
             onClick={async () => {
-              await handleAskQuetion(null);
+              await handleAskQuetion(null, 0);
               setScreenName(ProfileScreenName.QUESTION);
             }}
           >
@@ -222,17 +273,23 @@ export default function Profiling() {
         )}
 
       {/* question screen */}
-      {screenName === ProfileScreenName.QUESTION &&
-        currentQuestion !== null && (
-          <>
-            {/* <QuestionScreen data={data} currentCategory={currentCategoryKey} currentQuestion={currentQuestion} /> */}
-            {/* <QuestionCard 
-         //@ts-ignore
-         question={currentQuestion} handleAskQuetion={handleAskQuetion} />
-        </>} */}
-            <QuestionCard questions={questions} />
-          </>
-        )}
+      {screenName === ProfileScreenName.QUESTION && (
+        <>
+          <QuestionSection
+            //@ts-ignore
+            handleAskQuetion={handleAskQuetion}
+            questions={questionList}
+            displayQuestionIndex={displayQuestionIndex}
+          />
+        </>
+      )}
+
+      {/* GIVE_DESCRIPTION_OF_TEACHER */}
+      {screenName === ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER && (
+        <>
+          <div> this is descrition </div>
+        </>
+      )}
     </>
   );
 }

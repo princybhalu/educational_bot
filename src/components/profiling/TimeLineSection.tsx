@@ -14,38 +14,40 @@ interface TimeLineProps {
   questionList: Question[];
 }
 
-interface TimelineDataItem {
-  id: number;
-  title: string;
-  completed: boolean;
-}
-
-const timelineData: TimelineDataItem[] = [
-  { id: 1, title: 'Understanding Mindset', completed: true },
-  { id: 2, title: 'Lorem Ipsum', completed: true },
-  { id: 3, title: 'Lorem Ipsum', completed: true },
-  { id: 4, title: 'Lorem Ipsum', completed: false },
-  { id: 5, title: 'Lorem Ipsum', completed: false },
-];
-
 interface TimelineItemProps {
-  item: { id: number; title: string; completed: boolean };
+  item: Question[];
   index: number;
   nextCompleted: boolean;
+  lengthOfData: number;
+  category_name: string;
+  isCategoryCompleted: (a: Question[]) => boolean;
+  toggleCategory: (a: string, b: boolean) => void;
+  isDisabled: boolean;
 }
 
 const TimelineItem: React.FC<TimelineItemProps> = ({
   item,
   index,
   nextCompleted,
+  lengthOfData,
+  category_name,
+  isCategoryCompleted,
+  isDisabled,
+  toggleCategory,
 }) => {
   const isFirst = index === 0;
-  const isLast = index === timelineData.length - 1;
-
+  const isLast = index === lengthOfData - 1;
+  console.log({
+    item,
+    nextCompleted,
+  });
   return (
-    <div className="flex flex-col items-center flex-1">
+    <div
+      className="flex flex-col items-center flex-1"
+      onClick={() => toggleCategory(category_name, isDisabled)}
+    >
       <div
-        className={`mb-2 ${item.completed ? 'text-blue-600' : 'text-gray-400'}`}
+        className={`mb-2 ${isCategoryCompleted(item) ? 'text-blue-600' : 'text-gray-400'}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -62,15 +64,17 @@ const TimelineItem: React.FC<TimelineItemProps> = ({
           />
         </svg>
       </div>
-      <div className="text-center text-sm font-medium mb-2">{item.title}</div>
-      <div className="flex items-center w-full">
+      <div className="text-center text-sm font-medium mb-2">
+        {category_name}
+      </div>
+      <div className={`flex items-center w-full `}>
         {!isFirst && (
           <div
-            className={`flex-1 border-t-2 border-dashed ${item.completed ? 'border-blue-600' : 'border-gray-300'}`}
+            className={`flex-1 border-t-2 border-dashed ${isCategoryCompleted(item) ? 'border-blue-600' : 'border-gray-300'}`}
           />
         )}
         <div
-          className={`w-3 h-3 rounded-full ${item.completed ? 'bg-blue-600' : 'bg-gray-300'}`}
+          className={`w-3 h-3 rounded-full ${isCategoryCompleted(item) ? 'bg-blue-600' : 'bg-gray-300'}`}
         />
         {!isLast && (
           <div
@@ -107,6 +111,7 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
     },
     {}
   );
+  console.log({ groupedData });
 
   // Determine if a category should be disabled or green
   const isCategoryDisabled = (questions: Question[]) =>
@@ -131,7 +136,7 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
 
   return (
     <>
-      <div className="accordion-container">
+      <div className="accordion-container block lg:hidden">
         {Object.keys(groupedData).map((category, index) => {
           const questions = groupedData[category];
           const isDisabled = isCategoryDisabled(questions);
@@ -294,21 +299,54 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
         })}
       </div>
       {/* Web view */}
-      <div className="questions-list-web">
+      <div className="questions-list-web hidden lg:block">
         <div className="w-full p-8">
           <div className="flex justify-between items-start">
-            {timelineData.map((item, index) => (
+            {Object.keys(groupedData).map((item, index) => (
               <TimelineItem
-                key={item.id}
-                item={item}
+                key={index}
+                category_name={item}
+                item={groupedData[item]}
                 index={index}
-                nextCompleted={
-                  index < timelineData.length - 1
-                    ? timelineData[index + 1].completed
-                    : false
-                }
+                nextCompleted={isCategoryCompleted(groupedData[item])}
+                lengthOfData={Object.keys(groupedData).length}
+                isCategoryCompleted={isCategoryCompleted}
+                toggleCategory={toggleCategory}
+                isDisabled={isCategoryDisabled(groupedData[item])}
               />
             ))}
+          </div>
+          <div className="p-5">
+            {/* Title */}
+            <h2 className="text-2xl font-bold text-blue-900">{openCategory}</h2>
+            {/* Red underline */}
+            <div className="w-16 h-1 bg-red-500 mt-1 mb-4"></div>
+
+            {/* List of questions */}
+            <div className="space-y-4">
+              {openCategory &&
+                groupedData[openCategory].map((question, index) => (
+                  <div key={index} className="flex items-start">
+                    {/* Dotted line and dot */}
+                    <div className="relative mr-4 my-auto">
+                      <div
+                        className={`w-2.5 h-2.5 rounded-full ${question.status === QuestionStatus.ACTIVE ? 'bg-blue-900' : question.status === QuestionStatus.COMPLETED ? 'bg-green-500' : 'bg-gray-400'}`}
+                      ></div>
+                      {index < groupedData[openCategory].length - 1 && (
+                        <div
+                          className={`w-px h-10 bg-blue-900 absolute top-3 left-1.5 ${question.status === QuestionStatus.ACTIVE ? 'opacity-100' : 'opacity-30'}`}
+                        ></div>
+                      )}
+                    </div>
+                    {/* Question text */}
+                    <p
+                      className={`${question.status === QuestionStatus.ACTIVE ? 'text-green-500 font-semibold' : question.status === QuestionStatus.COMPLETED ? 'text-green-500' : 'text-gray-400'}`}
+                    >
+                      {question.question}
+                    </p>
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
       </div>
