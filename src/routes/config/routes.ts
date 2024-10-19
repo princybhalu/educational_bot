@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 import { RouteConfig } from '../../types/route';
-import  Layouts  from '../../layouts/layouts';
+import Layouts from '../../layouts/layouts';
 
 // Lazy load components
 const Landing = lazy(() => import('../../pages/Landing'));
@@ -10,6 +10,7 @@ const Dashboard = lazy(() => import('../../pages/Dashboard'));
 const Profiling = lazy(() => import('../../pages/Profiling'));
 const BasicInfo = lazy(() => import('../../pages/BasicInfo'));
 const StudyPlannerDashboard = lazy(() => import('../../pages/study-planner'));
+const ChatBot = lazy(() => import('../../pages/ChatBot'));
 
 export const routes: RouteConfig[] = [
   {
@@ -54,6 +55,14 @@ export const routes: RouteConfig[] = [
     isProtected: true,
     isProfilingRequired: true,
     element: StudyPlannerDashboard,
+    islayout: true,
+  },
+  {
+    path: '/chat-bot',
+    key: 'chatBot',
+    // isProtected: true,
+    // isProfilingRequired: true,
+    element: ChatBot,
     islayout: true,
   },
 ];
