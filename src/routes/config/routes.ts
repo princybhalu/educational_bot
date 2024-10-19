@@ -11,7 +11,10 @@ const Profiling = lazy(() => import('../../pages/Profiling'));
 const BasicInfo = lazy(() => import('../../pages/BasicInfo'));
 const StudyPlannerDashboard = lazy(() => import('../../pages/study-planner'));
 const LearningPathDashboard = lazy(() => import('../../pages/learning-path'));
-const ChatBot = lazy(() => import('../../pages/ChatBot'));
+const ChapterList = lazy(() => import('../../pages/learning-path/ChapterList'));
+const LearningChatView = lazy(
+  () => import('../../pages/learning-path/LearningChatView')
+);
 
 export const routes: RouteConfig[] = [
   {
@@ -64,13 +67,22 @@ export const routes: RouteConfig[] = [
     isProtected: true,
     // isProfilingRequired: true,
     element: LearningPathDashboard,
+    islayout: true,
   },
   {
-    path: '/chat-bot',
-    key: 'chatBot',
+    path: '/learning-path/chapter-list/:subjectId/:subjectName',
+    key: 'learningPathChapterList',
+    isProtected: true,
+    // isProfilingRequired: true,
+    element: ChapterList,
+    islayout: true,
+  },
+  {
+    path: '/learning-path/chat-view/:type/:relevantId/:topicName',
+    key: 'chatView',
     // isProtected: true,
     // isProfilingRequired: true,
-    element: ChatBot,
+    element: LearningChatView,
     islayout: true,
   },
 ];
