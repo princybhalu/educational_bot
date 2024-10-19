@@ -33,7 +33,7 @@ const App: React.FC = () => {
                         profilingIncomplete={route.isProfilingRequired ?? false}
                       >
                         {/* Exclude Layout for specific routes like /login */}
-                        {route.islayout !== false ? (
+                        {route.islayout === true ? (
                           <Layout>
                             <Suspense fallback={<LoadingSpinner />}>
                               <route.element />
@@ -45,7 +45,7 @@ const App: React.FC = () => {
                           </Suspense>
                         )}
                       </ProtectedRoute>
-                    ) : route.islayout !== false ? (
+                    ) : route.islayout === true ? (
                       <Layout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <route.element />
