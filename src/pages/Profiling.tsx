@@ -14,6 +14,7 @@ import TimeLIneSetion from '../components/profiling/TimeLineSection';
 import TimeLIneSetionOfWeb from '../components/profiling/TimeLineSectionOFWeb';
 import QuestionSection from '../components/profiling/QuestionSection';
 import { useSelector } from 'react-redux';
+import MascotTextComponent from '../components/profiling/MascotTextComponent';
 
 const data = [
   {
@@ -232,26 +233,46 @@ export default function Profiling() {
         screenName === ProfileScreenName.TIMELINE ||
         screenName === ProfileScreenName.QUESTION) && (
         <>
-          <div className="focus-check-container ">
-            <div className="icons-container">
-              <img src={ProfilingTitle1} alt="Icon 1" className="icon" />
-              <img src={ProfilingTitle2} alt="Icon 2" className="icon" />
-              <img src={ProfilingTitle3} alt="Icon 3" className="icon" />
-              <img src={ProfilingTitle4} alt="Icon 4" className="icon" />
+          <div className="w-full h-full">
+            <div className="relative max-w-max mx-auto py-16 text-3xl sm:text-4xl md:text-5xl font-bold flex flex-col gap-3 items-center Darker-Grotesque transition-all duration-100">
+              <img
+                src={ProfilingTitle1}
+                alt="Icon 1"
+                className="w-9 md:w-24 absolute top-5 left-20 md:left-0"
+              />
+              <img
+                src={ProfilingTitle3}
+                alt="Icon 3"
+                className="w-9 md:w-24 rotate-12 absolute top-5 right-20 md:right-0"
+              />
+              <img
+                src={ProfilingTitle2}
+                alt="Icon 2"
+                className="w-9 md:w-24 absolute top-16 md:top-36  left-0 md:-left-28 -rotate-12"
+              />
+
+              <img
+                src={ProfilingTitle4}
+                alt="Icon 4"
+                className="w-9 md:w-24 absolute top-16 md:top-20 right-0 md:-right-32 rotate-12"
+              />
+              <h1 className="hidden md:block">Help us tailor your learning!</h1>
+              <div className="flex gap-2 flex-col md:flex-row flex-wrap justify-center items-center">
+                <h1 className="text-nowrap">Quick Check On</h1>
+                <h2 className=" bg-[#FFE0CC] px-2.5 py-1 rounded-lg line-clamp-1">
+                  Your Focus & Well-Being!
+                </h2>
+              </div>
             </div>
-            <h1 className="main-heading">Quick Check On</h1>
-            <h2 className="sub-heading bg-[#CEE6FF]">
-              Your Focus & Well-Being!
-            </h2>
           </div>
         </>
       )}
 
       {/* Only avatar screen */}
       {screenName === ProfileScreenName.ONLY_AVATAR && (
-        <>
+        <div className="w-full p-10 flex flex-col gap-20 items-center">
           <button
-            className="btn  btn-primary"
+            className="text-white bg-blue-900 px-16 py-3.5 rounded-full text-lg md:text-xl mx-auto"
             onClick={async () => {
               await handleAskQuetion(null, 0);
               setScreenName(ProfileScreenName.QUESTION);
@@ -260,7 +281,12 @@ export default function Profiling() {
             {' '}
             Lets Start Quetions{' '}
           </button>
-        </>
+
+          <MascotTextComponent
+            text="Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text.Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text. Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text."
+            direction="right"
+          />
+        </div>
       )}
 
       {/* Time Line section */}

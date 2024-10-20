@@ -1,6 +1,6 @@
 .accordion-container {
   width: 100%;
-  max-width: 600px;
+  padding: 10px 20px;
   margin: 0 auto;
 }
 
@@ -43,13 +43,10 @@
 .question-item {
   display: flex;
   align-items: center;
+  gap: 8px;
   margin: 5px 0;
-  padding: 5px 0;
 }
 
-.question-item .bullet-icon {
-  margin-right: 10px;
-}
 
 .text-black {
   color: black;
@@ -95,3 +92,5 @@
 .question-item.disable .question-text {
   color: #b0b0b0;
 }
+
+
