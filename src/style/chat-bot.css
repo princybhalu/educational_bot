@@ -28,6 +28,9 @@
 
 .shrink-card {
   height: 58px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .topic-name {
@@ -100,15 +103,6 @@
   z-index: 10;
 }
 
-.up-arrow {
-  border: solid #123e72;
-  border-width: 0 2px 2px 0;
-  display: inline-block;
-  padding: 5px;
-  transform: rotate(-135deg);
-  -webkit-transform: rotate(-135deg);
-}
-
 .footer-input-and-send-btn {
   display: flex;
   justify-content: space-between;
@@ -142,12 +136,6 @@
   cursor: pointer;
 }
 
-.plus-icon::before {
-  content: '+';
-  font-size: 24px;
-  font-weight: bold;
-}
-
 .footer-input {
   border: none;
   outline: none;
@@ -177,7 +165,7 @@
 .chat-section {
   padding: 15px;
   border-radius: 10px;
-  max-height: 407px;
+  /* max-height: 407px; */
   overflow-y: auto;
   margin-top: 10px;
 }
