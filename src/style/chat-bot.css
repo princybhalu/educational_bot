@@ -19,7 +19,7 @@
 .topic-card {
   min-width: 327px;
   margin-top: 15px;
-  height: 409px;
+  height: 560px;
   background: #e5f3ff;
   padding: 20px;
   padding-top: 15px;
@@ -60,7 +60,7 @@
 }
 
 .card-content {
-  padding: 20px;
+  padding: 10px;
 }
 
 /* Footer */
@@ -110,7 +110,7 @@
 .footer-input-and-send-btn {
   display: flex;
   gap: 10px;
-  width: 100%;
+  width: 98%;
   align-items: center;
   margin-bottom: 60px;
   padding: 8px;
@@ -148,7 +148,7 @@
   outline: none;
   font-size: 16px;
   padding: 10px;
-  width: 100%;
+  width: 80%;
 }
 
 .footer-input::placeholder {
@@ -169,7 +169,7 @@
 }
 
 .chat-section-main {
-  width: 100%;
+  width: 95%;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -265,4 +265,14 @@
 
 .user-chat-text {
   margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+  .chat-section-main {
+    width: 100%;
+  }
+
+  .footer-input-and-send-btn {
+    width: 100%;
+  }
 }

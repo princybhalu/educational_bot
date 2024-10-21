@@ -13,6 +13,8 @@ import {
   GetProgressApiCall,
 } from 'services/api/learningPath';
 import Markdown from 'react-markdown';
+import AnimatedMarkdown from '../../components/learning-path/AnimatedMarkdown';
+import { useAppSelector } from 'store/TypedHooks';
 
 export interface ChatResponse {
   Status: string;
@@ -31,6 +33,7 @@ export interface Message {
 }
 
 const LearningChatView: React.FC = () => {
+  const { user } = useAppSelector((state) => state.auth);
   const ref = useRef<HTMLDivElement | null>(null);
   const chatSectionRef = useRef<HTMLDivElement | null>(null);
   const arrowRef = useRef<HTMLButtonElement | null>(null);
@@ -149,11 +152,24 @@ const LearningChatView: React.FC = () => {
       }
     }
   }, [num]);
+
   const tempFunc = () => {
     if (num === 0) {
       setNum(1);
     }
     return <></>;
+  };
+
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = async (content: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000); // Reset copied state after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
   };
 
   console.log({ chatContent });
@@ -188,11 +204,16 @@ const LearningChatView: React.FC = () => {
             {/* Title Card */}
             <div className={`topic-card ${isChatOpen ? 'shrink-card' : ''}`}>
               <div className="topic-name">
-                <h2 className="font-semibold">{topicName}</h2>
+                <h2 className="font-semibold">
+                  {' '}
+                  {topicName && topicName.length > 20 && isChatOpen
+                    ? `${topicName.substring(0, 20)}...`
+                    : topicName}
+                </h2>
                 {/* <div className="card-name">chapter Name</div> */}
               </div>
               <div className="card-content">
-                <Markdown>{mainContent}</Markdown>
+                <AnimatedMarkdown content={mainContent} typingSpeed={20} />
               </div>
             </div>
           </div>
@@ -228,15 +249,41 @@ const LearningChatView: React.FC = () => {
                                   <div className="ai-chat-avatar">AI</div>
                                   <div className="ai-chat-icon">
                                     <div>
-                                      <PenToSquare />
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="#003366"
+                                        className="size-5"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M16.25 3a.75.75 0 0 0-.75.75v7.5H4.56l1.97-1.97a.75.75 0 0 0-1.06-1.06l-3.25 3.25a.75.75 0 0 0 0 1.06l3.25 3.25a.75.75 0 0 0 1.06-1.06l-1.97-1.97h11.69A.75.75 0 0 0 17 12V3.75a.75.75 0 0 0-.75-.75Z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
                                     </div>
-                                    <div>
-                                      <PenToSquare />
+                                    <div
+                                      onClick={() => handleCopy(data.content)}
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="#003366"
+                                        className="size-5"
+                                      >
+                                        <path d="M7 3.5A1.5 1.5 0 0 1 8.5 2h3.879a1.5 1.5 0 0 1 1.06.44l3.122 3.12A1.5 1.5 0 0 1 17 6.622V12.5a1.5 1.5 0 0 1-1.5 1.5h-1v-3.379a3 3 0 0 0-.879-2.121L10.5 5.379A3 3 0 0 0 8.379 4.5H7v-1Z" />
+                                        <path d="M4.5 6A1.5 1.5 0 0 0 3 7.5v9A1.5 1.5 0 0 0 4.5 18h7a1.5 1.5 0 0 0 1.5-1.5v-5.879a1.5 1.5 0 0 0-.44-1.06L9.44 6.439A1.5 1.5 0 0 0 8.378 6H4.5Z" />
+                                      </svg>
                                     </div>
                                   </div>
                                 </div>
                                 <div className="ai-chat-text">
                                   <Markdown>{data.content}</Markdown>{' '}
+                                  {isCopied && (
+                                    <span className="text-green-500 ml-2">
+                                      Copied!
+                                    </span>
+                                  )}
                                 </div>
                               </div>
                             ) : (
@@ -253,16 +300,29 @@ const LearningChatView: React.FC = () => {
                                 </div>
                                 <div className="user-chat-avatar-with-icon">
                                   {/* TODO: First later of user name */}
-                                  <div className="user-chat-avatar">U</div>
+                                  <div className="user-chat-avatar">
+                                    {user?.name.toUpperCase()[0]}
+                                  </div>
                                 </div>
                               </div>
                             )}
                           </>
                         );
                       })}
+                    {chatContent &&
+                      //@ts-ignore
+                      chatContent.length === 0 && (
+                        <>
+                          <div>no Data ...</div>
+                        </>
+                      )}
                   </div>
                 )}
-
+                {isCopied && (
+                  <span className="text-white ml-2 w-full bg-green-500 text-center rounded-lg border">
+                    Copied!
+                  </span>
+                )}
                 {/* TODO: Add gradient color for footer */}
                 <div ref={ref} className="footer-input-and-send-btn">
                   <div className="footer-input-section">
@@ -273,15 +333,9 @@ const LearningChatView: React.FC = () => {
                       type="text"
                       placeholder="Ask your doubts here..."
                       className="footer-input"
-                      // //@ts-ignore
-                      // ref={doutRef}
+                      //@ts-ignore
+                      ref={doutRef}
                     />
-                    <button className="plus-btn">
-                      <PlusButton />
-                    </button>
-                    <button className="plus-btn">
-                      <PlusButton />
-                    </button>
                   </div>
                   <div className="send-container">
                     <button className="send-btn" onClick={() => submitDout()}>
