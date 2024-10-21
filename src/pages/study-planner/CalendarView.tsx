@@ -205,14 +205,6 @@ const CalendarView: React.FC = () => {
     }
   };
 
-  // const onDeleteOfTask = () => {
-  //   try{
-
-  //   }catch(err){
-  //     console.log(err)
-  //   }
-  // }
-
   useEffect(() => {
     const currentDate = new Date();
     const startOfMonth = new Date(
@@ -225,6 +217,7 @@ const CalendarView: React.FC = () => {
       currentDate.getMonth() + 1,
       0
     );
+    // TODO: check that above data is working or not
     GetEventBetweenRange(startOfMonth, endOfMonth).then(); // Fetch initial events on load
   }, []);
 
