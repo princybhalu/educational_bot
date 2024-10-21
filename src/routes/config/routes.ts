@@ -52,7 +52,7 @@ export const routes: RouteConfig[] = [
   {
     path: '/study-planner',
     key: 'studyPlanner',
-    isProtected: true,
+    // isProtected: true,
     // isProfilingRequired: true,
     element: StudyPlannerDashboard,
     islayout: true,
