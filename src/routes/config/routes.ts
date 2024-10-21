@@ -64,7 +64,7 @@ export const routes: RouteConfig[] = [
   {
     path: '/learning-path',
     key: 'learningPath',
-    isProtected: true,
+    // isProtected: true,
     // isProfilingRequired: true,
     element: LearningPathDashboard,
     islayout: true,
@@ -72,7 +72,7 @@ export const routes: RouteConfig[] = [
   {
     path: '/learning-path/chapter-list/:subjectId/:subjectName',
     key: 'learningPathChapterList',
-    isProtected: true,
+    // isProtected: true,
     // isProfilingRequired: true,
     element: ChapterList,
     islayout: true,
