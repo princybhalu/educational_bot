@@ -79,6 +79,7 @@ const QuestionSection: React.FC<QuestionSectionProps> = ({
           const cardStyle = {
             transition: 'all 0.5s ease-in-out',
             position: 'absolute',
+            left: '4%',
             transform: isActive
               ? 'rotate(0deg)'
               : `rotate(${(index - currentIndex) * 5}deg)`,

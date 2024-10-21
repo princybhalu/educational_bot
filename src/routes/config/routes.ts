@@ -54,7 +54,7 @@ export const routes: RouteConfig[] = [
   {
     path: '/profiling',
     key: 'profiling',
-    isProtected: true,
+    // isProtected: true,
     element: Profiling,
     islayout: true,
   },

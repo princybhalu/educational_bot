@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react';
 // import './Accordion.css';
 import { QuestionStatus } from '../../utils/enums';
 import '../../style/timeline.css';
+import MascotTextComponent from './MascotTextComponent';
+import {
+  FaCheckCircle,
+  FaCircle,
+  FaChevronUp,
+  FaChevronDown,
+} from 'react-icons/fa';
 
 interface Question {
   category_key: string;
@@ -23,6 +30,7 @@ interface TimelineItemProps {
   isCategoryCompleted: (a: Question[]) => boolean;
   toggleCategory: (a: string, b: boolean) => void;
   isDisabled: boolean;
+  openCategory: string | null;
 }
 
 const TimelineItem: React.FC<TimelineItemProps> = ({
@@ -34,6 +42,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({
   isCategoryCompleted,
   isDisabled,
   toggleCategory,
+  openCategory,
 }) => {
   const isFirst = index === 0;
   const isLast = index === lengthOfData - 1;
@@ -43,7 +52,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({
   });
   return (
     <div
-      className="flex flex-col items-center flex-1"
+      className="flex flex-col items-center justify-center flex-1"
       onClick={() => toggleCategory(category_name, isDisabled)}
     >
       <div
@@ -55,7 +64,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-6"
+          className="size-16"
         >
           <path
             strokeLinecap="round"
@@ -64,23 +73,24 @@ const TimelineItem: React.FC<TimelineItemProps> = ({
           />
         </svg>
       </div>
-      <div className="text-center text-sm font-medium mb-2">
-        {category_name}
-      </div>
+      {openCategory === category_name ? (
+        <div className="w-[2px] border-dashed bg-blue-700 h-7"></div>
+      ) : (
+        <div className="text-center text-sm font-medium mb-2">
+          {category_name}
+        </div>
+      )}
+
       <div className={`flex items-center w-full `}>
-        {!isFirst && (
-          <div
-            className={`flex-1 border-t-2 border-dashed ${isCategoryCompleted(item) ? 'border-blue-600' : 'border-gray-300'}`}
-          />
-        )}
         <div
-          className={`w-3 h-3 rounded-full ${isCategoryCompleted(item) ? 'bg-blue-600' : 'bg-gray-300'}`}
+          className={`w-1/2 border-t-2 border-dashed ${isFirst ? 'border-white' : isCategoryCompleted(item) ? 'border-blue-600' : 'border-gray-300'}`}
         />
-        {!isLast && (
-          <div
-            className={`flex-1 border-t-2 border-dashed ${nextCompleted ? 'border-blue-600' : 'border-gray-300'}`}
-          />
-        )}
+        <div
+          className={`w-4 h-4 mx-auto rounded-full ${isCategoryCompleted(item) || openCategory === category_name ? 'bg-blue-600' : 'bg-gray-300'}`}
+        />
+        <div
+          className={`w-1/2 ml-auto border-t-2 border-dashed ${isLast ? 'border-white' : nextCompleted ? 'border-blue-600' : 'border-gray-300'}`}
+        />
       </div>
     </div>
   );
@@ -111,7 +121,7 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
     },
     {}
   );
-  console.log({ groupedData });
+  console.log({ groupedData }, 'this is group fljdfs');
 
   // Determine if a category should be disabled or green
   const isCategoryDisabled = (questions: Question[]) =>
@@ -150,74 +160,25 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
               {/* tab & mobile view */}
               <div key={index} className="category-section">
                 <div
-                  className={`category-heading ${isDisabled ? 'text-[#919191]' : isCompleted ? 'text-green-500' : 'text-[#003366]'}`}
+                  className={`category-heading ${isDisabled ? 'text-[#919191]' : isCompleted ? 'text-green-500' : 'text-[#003366]'} border-b-2`}
                   onClick={() => toggleCategory(category, isDisabled)}
                   style={{ cursor: isDisabled ? 'not-allowed' : 'pointer' }}
                 >
                   <div className="flex  justify-between items-center">
-                    <div className="flex">
+                    <div className="flex items-center">
                       {isCompleted && (
-                        <>
-                          {' '}
-                          <svg
-                            width="20"
-                            height="24"
-                            viewBox="0 0 20 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M9.91807 1.65283C7.95647 1.65283 6.03891 2.23452 4.40789 3.32433C2.77687 4.41414 1.50565 5.96313 0.754973 7.77542C0.00429735 9.58771 -0.192114 11.5819 0.190577 13.5058C0.573268 15.4297 1.51787 17.197 2.90494 18.584C4.29201 19.9711 6.05924 20.9157 7.98316 21.2984C9.90707 21.6811 11.9013 21.4847 13.7136 20.734C15.5258 19.9833 17.0748 18.7121 18.1646 17.0811C19.2545 15.4501 19.8361 13.5325 19.8361 11.5709C19.8334 8.94132 18.7875 6.42023 16.9281 4.56083C15.0687 2.70144 12.5477 1.65561 9.91807 1.65283ZM14.2725 9.82189L8.93199 15.1624C8.86113 15.2333 8.77699 15.2896 8.68437 15.328C8.59176 15.3664 8.49248 15.3861 8.39222 15.3861C8.29196 15.3861 8.19268 15.3664 8.10006 15.328C8.00744 15.2896 7.9233 15.2333 7.85245 15.1624L5.56366 12.8736C5.4205 12.7304 5.34008 12.5363 5.34008 12.3338C5.34008 12.1314 5.4205 11.9372 5.56366 11.7941C5.70682 11.6509 5.90098 11.5705 6.10343 11.5705C6.30589 11.5705 6.50005 11.6509 6.6432 11.7941L8.39222 13.544L13.1929 8.74234C13.2638 8.67146 13.348 8.61523 13.4406 8.57687C13.5332 8.53851 13.6325 8.51876 13.7327 8.51876C13.833 8.51876 13.9322 8.53851 14.0248 8.57687C14.1175 8.61523 14.2016 8.67146 14.2725 8.74234C14.3434 8.81323 14.3996 8.89738 14.438 8.98999C14.4763 9.08261 14.4961 9.18187 14.4961 9.28212C14.4961 9.38236 14.4763 9.48163 14.438 9.57424C14.3996 9.66685 14.3434 9.75101 14.2725 9.82189Z"
-                              fill="#19B500"
-                            />
-                          </svg>
-                        </>
+                        <FaCheckCircle className="mr-2 text-green-500" />
                       )}
 
                       {isDisabled && (
-                        <>
-                          <svg
-                            width="12"
-                            height="13"
-                            viewBox="0 0 12 13"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="my-auto"
-                          >
-                            <circle
-                              cx="5.91778"
-                              cy="6.57085"
-                              r="4.95904"
-                              fill="#919191"
-                              stroke="#919191"
-                              strokeWidth="1.65301"
-                            />
-                          </svg>
-                        </>
+                        <FaCircle className="mr-2 text-gray-400" size="0.8em" />
                       )}
 
                       {!isDisabled && !isCompleted && (
-                        <>
-                          <svg
-                            width="12"
-                            height="24"
-                            viewBox="0 0 12 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <circle
-                              cx="5.91778"
-                              cy="11.5709"
-                              r="4.95904"
-                              fill="#003366"
-                              stroke="#003366"
-                              strokeWidth="1.65301"
-                            />
-                          </svg>
-                        </>
+                        <FaCircle className="mr-2 text-blue-900" size="0.8em" />
                       )}
 
-                      <span className="ml-2">
+                      <span className="ml-2 capitalize">
                         {' '}
                         {category.replace('_', ' ')}
                       </span>
@@ -226,41 +187,9 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
 
                   <span className="arrow-icon">
                     {openCategory === category ? (
-                      <>
-                        <svg
-                          width="14"
-                          height="8"
-                          viewBox="0 0 14 8"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M1 7L7 1L13 7"
-                            stroke="#003366"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </>
+                      <FaChevronUp />
                     ) : (
-                      <>
-                        <svg
-                          width="14"
-                          height="8"
-                          viewBox="0 0 14 8"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M1 1L7 7L13 1"
-                            stroke="#003366"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </>
+                      <FaChevronDown />
                     )}
                   </span>
                 </div>
@@ -281,11 +210,16 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
                           className={`question-item ${item.status === QuestionStatus.COMPLETED ? 'completed' : item.status === QuestionStatus.ACTIVE ? 'active' : 'disable'}`}
                         >
                           <span className="bullet-icon">
-                            {item.status === QuestionStatus.COMPLETED
-                              ? '✔'
-                              : item.status === QuestionStatus.DISABLE
-                                ? '✘'
-                                : '•'}
+                            {item.status === QuestionStatus.COMPLETED ? (
+                              <FaCheckCircle className="text-green-500 mr-2" />
+                            ) : item.status === QuestionStatus.DISABLE ? (
+                              <FaCircle
+                                className="text-gray-400 mr-2"
+                                size="0.5em"
+                              />
+                            ) : (
+                              <div className="w-2 h-2 bg-blue-900 rounded-full mr-2" />
+                            )}
                           </span>
                           <span className="question-text">{item.question}</span>
                         </div>
@@ -313,21 +247,18 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
                 isCategoryCompleted={isCategoryCompleted}
                 toggleCategory={toggleCategory}
                 isDisabled={isCategoryDisabled(groupedData[item])}
+                openCategory={openCategory}
               />
             ))}
           </div>
-          <div className="p-5">
-            {/* Title */}
+          {/* <div className="p-5">
             <h2 className="text-2xl font-bold text-blue-900">{openCategory}</h2>
-            {/* Red underline */}
             <div className="w-16 h-1 bg-red-500 mt-1 mb-4"></div>
 
-            {/* List of questions */}
             <div className="space-y-4">
               {openCategory &&
                 groupedData[openCategory].map((question, index) => (
                   <div key={index} className="flex items-start">
-                    {/* Dotted line and dot */}
                     <div className="relative mr-4 my-auto">
                       <div
                         className={`w-2.5 h-2.5 rounded-full ${question.status === QuestionStatus.ACTIVE ? 'bg-blue-900' : question.status === QuestionStatus.COMPLETED ? 'bg-green-500' : 'bg-gray-400'}`}
@@ -338,7 +269,6 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
                         ></div>
                       )}
                     </div>
-                    {/* Question text */}
                     <p
                       className={`${question.status === QuestionStatus.ACTIVE ? 'text-green-500 font-semibold' : question.status === QuestionStatus.COMPLETED ? 'text-green-500' : 'text-gray-400'}`}
                     >
@@ -346,6 +276,67 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
                     </p>
                   </div>
                 ))}
+            </div>
+          </div> */}
+
+          <div className="p-10 max-w-[1200px] mx-auto flex gap-10">
+            <div className="w-1/2">
+              {/* Title */}
+              <h2 className="text-2xl font-bold text-blue-900">
+                {openCategory}
+              </h2>
+              {/* Red underline */}
+              <div className="w-16 h-1 bg-red-500 mt-1 mb-4"></div>
+
+              {/* List of timeline items */}
+
+              <div className="space-y-4">
+                {openCategory &&
+                  groupedData[openCategory].map((item, index) => (
+                    <div key={index} className="flex items-start">
+                      {/* Dotted line and dot */}
+                      <div className="relative mr-4 my-auto">
+                        <div
+                          className={`w-2.5 h-2.5 rounded-full ${
+                            item.status === 'ACTIVE'
+                              ? 'bg-blue-900'
+                              : item.status === 'COMPLETED'
+                                ? 'bg-green-500'
+                                : 'bg-gray-400'
+                          }`}
+                        ></div>
+
+                        {index < groupedData[openCategory].length - 1 && (
+                          <div
+                            className={`w-px h-10 bg-blue-900 absolute top-3 left-[5px] ${
+                              item.status === 'ACTIVE'
+                                ? 'opacity-100'
+                                : 'opacity-30'
+                            }`}
+                          ></div>
+                        )}
+                      </div>
+                      {/* Item text */}
+                      <p
+                        className={`text-base md:text-lg ${
+                          item.status === 'ACTIVE'
+                            ? 'text-green-500 font-semibold'
+                            : item.status === 'COMPLETED'
+                              ? 'text-green-500'
+                              : 'text-gray-400'
+                        }`}
+                      >
+                        {item.question}
+                      </p>
+                    </div>
+                  ))}
+              </div>
+            </div>
+            <div className="w-[45%]">
+              {/* <MascotTextComponent
+                text="Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text."
+                direction="left"
+              /> */}
             </div>
           </div>
         </div>
