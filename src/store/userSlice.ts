@@ -6,6 +6,12 @@ interface User {
   name: string;
   email: string;
   hasCompletedProfiling: boolean;
+  board: string;
+  field: string;
+  standard: string | number;
+  dob: null | string;
+  age: null | number;
+  created_at: null | string;
   // Add more fields if needed
 }
 

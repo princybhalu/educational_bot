@@ -34,7 +34,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div className="flex flex-1 overflow-hidden">
         {!(
           window.location.pathname === '/' ||
-          window.location.pathname === '/project/add'
+          window.location.pathname === '/profiling'
         ) && (
           <>
             <LeftsideBar

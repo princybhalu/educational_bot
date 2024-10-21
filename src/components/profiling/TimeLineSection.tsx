@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import './Accordion.css';
-import { QuestionStatus } from '../../utils/enums';
+import { ProfileScreenName, QuestionStatus } from '../../utils/enums';
 import '../../style/timeline.css';
-import MascotTextComponent from './MascotTextComponent';
 import {
   FaCheckCircle,
   FaCircle,
@@ -19,6 +18,7 @@ interface Question {
 
 interface TimeLineProps {
   questionList: Question[];
+  handleClickOnQuestion: (a: number) => void;
 }
 
 interface TimelineItemProps {
@@ -31,6 +31,7 @@ interface TimelineItemProps {
   toggleCategory: (a: string, b: boolean) => void;
   isDisabled: boolean;
   openCategory: string | null;
+  handleClickOnQuestion: (a: number) => void;
 }
 
 const TimelineItem: React.FC<TimelineItemProps> = ({
@@ -43,6 +44,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({
   isDisabled,
   toggleCategory,
   openCategory,
+  handleClickOnQuestion,
 }) => {
   const isFirst = index === 0;
   const isLast = index === lengthOfData - 1;
@@ -96,16 +98,14 @@ const TimelineItem: React.FC<TimelineItemProps> = ({
   );
 };
 
-const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
+const TimeLIneSetion: React.FC<TimeLineProps> = ({
+  questionList,
+  handleClickOnQuestion,
+}) => {
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
   const toggleCategory = (category: string, isDisabled: boolean) => {
     if (!isDisabled) {
-      console.log(
-        { isDisabled, openCategory, category },
-        ' isDisabled inside func'
-      );
-
       setOpenCategory(openCategory === category ? null : category);
     }
   };
@@ -153,7 +153,7 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
           const isCompleted = isCategoryCompleted(questions);
           const isActive = isCategoryActive(questions);
           // console.log({
-          //   isActive , isDisabled , isCompleted
+          //   isActive , isDisabled , isCompleted , category
           // })
           return (
             <>
@@ -203,11 +203,16 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
                         item.status === QuestionStatus.ACTIVE;
                       const isDisabledQuestion =
                         item.status === QuestionStatus.DISABLE;
-
+                      console.log({
+                        stas: item.status,
+                        category,
+                        item,
+                      });
                       return (
                         <div
                           key={item.sequence}
                           className={`question-item ${item.status === QuestionStatus.COMPLETED ? 'completed' : item.status === QuestionStatus.ACTIVE ? 'active' : 'disable'}`}
+                          onClick={() => handleClickOnQuestion(item.sequence)}
                         >
                           <span className="bullet-icon">
                             {item.status === QuestionStatus.COMPLETED ? (
@@ -248,6 +253,7 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
                 toggleCategory={toggleCategory}
                 isDisabled={isCategoryDisabled(groupedData[item])}
                 openCategory={openCategory}
+                handleClickOnQuestion={handleClickOnQuestion}
               />
             ))}
           </div>
@@ -293,14 +299,18 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
               <div className="space-y-4">
                 {openCategory &&
                   groupedData[openCategory].map((item, index) => (
-                    <div key={index} className="flex items-start">
+                    <div
+                      key={index}
+                      className="flex items-start"
+                      onClick={() => handleClickOnQuestion(item.sequence)}
+                    >
                       {/* Dotted line and dot */}
                       <div className="relative mr-4 my-auto">
                         <div
                           className={`w-2.5 h-2.5 rounded-full ${
-                            item.status === 'ACTIVE'
+                            item.status === QuestionStatus.ACTIVE
                               ? 'bg-blue-900'
-                              : item.status === 'COMPLETED'
+                              : item.status === QuestionStatus.COMPLETED
                                 ? 'bg-green-500'
                                 : 'bg-gray-400'
                           }`}
@@ -319,9 +329,9 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
                       {/* Item text */}
                       <p
                         className={`text-base md:text-lg ${
-                          item.status === 'ACTIVE'
+                          item.status === QuestionStatus.ACTIVE
                             ? 'text-green-500 font-semibold'
-                            : item.status === 'COMPLETED'
+                            : item.status === QuestionStatus.COMPLETED
                               ? 'text-green-500'
                               : 'text-gray-400'
                         }`}

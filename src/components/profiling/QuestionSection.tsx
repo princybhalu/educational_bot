@@ -14,7 +14,7 @@ interface Question {
 }
 
 interface QuestionSectionProps {
-  handleAskQuetion: (body: any, a: number) => any;
+  handleAskQuetion: (body: any, a: number, c: string | null) => any;
   questions: Question[];
   displayQuestionIndex: number;
 }
@@ -51,15 +51,33 @@ const QuestionSection: React.FC<QuestionSectionProps> = ({
   };
 
   const handleSubmit = (question: Question) => {
-    console.log(`Submitted answer for question ${currentIndex + 1}:`, answer);
-    handleAskQuetion(
-      {
-        question_id: question.question_id,
-        sequence: question.sequence,
-        answer,
-      },
-      currentIndex
+    console.log(
+      `Submitted answer for question ${currentIndex + 1}:`,
+      answer,
+      question
     );
+    if (question.status === QuestionStatus.COMPLETED) {
+      console.log('completed ques');
+      handleAskQuetion(
+        {
+          question_id: question.question_id,
+          sequence: question.sequence,
+          answer,
+        },
+        currentIndex,
+        question.status
+      );
+    } else {
+      handleAskQuetion(
+        {
+          question_id: question.question_id,
+          sequence: question.sequence,
+          answer,
+        },
+        currentIndex,
+        ''
+      );
+    }
     handleNext();
     setAnswer('');
   };
@@ -121,12 +139,17 @@ const QuestionSection: React.FC<QuestionSectionProps> = ({
                 ></textarea>
                 <button
                   onClick={() => handleSubmit(question)}
-                  disabled={isMoving || answer.length === 0}
-                  className={`text-xs sm:text-sm outline-none text-[#405E7F] max-w-max flex gap-2 hover:underline ${answer.length === 0 ? 'text-[#919191]' : ''} `}
+                  disabled={
+                    !(question.status === QuestionStatus.COMPLETED) &&
+                    (isMoving || answer.length === 0)
+                  }
+                  className={`text-xs sm:text-sm outline-none text-[#405E7F] max-w-max flex gap-2 hover:underline ${!(question.status === QuestionStatus.COMPLETED) && (isMoving || answer.length === 0) ? 'text-[#919191]' : ''} `}
                 >
                   {currentIndex === questions.length - 1
                     ? 'Finish'
-                    : 'Submit answer'}
+                    : question.status === QuestionStatus.COMPLETED
+                      ? 'Next Question'
+                      : 'Submit answer'}
                   <FaArrowRightLong size={18} />
                 </button>
               </div>
@@ -136,7 +159,12 @@ const QuestionSection: React.FC<QuestionSectionProps> = ({
                   disabled={currentIndex === 0 || isMoving}
                   className="text-xs sm:text-sm outline-none text-[#405E7F] max-w-max mb-5 flex px-4 hover:underline"
                 >
-                  <FaArrowLeftLong className="w-5 sm:w-6" /> Previous question
+                  {currentIndex !== 0 && (
+                    <>
+                      <FaArrowLeftLong className="w-5 sm:w-6" /> Previous
+                      question{' '}
+                    </>
+                  )}
                 </button>
                 <img
                   src={stressLady}

@@ -12,15 +12,25 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   profilingIncomplete = false,
 }) => {
   // Access the authentication state from Redux
-  const isAuthenticated = useAppSelector((state) => state.auth.isLoggedIn);
+  const { isLoggedIn: isAuthenticated, user } = useAppSelector(
+    (state) => state.auth
+  );
   const hasCompletedProfiling = useAppSelector(
     (state) => state.auth.user?.hasCompletedProfiling
   ); // Assuming `hasCompletedProfiling` is part of user data
-
+  console.log(hasCompletedProfiling, ' nk kjjnk');
   // Check if the user is logged in
   if (!isAuthenticated) {
     // If the user is not authenticated, redirect to the login page
     return <Navigate to="/login" replace />;
+  }
+
+  if (
+    window.location.pathname !== '/basic-info' &&
+    user &&
+    (!user.board || !user.field || !user.standard)
+  ) {
+    return <Navigate to="/basic-info" replace />;
   }
 
   // If profiling is incomplete, redirect to profiling page

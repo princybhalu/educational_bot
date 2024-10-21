@@ -107,7 +107,8 @@ const Http = async (apiDataProps: IAPIOptions) => {
   };
 
   const handleError = async (error: any) => {
-    const { status, data } = error;
+    const { Status: status, data } = error.data;
+    console.log({ status, data });
     if (messageSettings && !messageSettings.hideErrorMessage) {
       if (messageSettings.errorMessage !== '') {
         Notification({

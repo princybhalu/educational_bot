@@ -74,7 +74,6 @@ interface Question {
 
 export default function Profiling() {
   const user = useSelector((state: any) => state.auth.user);
-  console.log({ user });
   const [screenName, setScreenName] = useState(ProfileScreenName.ONLY_AVATAR);
   const [displayQuestionIndex, setDisplayQuestionIndex] = useState<number>(0);
   const [currentCategoryKey, setCurrentCategoryKey] = useState<string | null>(
@@ -84,7 +83,17 @@ export default function Profiling() {
   const [questionList, setQuestionList] = useState(data);
   const [isCalledCreateProfile, setIsCalledCreateProfile] = useState(false);
 
-  const handleAskQuetion = async (body: any, nextIndex: number) => {
+  const handleClickOnQuestion = (index: number) => {
+    console.log(index - 1, ' index - 1');
+    setDisplayQuestionIndex(index - 1);
+    setScreenName(ProfileScreenName.QUESTION);
+  };
+
+  const handleAskQuetion = async (
+    body: any,
+    nextIndex: number,
+    status: string
+  ) => {
     try {
       // for future addition
       // if (!questionList) {
@@ -95,6 +104,11 @@ export default function Profiling() {
       //     console.log(err);
       //   }
       // }
+
+      if (status === QuestionStatus.COMPLETED) {
+        setDisplayQuestionIndex(nextIndex);
+        return;
+      }
 
       // create profile question
       if (!isCalledCreateProfile) {
@@ -128,13 +142,25 @@ export default function Profiling() {
         // logic of create question list
         const resProfileData = res.data.profile_data;
         const resNextQuestion = res.data.next_question;
-        resProfileData.splice(0, 1);
-        const newQuestionListData = [...resProfileData];
+        resProfileData.splice(-1, 1);
+        if (!resProfileData || resProfileData.length === 0) {
+          setDisplayQuestionIndex(0);
+          return;
+        }
+        const tempProfileData = resProfileData.map(
+          (item: any, index: number) => {
+            item.status = QuestionStatus.COMPLETED;
+            item.sequence = index + 1;
+            return item;
+          }
+        );
+        const newQuestionListData = [...tempProfileData];
         setDisplayQuestionIndex(newQuestionListData.length);
         newQuestionListData.push({
           ...resNextQuestion,
           status: QuestionStatus.ACTIVE,
           answer: '',
+          sequence: newQuestionListData.length + 1,
         });
         // add disable questions
         questionList.splice(0, newQuestionListData.length);
@@ -153,7 +179,7 @@ export default function Profiling() {
   };
 
   useEffect(() => {
-    handleAskQuetion(null, 0).then();
+    handleAskQuetion(null, 0, '').then();
   }, [isCalledCreateProfile]);
 
   return (
@@ -233,7 +259,7 @@ export default function Profiling() {
         screenName === ProfileScreenName.TIMELINE ||
         screenName === ProfileScreenName.QUESTION) && (
         <>
-          <div className="w-full h-full">
+          <div className="w-full">
             <div className="relative max-w-max mx-auto py-16 text-3xl sm:text-4xl md:text-5xl font-bold flex flex-col gap-3 items-center Darker-Grotesque transition-all duration-100">
               <img
                 src={ProfilingTitle1}
@@ -256,10 +282,12 @@ export default function Profiling() {
                 alt="Icon 4"
                 className="w-9 md:w-24 absolute top-16 md:top-20 right-0 md:-right-32 rotate-12"
               />
-              <h1 className="hidden md:block">Help us tailor your learning!</h1>
+              <h1 className="hidden md:block">
+                Guide us to shape your learning
+              </h1>
               <div className="flex gap-2 flex-col md:flex-row flex-wrap justify-center items-center">
                 <h1 className="text-nowrap">Quick Check On</h1>
-                <h2 className=" bg-[#FFE0CC] px-2.5 py-1 rounded-lg line-clamp-1">
+                <h2 className=" bg-[#CEE6FF] px-2.5 py-1 rounded-lg line-clamp-1">
                   Your Focus & Well-Being!
                 </h2>
               </div>
@@ -271,21 +299,20 @@ export default function Profiling() {
       {/* Only avatar screen */}
       {screenName === ProfileScreenName.ONLY_AVATAR && (
         <div className="w-full p-10 flex flex-col gap-20 items-center">
+          <MascotTextComponent
+            text=" These questions aren’t just to help us understand you better, they are key to how our AI will train teachers to support your learning style. Answering thoroughly will provide the most tailored guidance possible! "
+            direction="right"
+          />
           <button
             className="text-white bg-blue-900 px-16 py-3.5 rounded-full text-lg md:text-xl mx-auto"
             onClick={async () => {
-              await handleAskQuetion(null, 0);
+              await handleAskQuetion(null, 0, '');
               setScreenName(ProfileScreenName.QUESTION);
             }}
           >
             {' '}
             Lets Start Quetions{' '}
           </button>
-
-          <MascotTextComponent
-            text="Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text.Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text. Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text."
-            direction="right"
-          />
         </div>
       )}
 
@@ -293,7 +320,10 @@ export default function Profiling() {
       {screenName === ProfileScreenName.TIMELINE &&
         currentCategoryKey !== null && (
           <>
-            <TimeLIneSetion questionList={questionList} />
+            <TimeLIneSetion
+              questionList={questionList}
+              handleClickOnQuestion={handleClickOnQuestion}
+            />
             {/* <TimeLIneSetionOfWeb questionList={questionList} /> */}
           </>
         )}
