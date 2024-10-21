@@ -42,7 +42,7 @@ const Register: React.FC = () => {
       const response = await RegisterApiCall(data);
       console.log('register data : ', response);
       dispatch(loginSuccess(response.data));
-      navigate('/profiling');
+      navigate('/basic-info');
     } catch (err) {
       console.log(err);
     }

@@ -168,6 +168,7 @@ const Http = async (apiDataProps: IAPIOptions) => {
       return response.data;
     },
     (error) => {
+      console.log({ error });
       const { response } = error;
       return handleError(response);
     }

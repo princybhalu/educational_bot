@@ -1,8 +1,10 @@
 import http from '../http';
 
 export const BasicInfoApiCall = (body: any) => {
-  return http.patch({
+  return http.put({
     url: '/user-service/user',
-    data: body,
+    data: {
+      update_with: body,
+    },
   });
 };
