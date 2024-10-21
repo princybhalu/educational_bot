@@ -25,3 +25,23 @@
 .fc .fc-day-today {
   background-color: #f5f5dc; /* Adjust the color */
 }
+
+.rdrInRange{
+  background-color: #003366 !important;
+}
+
+.rdrStartEdge {
+  background-color: #003366 !important;
+}
+
+.rdrEndEdge {
+  background-color: #003366 !important;
+}
+
+.rdrDateDisplayItemActive{
+  border-color: #003366;
+}
+
+.rdrDayToday{
+  color: #003366;
+}

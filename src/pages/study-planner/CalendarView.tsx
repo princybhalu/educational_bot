@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import '../../style/calendar-view.css';
 import EventModal from '../../components/study-planner/EventModel';
 import {
@@ -22,6 +22,7 @@ const CalendarView: React.FC = () => {
   const scheduleId = '9f2c77ec-c42a-44d4-bc8e-3d92bf9087c6';
   const calendarRef = useRef<FullCalendar>(null);
   const date = new Date();
+  const navigate = useNavigate();
 
   // Format the date to 'October 19, 2024'
   const formattedDate = date.toLocaleDateString('en-US', {
@@ -227,7 +228,10 @@ const CalendarView: React.FC = () => {
       <div className="sticky top-0 z-10 bg-white">
         <div className="p-4 flex justify-between items-center flex-wrap">
           <div className="flex items-center space-x-2 text-sm text-gray-500 flex-wrap">
-            <a href="/" className="text-gray-400">
+            <a
+              className="text-gray-400"
+              onClick={() => navigate('/study-planner')}
+            >
               Dashboard
             </a>{' '}
             /<span className="text-gray-600">Calendar</span>
@@ -295,7 +299,7 @@ const CalendarView: React.FC = () => {
           droppable={true}
           //@ts-ignore
           events={events}
-          eventContent={(eventInfo) => (
+          eventContent={(eventInfo: any) => (
             <div className="bg-white border-white-300">
               <div className="p-2 border-l-4 border-orange-500 rounded-lg bg-orange-100 text-black">
                 <strong>{eventInfo.event.title}</strong>
@@ -308,10 +312,10 @@ const CalendarView: React.FC = () => {
           height="auto" // Responsive height
           allDaySlot={false}
           // Call API when event is dragged
-          eventDrop={(info) => handleEventDrop(info)}
+          eventDrop={(info: any) => handleEventDrop(info)}
           // Call API when event is resized
-          eventResize={(info) => handleEventResize(info)}
-          eventClick={(eventInfo) => handleEventClick(eventInfo.event)}
+          eventResize={(info: any) => handleEventResize(info)}
+          eventClick={(eventInfo: any) => handleEventClick(eventInfo.event)}
         />
       </div>
 
