@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { RouteConfig } from '../../types/route';
 import Layouts from '../../layouts/layouts';
+import QuestionCards from '../../components/profiling/QuestionSection';
 
 // Lazy load components
 const Landing = lazy(() => import('../../pages/Landing'));
@@ -42,6 +43,7 @@ export const routes: RouteConfig[] = [
     element: Dashboard,
     islayout: true,
   },
+  // teacher tailer route
   {
     path: '/profiling',
     key: 'profiling',

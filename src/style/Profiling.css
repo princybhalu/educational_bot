@@ -1,0 +1,172 @@
+/* FocusCheck.css */
+.focus-check-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.icons-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+/* Heading Styles */
+.main-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #000000;
+}
+
+.sub-heading {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #000000;
+  margin-top: 1rem;
+}
+
+/* Responsive Styles */
+@media (min-width: 640px) {
+  .icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .main-heading {
+    font-size: 2.5rem;
+  }
+
+  .sub-heading {
+    font-size: 1.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .main-heading {
+    font-size: 3rem;
+  }
+
+  .sub-heading {
+    font-size: 2rem;
+  }
+}
+
+/* LearningGroove.css */
+.category-header {
+  @apply flex overflow-x-auto py-2 px-4 bg-gray-100;
+}
+
+.category-tab {
+  @apply cursor-pointer px-6 py-2 bg-blue-500 text-white rounded-md mx-2 transition-all duration-200;
+}
+
+.category-tab.active {
+  @apply bg-blue-700;
+}
+
+.questions-list {
+  @apply mt-4;
+}
+
+.question-item {
+  @apply mb-4;
+}
+
+.complete-btn {
+  @apply mt-2 bg-green-500 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-green-600;
+}
+
+.question-card {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  width: 400px; /* Increased width to give space */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  font-family: Arial, sans-serif;
+}
+
+.card-header {
+  text-align: left;
+}
+
+.card-header h2 {
+  font-size: 18px;
+  color: #003366; /* Navy Blue */
+  margin-bottom: 10px;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.card-body textarea {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #ff6600; /* Saffron color */
+  padding: 10px;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+  resize: none; /* Prevent manual resizing */
+  overflow-y: auto; /* Scroll if more than 3 lines */
+  height: auto;
+  max-height: 100px; /* Limit the height */
+}
+
+.card-body textarea:focus {
+  outline: none;
+  border-bottom-color: #003366; /* Change border to navy blue when focused */
+}
+
+.card-body textarea::placeholder {
+  color: #999;
+}
+
+.submit-btn {
+  background-color: #ff6600;
+  color: white;
+  font-size: 14px;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.submit-btn:not(:disabled):hover {
+  background-color: #e65c00;
+}
+
+.previous-question {
+  color: #003366;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* navigation-headline */
+.navigation-headline {
+  font-size: 1.2rem;
+}

@@ -1,0 +1,97 @@
+.accordion-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.category-section {
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.category-heading {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 15px;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.text-gray-500 {
+  color: #b0b0b0;
+}
+
+.text-blue-500 {
+  color: #1a73e8;
+}
+
+.text-green-500 {
+  color: #4caf50;
+}
+
+.arrow-icon {
+  font-size: 16px;
+  align-self: center;
+}
+
+.questions-list {
+  padding-left: 10px;
+  padding-right: 15px;
+  padding-bottom: 10px;
+}
+
+.question-item {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  padding: 5px 0;
+}
+
+.question-item .bullet-icon {
+  margin-right: 10px;
+}
+
+.text-black {
+  color: black;
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
+.text-lg {
+  font-size: 1.25rem;
+}
+
+.text-gray-500 {
+  color: #b0b0b0;
+}
+
+.text-blue-500 {
+  color: #1a73e8;
+}
+
+.question-item.completed .bullet-icon {
+  color: #1a73e8; /* Completed checkmark in blue */
+}
+
+.question-item.completed .question-text {
+  color: #1a73e8;
+}
+
+.question-item.active .bullet-icon {
+  color: #1a73e8;
+}
+
+.question-item.active .question-text {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.question-item.disable .bullet-icon {
+  color: #b0b0b0;
+}
+
+.question-item.disable .question-text {
+  color: #b0b0b0;
+}
