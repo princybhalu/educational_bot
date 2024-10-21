@@ -333,10 +333,10 @@ const TimeLIneSetion: React.FC<TimeLineProps> = ({ questionList }) => {
               </div>
             </div>
             <div className="w-[45%]">
-              <MascotTextComponent
+              {/* <MascotTextComponent
                 text="Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text Lorem Ipsum is simply dummy text."
                 direction="left"
-              />
+              /> */}
             </div>
           </div>
         </div>
