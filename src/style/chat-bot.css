@@ -3,6 +3,7 @@
 }
 
 /* Bake button */
+
 .back-to-chapter {
   display: flex;
   font-size: 16px;
@@ -14,12 +15,14 @@
 }
 
 /* Topic Card */
+
 .topic-card {
   min-width: 327px;
   margin-top: 15px;
   height: 409px;
   background: #e5f3ff;
   padding: 20px;
+  padding-top: 15px;
   border: 1px solid #00336680;
   border-radius: 16px;
   overflow-y: auto;
@@ -28,6 +31,9 @@
 
 .shrink-card {
   height: 58px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .topic-name {
@@ -58,6 +64,7 @@
 }
 
 /* Footer */
+
 .footer-container {
   position: fixed;
   bottom: 0;
@@ -100,21 +107,15 @@
   z-index: 10;
 }
 
-.up-arrow {
-  border: solid #123e72;
-  border-width: 0 2px 2px 0;
-  display: inline-block;
-  padding: 5px;
-  transform: rotate(-135deg);
-  -webkit-transform: rotate(-135deg);
-}
-
 .footer-input-and-send-btn {
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
   align-items: center;
-  position: absolute;
-  bottom: 10px;
+  margin-bottom: 60px;
+  padding: 8px;
+  /* padding-left: 10px;
+  padding-right: 20px; */
 }
 
 .footer-input-section {
@@ -123,8 +124,8 @@
   border-radius: 1234px;
   border: 1px solid #cbd5e1;
   background-color: white;
-  min-width: 341px;
-  width: 90%;
+  /* min-width: 341px; */
+  width: 100%;
   height: 48px;
   padding: 5px 10px;
   box-shadow: 0px 4px 8px -2px #1717171a;
@@ -142,12 +143,6 @@
   cursor: pointer;
 }
 
-.plus-icon::before {
-  content: '+';
-  font-size: 24px;
-  font-weight: bold;
-}
-
 .footer-input {
   border: none;
   outline: none;
@@ -162,22 +157,31 @@
 
 .send-container {
   background: #003366;
-  height: 40px;
-  width: 40px;
+  /* height: 40px;
+  width: 40px; */
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 123px;
   border: 0.09px solid #ffffff;
   color: #ffffff;
-  margin-left: 10px;
+  padding: 10px;
+}
+
+.chat-section-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 20px;
 }
 
 /* Chat Section */
+
 .chat-section {
+  flex-grow: 1;
   padding: 15px;
   border-radius: 10px;
-  max-height: 407px;
   overflow-y: auto;
   margin-top: 10px;
 }
