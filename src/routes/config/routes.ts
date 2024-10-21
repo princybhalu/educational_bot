@@ -11,6 +11,9 @@ const Profiling = lazy(() => import('../../pages/Profiling'));
 const BasicInfo = lazy(() => import('../../pages/BasicInfo'));
 const StudyPlannerDashboard = lazy(() => import('../../pages/study-planner'));
 const LearningPathDashboard = lazy(() => import('../../pages/learning-path'));
+const CalendarView = lazy(
+  () => import('../../pages/study-planner/CalendarView')
+);
 
 export const routes: RouteConfig[] = [
   {
@@ -52,9 +55,17 @@ export const routes: RouteConfig[] = [
   {
     path: '/study-planner',
     key: 'studyPlanner',
-    isProtected: true,
+    // isProtected: true,
     // isProfilingRequired: true,
     element: StudyPlannerDashboard,
+    islayout: true,
+  },
+  {
+    path: '/study-planner/calendar/:scheduleId',
+    key: 'studyPlanner',
+    // isProtected: true,
+    // isProfilingRequired: true,
+    element: CalendarView,
     islayout: true,
   },
   {

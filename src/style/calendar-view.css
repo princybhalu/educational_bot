@@ -1,0 +1,27 @@
+.fc .fc-col-header-cell-cushion {
+  font-size: 14px;
+  font-weight: 500;
+  height: 40px;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-top: 5px;
+}
+
+.fc .fc-timegrid-slot-label-cushion {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.fc .fc-timegrid-axis-cushion {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.fc .fc-event {
+  border: none; /* Removes the border */
+  box-shadow: none; /* Removes the shadow */
+}
+
+.fc .fc-day-today {
+  background-color: #f5f5dc; /* Adjust the color */
+}
