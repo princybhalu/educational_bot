@@ -1,82 +1,102 @@
 import React, { useEffect, useState } from 'react';
-import { GetAllSubjects } from '../../services/api/learningPath';
 import { useNavigate } from 'react-router-dom';
+import { FaBook, FaChevronRight } from 'react-icons/fa';
+import { MdOutlineError } from 'react-icons/md';
+import { GetAllSubjects } from '../../services/api/learningPath';
 
-export default function LearningPathDashboard() {
-  const [subjectList, setSubjectList] = useState<any[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+interface Subject {
+  id: string;
+  subject_name: string;
+  chapter_ids: string[];
+}
+
+const LearningPathDashboard: React.FC = () => {
+  const [subjectList, setSubjectList] = useState<Subject[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-  const GetAllSubjectsByApiCall = async () => {
-    try {
-      const res = await GetAllSubjects();
-      console.log({ res });
-      setSubjectList(res.data);
-      setIsLoading(false);
-    } catch (err) {
-      console.log(err);
-      setIsLoading(false);
-    }
-  };
-
-  const handleNavigateToChaptersList = (subjectId: string, name: string) => {
-    console.log('navigation called');
-    navigate('/learning-path/chapter-list/' + subjectId + '/' + name);
-  };
 
   useEffect(() => {
-    GetAllSubjectsByApiCall().then();
+    const fetchSubjects = async () => {
+      try {
+        const res = await GetAllSubjects();
+        setSubjectList(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSubjects();
   }, []);
 
+  const handleNavigateToChaptersList = (
+    subjectId: string,
+    name: string
+  ): void => {
+    navigate(`/learning-path/chapter-list/${subjectId}/${name}`);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-50">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  if (!subjectList) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50 text-gray-800">
+        <MdOutlineError className="text-5xl mb-4 text-red-600" />
+        <p className="text-xl font-semibold">
+          An error occurred while loading the dashboard.
+        </p>
+        <p className="mt-2">Please try again later or contact support.</p>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <div>
-        {isLoading && (
-          <>
-            <div> Loading .......... </div>
-          </>
-        )}
-
-        {!isLoading && subjectList === null && (
-          <>
-            <div> Some things goes wrong </div>
-          </>
-        )}
-
-        {!isLoading &&
-          subjectList &&
-          subjectList.length > 0 &&
-          subjectList.map((subject, index) => (
-            <>
-              <div
-                key={index}
-                className="flex flex-col md:flex-row justify-center items-center p-4 gap-6"
-                onClick={() =>
-                  handleNavigateToChaptersList(subject.id, subject.subject_name)
-                }
-              >
-                <div className="relative w-80 p-6 bg-gradient-to-br from-white to-[#00336640] shadow-lg rounded-lg">
-                  {/* Radial Gradient Circle */}
-                  {/* <div
-          className="absolute top-[-20%] right-[-10%] w-[150px] h-[150px] rounded-full"
-          style={{
-            background: 'radial-gradient(circle, rgba(0,55,102,0.4038) 30%, rgba(255,255,255,1) 100%)',
-          }}
-        ></div> */}
-
-                  <h2 className="text-xl font-bold text-[#003366]">
-                    {subject.subject_name}
-                  </h2>
-                  <p className="text-gray-700">Enter your views here</p>
-                  <p className="text-gray-700">Enter your views here</p>
-                  <p className="mt-4 text-lg font-semibold text-[#003366] text-right">
-                    {subject.chapter_ids.length}{' '}
-                    <span className="text-sm text-gray-500">Chapter Stats</span>
-                  </p>
+    <div className="min-h-screen">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+          Learning Path Dashboard
+        </h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {subjectList.map((subject: Subject) => (
+            <div
+              key={subject.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden transition duration-300 hover:shadow-lg cursor-pointer"
+              onClick={() =>
+                handleNavigateToChaptersList(subject.id, subject.subject_name)
+              }
+            >
+              <div className="bg-[#D4EBFF] p-4">
+                <h2 className="text-xl font-semibold text-gray-800">
+                  {subject.subject_name}
+                </h2>
+              </div>
+              <div className="p-4">
+                <p className="text-gray-600 mb-4">
+                  Explore the comprehensive curriculum of {subject.subject_name}{' '}
+                  and enhance your expertise.
+                </p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-[#003366]">
+                    <FaBook className="mr-2" />
+                    <span className="font-medium">
+                      {subject.chapter_ids.length} Chapters
+                    </span>
+                  </div>
+                  <FaChevronRight className="text-gray-400" />
                 </div>
               </div>
-            </>
+            </div>
           ))}
+        </div>
       </div>
-    </>
+    </div>
   );
-}
+};
+
+export default LearningPathDashboard;
