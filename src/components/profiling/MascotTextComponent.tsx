@@ -61,7 +61,7 @@ const MascotTextComponent: React.FC<MascotTextComponentProps> = ({
     const textLength = text.length;
 
     const typingInterval = setInterval(() => {
-      if (currentIndex < textLength) {
+      if (currentIndex < textLength-1) {
         setDisplayedText((prev) => prev + text[currentIndex]);
         currentIndex++;
       } else {
@@ -79,7 +79,7 @@ const MascotTextComponent: React.FC<MascotTextComponentProps> = ({
         isTextRight ? 'flex-row' : 'flex-row-reverse'
       } items-end gap-4 p-4`}
     >
-      <div className={`${isTyping ? 'animate-bounce' : ''}`}>
+      <div className={`w-1/4 ${isTyping ? 'animate-bounce' : ''}`}>
         <DropletAnimation />
       </div>
       <div

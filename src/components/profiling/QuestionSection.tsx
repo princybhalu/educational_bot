@@ -87,8 +87,8 @@ const QuestionSection: React.FC<QuestionSectionProps> = ({
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center px-4 py-8 overflow-hidden">
-      <div className="w-full h-[500px] sm:h-[600px] my-10 sm:my-20 mx-6 max-w-md sm:max-w-3xl relative">
+    <div className="w-full h-full flex items-start justify-center px-4 py-8 overflow-hidden">
+      <div className="w-full h-[300px] sm:h-[400px] my-10 sm:my-20 mx-6 max-w-md sm:max-w-3xl relative">
         {questions.map((question, index) => {
           const isActive = index === currentIndex;
           const isPrevious = index < currentIndex;
