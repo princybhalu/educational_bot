@@ -382,6 +382,7 @@ import {
   AddTaskByQueryApiCall,
   GetTaskBetweenRangeApiCall,
   RemoveTaskApiCall,
+  UpdateTaskApiCall,
 } from 'services/api/study-planner';
 import { EventOFCalender } from '../../types/study-planner';
 import {
@@ -456,6 +457,8 @@ const CalendarView: React.FC = () => {
   const handleButtonClick = async () => {
     if (buttonText === 'Add') {
       handleEventClick(null);
+      setShowModal(true);
+      setSelectedEvent(null);
     } else {
       await GetResOfQuery(inputValue);
     }
@@ -471,6 +474,12 @@ const CalendarView: React.FC = () => {
       end: info.event.end ? info.event.end.toISOString() : null,
     };
     console.log('Event dropped:', updatedEvent);
+
+    //api call
+    UpdateTask({
+      start: info.event.start.toISOString(),
+      end: info.event.end ? info.event.end.toISOString() : null,
+    });
   };
 
   const handleEventResize = (info: any) => {
@@ -481,6 +490,11 @@ const CalendarView: React.FC = () => {
       end: info.event.end ? info.event.end.toISOString() : null,
     };
     console.log('Event resized:', resizedEvent);
+    //api call
+    UpdateTask({
+      start: info.event.start.toISOString(),
+      end: info.event.end ? info.event.end.toISOString() : null,
+    });
   };
 
   const onDeleteOfTask = async () => {
@@ -541,6 +555,16 @@ const CalendarView: React.FC = () => {
     }
   };
 
+  const UpdateTask = async (body: any) => {
+    try {
+      const reqBody = { ...body };
+      const res = await UpdateTaskApiCall(reqBody, scheduleId);
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     const currentDate = new Date();
     const startOfMonth = new Date(
@@ -568,7 +592,7 @@ const CalendarView: React.FC = () => {
               className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 transition-colors"
             >
               <MdHome className="w-4 h-4" />
-              <span>Dashboard</span>
+              <span>Study Planner</span>
             </button>
             <MdArrowForward className="w-4 h-4 text-gray-400" />
             <span className="text-gray-600 flex items-center space-x-1">

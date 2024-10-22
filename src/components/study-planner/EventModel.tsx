@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { EventOFCalender } from 'types/study-planner';
-import { AddTaskApiCall } from 'services/api/study-planner';
+import { AddTaskApiCall, UpdateTaskApiCall } from 'services/api/study-planner';
 import {
   Notification,
   NOTIFICATION_TYPE_INFO,
@@ -81,7 +81,12 @@ const EventModal: React.FC<{
           description: data.description,
         },
       };
-      const res = await AddTaskApiCall(reqBody);
+      let res;
+      if (event) {
+        res = await UpdateTaskApiCall(reqBody, scheduleId);
+      } else {
+        res = await AddTaskApiCall(reqBody);
+      }
       //@ts-ignore
       if (!res.data?.conflict) {
         //@ts-ignore
@@ -113,7 +118,7 @@ const EventModal: React.FC<{
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
       <div className="bg-white p-6 rounded-lg max-w-lg w-full max-h-[600px] overflow-auto">
-        <h2 className="text-2xl mb-4">{event ? 'Edit Event' : 'Add Event'}</h2>
+        <h2 className="text-2xl mb-4 ">{event ? 'Edit Event' : 'Add Event'}</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
             <label className="block text-gray-700">Title</label>

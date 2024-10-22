@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaBook, FaClipboardList } from 'react-icons/fa';
-import { IoMdClose } from "react-icons/io";
+import { IoMdClose } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import {
   CreateSchedulerApiCall,
@@ -37,11 +37,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ data }) => {
   };
 
   return (
-    <div className="flex justify-between flex-col md:flex-row gap-2 bg-white p-4 rounded-lg shadow-md mb-4">
-      <div
-        className="flex items-center space-x-4"
-        onClick={() => navigate('/study-planner/calendar/' + data.id)}
-      >
+    <div
+      className="flex justify-between flex-col md:flex-row gap-2 bg-white p-4 rounded-lg shadow-md mb-4"
+      onClick={() => navigate('/study-planner/calendar/' + data.id)}
+    >
+      <div className="flex items-center space-x-4">
         {/* Icon Section */}
         <div className="p-2 rounded-full bg-green-100">
           {data.is_active ? (
@@ -67,14 +67,20 @@ const TaskCard: React.FC<TaskCardProps> = ({ data }) => {
         {data.is_active ? (
           <button
             className="bg-orange-400 text-white px-4 py-2 rounded-full text-sm md:text-base"
-            onClick={() => changeStatus(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              changeStatus(false);
+            }}
           >
             Deactive
           </button>
         ) : (
           <button
             className="bg-gray-300 text-gray-700 px-4 py-2 rounded-full"
-            onClick={() => changeStatus(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              changeStatus(true);
+            }}
           >
             Active
           </button>
@@ -167,7 +173,7 @@ const TaskSection: React.FC<{ setActiveScheduledId: any }> = ({
     <>
       <div className="w-full p-4">
         <div className="flex justify-between items-center mb-4 border-b p-2">
-          <h2 className="text-2xl font-bold text-blue-800">Scheduled List</h2>
+          <h2 className="text-2xl font-bold text-[#003366] ">Scheduled List</h2>
           <span className="text-orange-500 cursor-pointer" onClick={openModal}>
             Add Scheduled
           </span>

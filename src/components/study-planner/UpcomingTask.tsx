@@ -133,8 +133,8 @@ const UpcomingExams: React.FC<UpcomingExamsProps> = ({
   return (
     <div className="w-full p-4 bg-white shadow-lg rounded-lg">
       {/* Heading */}
-      <div className="flex justify-between items-center mb-4 border-b p-2">
-        <h2 className="text-2xl font-bold text-blue-800">Upcoming</h2>
+      <div className="flex justify-between items-center mb-4 border-b p-2 ">
+        <h2 className="text-2xl font-bold text-[#003366] ">Upcoming</h2>
         <span
           className="text-orange-500 cursor-pointer"
           onClick={() =>

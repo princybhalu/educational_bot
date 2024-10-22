@@ -54,8 +54,8 @@ const Chart: React.FC = () => {
   return (
     <div className="w-full p-4">
       {/* Title */}
-      <h1 className="text-xl md:text-2xl font-bold text-blue-800 mb-4 border-b p-2">
-        My Class Section Replacement
+      <h1 className="text-xl md:text-2xl font-bold text-[#003366] mb-4 border-b p-2">
+        Charts Of Progress
       </h1>
 
       {/* Tab Section */}
