@@ -7,6 +7,7 @@ import NotificationWrapper from './components/notifiction/Notifiction';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import { store, persistor } from './store';
+import DropletAnimation from './components/avatar';
 // import ErrorBoundary from './components/error-boundry/error-boundry';
 
 const LoadingSpinner = () => (
@@ -20,7 +21,7 @@ const App: React.FC = () => {
     <>
       {/* <ErrorBoundary> */}
       <Provider store={store}>
-        <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+        <PersistGate loading={<DropletAnimation />} persistor={persistor}>
           <Router>
             <Routes>
               {routes.map((route) => (
@@ -35,24 +36,24 @@ const App: React.FC = () => {
                         {/* Exclude Layout for specific routes like /login */}
                         {route.islayout === true ? (
                           <Layout>
-                            <Suspense fallback={<LoadingSpinner />}>
+                            <Suspense fallback={<DropletAnimation />}>
                               <route.element />
                             </Suspense>
                           </Layout>
                         ) : (
-                          <Suspense fallback={<LoadingSpinner />}>
+                          <Suspense fallback={<DropletAnimation />}>
                             <route.element />
                           </Suspense>
                         )}
                       </ProtectedRoute>
                     ) : route.islayout === true ? (
                       <Layout>
-                        <Suspense fallback={<LoadingSpinner />}>
+                        <Suspense fallback={<DropletAnimation />}>
                           <route.element />
                         </Suspense>
                       </Layout>
                     ) : (
-                      <Suspense fallback={<LoadingSpinner />}>
+                      <Suspense fallback={<DropletAnimation />}>
                         <route.element />
                       </Suspense>
                     )

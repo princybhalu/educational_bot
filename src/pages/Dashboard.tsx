@@ -39,7 +39,7 @@ export default function Dashboard() {
       {/* Daily Study Planner Card */}
       <div
         className="flex flex-col justify-between bg-green-500 text-white rounded-lg shadow-lg p-6 cursor-pointer hover:bg-green-600 transition"
-        onClick={() => handleNavigation('/daily-study-planner')}
+        onClick={() => handleNavigation('/study-planner')}
       >
         <h2 className="text-xl font-bold">Daily Study Planner</h2>
         <p className="mt-2">

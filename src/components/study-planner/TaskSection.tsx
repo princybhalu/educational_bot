@@ -1,3 +1,5 @@
+import DropletAnimation from '../avatar';
+import NoDataFound from '../shared/NoDataFound';
 import React, { useEffect, useState } from 'react';
 import { FaBook, FaClipboardList } from 'react-icons/fa';
 import { IoMdClose } from 'react-icons/io';
@@ -105,7 +107,7 @@ const TaskSection: React.FC<{ setActiveScheduledId: any }> = ({
       const tempActiveId = res.data.find(
         ({ is_active }: TaskData) => is_active === true
       );
-      setActiveScheduledId(tempActiveId.id);
+      if (tempActiveId) setActiveScheduledId(tempActiveId.id);
       setTasks(res.data);
     } catch (err) {
       console.log(err);
@@ -160,7 +162,7 @@ const TaskSection: React.FC<{ setActiveScheduledId: any }> = ({
         is_active: formData.isActive,
       });
       console.log(res.data);
-      navigate('//study-planner/calendar/' + res.data.id);
+      navigate('/study-planner/calendar/' + res.data.id);
     } catch (err) {
       console.log(err);
     }
@@ -249,8 +251,7 @@ const TaskSection: React.FC<{ setActiveScheduledId: any }> = ({
         {/* TODO : css chnages */}
         {isLoading && (
           <>
-            {' '}
-            <div> Loading </div>{' '}
+            <DropletAnimation />
           </>
         )}
 

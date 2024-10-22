@@ -390,6 +390,32 @@ import {
   NOTIFICATION_TYPE_INFO,
 } from '../../components/notifiction/Notifiction';
 
+const convertEventTimes = (eventsArray: EventOFCalender[]) => {
+  return eventsArray.map((event) => {
+    const eventDate = new Date(event.date);
+
+    // Combine date and time
+    const startDateTimeUtc = new Date(
+      `${event.date.split('T')[0]}T${event.start_time_utc}Z`
+    );
+    const endDateTimeUtc = new Date(
+      `${event.date.split('T')[0]}T${event.end_time_utc}Z`
+    );
+
+    console.log(endDateTimeUtc, startDateTimeUtc);
+    // Convert to local timezone
+    // const startLocal = new Date(startDateTimeUtc.toLocaleString());
+    // const endLocal = new Date(endDateTimeUtc.toLocaleString());
+    // console.log(startLocal , endLocal);
+    console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
+    return {
+      ...event,
+      start: startDateTimeUtc, // Add start in ISO format
+      end: endDateTimeUtc, // Add end in ISO format
+    };
+  });
+};
+
 const CalendarView: React.FC = () => {
   const scheduleId = '9f2c77ec-c42a-44d4-bc8e-3d92bf9087c6';
   const calendarRef = useRef<FullCalendar>(null);
@@ -542,7 +568,8 @@ const CalendarView: React.FC = () => {
       });
       if (!res.data?.conflict) {
         //@ts-ignore
-        setEvents((prevEvents) => [...(res.data.tasks || []), ...prevEvents]);
+        setEvents((prev) => [...prev, res.data.tasks]);
+        // setEvents((prevEvents) => [...(res.data.tasks || {}), ...prevEvents]);
       } else {
         Notification({
           type: NOTIFICATION_TYPE_INFO,
@@ -579,6 +606,8 @@ const CalendarView: React.FC = () => {
     );
     GetEventBetweenRange(startOfMonth, endOfMonth);
   }, []);
+
+  console.log({ events });
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -687,28 +716,62 @@ const CalendarView: React.FC = () => {
             //@ts-ignore
             events={events}
             eventContent={(eventInfo: any) => (
-              <div className="rounded-lg overflow-hidden shadow-sm transition-all hover:shadow-md group">
-                <div className="p-2 bg-blue-50 border-l-4 border-blue-500 group-hover:bg-blue-100">
-                  <div className="font-medium text-blue-900 flex items-center justify-between">
-                    <span>{eventInfo.event.title}</span>
-                    <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-1 hover:bg-blue-200 rounded">
-                        <MdEdit className="w-4 h-4 text-blue-600" />
-                      </button>
-                      <button className="p-1 hover:bg-blue-200 rounded">
-                        <MdDelete className="w-4 h-4 text-blue-600" />
-                      </button>
+              <>
+                {(currentViewOfCalendar === 'Day' ||
+                  currentViewOfCalendar === 'Week') && (
+                  <>
+                    <div className="ml-4">
+                      <div className="font-medium flex items-center justify-between text-black">
+                        <span>{eventInfo.event.title}</span>
+                        <div className="flex space-x-1">
+                          <button className="p-1 rounded">
+                            <MdEdit className="w-4 h-4 text-black" />
+                          </button>
+                          <button
+                            className="p-1 rounded"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              try {
+                                await RemoveTaskApiCall(eventInfo.event.id);
+                                setEvents(
+                                  //@ts-ignore
+                                  events.filter(
+                                    (event) => event.id !== eventInfo.event.id
+                                  )
+                                );
+                              } catch (err) {
+                                console.log(err);
+                              }
+                            }}
+                          >
+                            <MdDelete className="w-4 h-4 text-black" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="text-sm text-black">
+                        {eventInfo.event.extendedProps.description ??
+                          'hbdvjhbj'}
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-sm text-blue-700">
-                    {eventInfo.event.extendedProps.description}
-                  </div>
-                  <div className="text-right text-xs text-blue-600 mt-1 flex items-center justify-end">
-                    <MdAccessTime className="w-3 h-3 mr-1" />
-                    {eventInfo.timeText}
-                  </div>
-                </div>
-              </div>
+
+                    <div className="text-right text-md mt-1 mr-4 flex items-center justify-end text-black">
+                      <MdAccessTime className="w-4 h-4 mr-1" />
+                      {eventInfo.timeText}
+                    </div>
+                  </>
+                )}
+
+                {currentViewOfCalendar === 'Month' && (
+                  <>
+                    <div className="font-medium flex items-center justify-between text-black">
+                      {/* <span>{eventInfo.event.title}</span> */}
+                      {eventInfo.event.title &&
+                        eventInfo.event.title.length > 10 &&
+                        `${eventInfo.event.title.substring(0, 10)}...`}
+                    </div>
+                  </>
+                )}
+              </>
             )}
             datesSet={updateTitle}
             height="auto"
@@ -727,7 +790,6 @@ const CalendarView: React.FC = () => {
         </div>
       </div>
 
-      {/* Event Modal */}
       {showModal && (
         <EventModal
           //@ts-ignore
