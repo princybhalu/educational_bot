@@ -554,7 +554,7 @@ const CalendarView: React.FC = () => {
         startDate,
         endDate
       );
-      setEvents(res.data || []);
+      setEvents(convertEventTimes(res.data) || []);
     } catch (err) {
       console.log(err);
     }
@@ -803,13 +803,13 @@ const CalendarView: React.FC = () => {
       )}
 
       {/* Quick Add Input */}
-      <div className="sticky bottom-0 w-full z-10 bg-white border-t border-gray-200 shadow-lg">
+      <div className="sticky bottom-0 w-full z-10 bg-[#CEE6FF] border-t border-gray-200 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center space-x-4">
             <div className="flex-grow relative">
               <input
                 type="text"
-                className="w-full px-4 py-3 pr-10  bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="w-full px-4 py-3 pr-10  bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 placeholder="Quick add event or type a command..."
                 value={inputValue}
                 onChange={handleInputChange}
@@ -821,7 +821,7 @@ const CalendarView: React.FC = () => {
             <button
               className={`px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition-colors ${
                 buttonText === 'Add'
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  ? 'text-white bg-[#003366] hover:text-[#003366] hover:text-white'
                   : 'bg-green-600 text-white hover:bg-green-700'
               }`}
               onClick={handleButtonClick}

@@ -272,7 +272,11 @@ const TaskSection: React.FC<{ setActiveScheduledId: any }> = ({
         )}
 
         {/* TODO : css chnages */}
-        {!isLoading && tasks && tasks.length === 0 && <>No Data</>}
+        {!isLoading && tasks && tasks.length === 0 && (
+          <>
+            <NoDataFound displayText="No Data Task" />
+          </>
+        )}
       </div>
     </>
   );
