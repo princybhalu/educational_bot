@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FaBook, FaClipboardList } from 'react-icons/fa';
+import { IoMdClose } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 import {
+  CreateSchedulerApiCall,
   GetSchedulerListForUserApiCall,
   UpdateStatusOfSchedulerApiCall,
 } from 'services/api/study-planner';
@@ -110,18 +112,133 @@ const TaskSection: React.FC<{ setActiveScheduledId: any }> = ({
     GetTaskList().then();
   }, []);
 
+  // State to manage modal visibility
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    isActive: true, // Default value for the active status
+  });
+
+  // Function to open the modal
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Function to close the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  // Handle input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // Handle toggle change for active status
+  const handleToggleChange = () => {
+    setFormData({
+      ...formData,
+      isActive: !formData.isActive, // Toggle the value
+    });
+  };
+
+  // Handle form submission (add scheduled)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form logic here (e.g., make API call)
+    try {
+      const res = await CreateSchedulerApiCall({
+        schedule_title: formData.title,
+        is_active: formData.isActive,
+      });
+      console.log(res.data);
+      navigate('//study-planner/calendar/' + res.data.id);
+    } catch (err) {
+      console.log(err);
+    }
+
+    console.log('Form submitted');
+    closeModal(); // Close modal after submission
+  };
+
   return (
     <>
       <div className="w-full p-4">
         <div className="flex justify-between items-center mb-4 border-b p-2">
           <h2 className="text-2xl font-bold text-blue-800">Scheduled List</h2>
-          <span
-            className="text-orange-500 cursor-pointer"
-            onClick={() => navigate('/study-planner/calendar/new')}
-          >
+          <span className="text-orange-500 cursor-pointer" onClick={openModal}>
             Add Scheduled
           </span>
         </div>
+
+        {/* Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded-md shadow-md w-96">
+              <div className="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 className="text-xl font-bold">Add New Schedule</h3>
+                <button
+                  className="text-sm text-gray-400 hover:text-gray-600 ml-auto"
+                  onClick={closeModal}
+                >
+                  <IoMdClose size={24} />
+                </button>
+              </div>
+              <form onSubmit={handleSubmit}>
+                {/* Title Field */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                    required
+                  />
+                </div>
+
+                {/* Active/Inactive Toggle */}
+                <div className="flex items-center mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mr-2">
+                    Status:
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleToggleChange}
+                    className={`${
+                      formData.isActive ? 'bg-green-500' : 'bg-red-500'
+                    } text-white py-1 px-4 rounded-full focus:outline-none`}
+                  >
+                    {formData.isActive ? 'Active' : 'Inactive'}
+                  </button>
+                </div>
+
+                {/* Submit Button */}
+                <div className="mt-4">
+                  <button
+                    type="submit"
+                    className="w-full bg-[#003366] text-white py-2 rounded-md"
+                  >
+                    Add Schedule
+                  </button>
+                </div>
+              </form>
+
+              {/* Close Modal Button */}
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                onClick={closeModal}
+              >
+                &times;
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* TODO : css chnages */}
         {isLoading && (

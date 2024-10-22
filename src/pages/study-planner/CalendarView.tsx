@@ -362,6 +362,20 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useNavigate, useParams } from 'react-router-dom';
+import {
+  MdChevronLeft,
+  MdChevronRight,
+  MdAdd,
+  MdSend,
+  MdToday,
+  MdEvent,
+  MdAccessTime,
+  MdDateRange,
+  MdHome,
+  MdArrowForward,
+  MdEdit,
+  MdDelete,
+} from 'react-icons/md';
 import '../../style/calendar-view.css';
 import EventModal from '../../components/study-planner/EventModel';
 import {
@@ -388,14 +402,13 @@ const CalendarView: React.FC = () => {
   });
   const [currentTitle, setCurrentTitle] = useState(formattedDate);
   const [currentViewOfCalendar, setCurrentViewOfCalendar] = useState('Day');
-  const [events, setEvents] = useState<EventOFCalender[]>([]);
-  const [selectedEvent, setSelectedEvent] = useState<EventOFCalender | null>(
-    null
-  );
+  const [events, setEvents] = useState<EventOFCalender[] | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [buttonText, setButtonText] = useState('Add');
-
   const [showModal, setShowModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<null | EventOFCalender>(
+    null
+  );
 
   const handleEventClick = (eventData: any) => {
     setSelectedEvent(eventData);
@@ -514,6 +527,7 @@ const CalendarView: React.FC = () => {
         query,
       });
       if (!res.data?.conflict) {
+        //@ts-ignore
         setEvents((prevEvents) => [...(res.data.tasks || []), ...prevEvents]);
       } else {
         Notification({
@@ -542,138 +556,157 @@ const CalendarView: React.FC = () => {
     GetEventBetweenRange(startOfMonth, endOfMonth);
   }, []);
 
-  const eventColors = [
-    'bg-blue-200 border-blue-500',
-    'bg-green-200 border-green-500',
-    'bg-yellow-200 border-yellow-500',
-    'bg-red-200 border-red-500',
-    'bg-purple-200 border-purple-500',
-  ];
-
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      <div className="sticky top-0 z-10 bg-white shadow-md">
-        <div className="p-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <a
-              className="text-blue-500 hover:underline"
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-white shadow-sm">
+        <div className="w-full">
+          {/* Breadcrumb */}
+          <div className="px-6 py-4 flex items-center space-x-2 text-sm">
+            <button
               onClick={() => navigate('/study-planner')}
+              className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 transition-colors"
             >
-              Dashboard
-            </a>
-            <span>/</span>
-            <span className="text-gray-600">Calendar</span>
+              <MdHome className="w-4 h-4" />
+              <span>Dashboard</span>
+            </button>
+            <MdArrowForward className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-600 flex items-center space-x-1">
+              <MdEvent className="w-4 h-4" />
+              <span>Calendar</span>
+            </span>
           </div>
-        </div>
 
-        <div className="px-4 py-2 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <button
-              className="text-blue-500 hover:text-blue-700"
-              onClick={() => calendarRef.current?.getApi().prev()}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-            <h2 className="text-xl font-semibold text-gray-800">
-              {currentTitle}
-            </h2>
-            <button
-              className="text-blue-500 hover:text-blue-700"
-              onClick={() => calendarRef.current?.getApi().next()}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-          </div>
-          <div className="flex items-center space-x-4">
-            <button
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition duration-200"
-              onClick={() => goToDate(new Date().toISOString())}
-            >
-              Today
-            </button>
-            <div className="bg-gray-200 rounded-lg">
-              {['Day', 'Week', 'Month'].map((view) => (
+          {/* Calendar Controls */}
+          <div className="px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+            {/* Title and Navigation */}
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
                 <button
-                  key={view}
-                  className={`px-4 py-2 ${
-                    currentViewOfCalendar === view
-                      ? 'bg-blue-500 text-white'
-                      : 'text-gray-700 hover:bg-gray-300'
-                  } rounded-lg transition duration-200`}
-                  onClick={() =>
-                    changeView(`timeGrid${view.toLowerCase()}`, view)
-                  }
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  onClick={() => calendarRef.current?.getApi().prev()}
                 >
-                  {view}
+                  <MdChevronLeft className="w-6 h-6 text-gray-600" />
                 </button>
-              ))}
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  {currentTitle}
+                </h2>
+                <button
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  onClick={() => calendarRef.current?.getApi().next()}
+                >
+                  <MdChevronRight className="w-6 h-6 text-gray-600" />
+                </button>
+              </div>
+            </div>
+
+            {/* View Controls */}
+            <div className="flex items-center space-x-4">
+              <button
+                className="px-2 md:px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors flex items-center space-x-2"
+                onClick={() => goToDate(new Date().toISOString())}
+              >
+                <MdToday className="w-5 h-5" />
+                <span>Today</span>
+              </button>
+
+              <div className="bg-gray-100 rounded-lg p-1 flex">
+                <button
+                  className={`px-2 md:px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center space-x-2 ${
+                    currentViewOfCalendar === 'Day'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:bg-gray-200'
+                  }`}
+                  onClick={() => changeView('timeGridDay', 'Day')}
+                >
+                  <MdAccessTime className="w-4 h-4" />
+                  <span>Day</span>
+                </button>
+                <button
+                  className={`px-2 md:px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center space-x-2 ${
+                    currentViewOfCalendar === 'Week'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:bg-gray-200'
+                  }`}
+                  onClick={() => changeView('timeGridWeek', 'Week')}
+                >
+                  <MdEvent className="w-4 h-4" />
+                  <span>Week</span>
+                </button>
+                <button
+                  className={`px-2 md:px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center space-x-2 ${
+                    currentViewOfCalendar === 'Month'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:bg-gray-200'
+                  }`}
+                  onClick={() => changeView('dayGridMonth', 'Month')}
+                >
+                  <MdDateRange className="w-4 h-4" />
+                  <span>Month</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="p-4 flex-grow">
-        <FullCalendar
-          ref={calendarRef}
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="timeGridDay"
-          headerToolbar={false}
-          editable={true}
-          droppable={true}
-          events={events}
-          eventContent={(eventInfo: any) => {
-            const colorIndex =
-              eventInfo.event.id.charCodeAt(0) % eventColors.length;
-            const colorClass = eventColors[colorIndex];
-            return (
-              <div className={`p-2 rounded-lg ${colorClass} shadow-sm`}>
-                <div className="font-semibold">{eventInfo.event.title}</div>
-                <div className="text-sm">
-                  {eventInfo.event.extendedProps.description}
-                </div>
-                <div className="text-right text-xs mt-1">
-                  {eventInfo.timeText}
+      {/* Calendar */}
+      <div className="flex-grow p-4 md:p-6">
+        <div className="bg-white rounded-lg shadow-sm p-4">
+          <FullCalendar
+            ref={calendarRef}
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            initialView="timeGridDay"
+            headerToolbar={false}
+            editable={true}
+            droppable={true}
+            //@ts-ignore
+            events={events}
+            eventContent={(eventInfo: any) => (
+              <div className="rounded-lg overflow-hidden shadow-sm transition-all hover:shadow-md group">
+                <div className="p-2 bg-blue-50 border-l-4 border-blue-500 group-hover:bg-blue-100">
+                  <div className="font-medium text-blue-900 flex items-center justify-between">
+                    <span>{eventInfo.event.title}</span>
+                    <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button className="p-1 hover:bg-blue-200 rounded">
+                        <MdEdit className="w-4 h-4 text-blue-600" />
+                      </button>
+                      <button className="p-1 hover:bg-blue-200 rounded">
+                        <MdDelete className="w-4 h-4 text-blue-600" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="text-sm text-blue-700">
+                    {eventInfo.event.extendedProps.description}
+                  </div>
+                  <div className="text-right text-xs text-blue-600 mt-1 flex items-center justify-end">
+                    <MdAccessTime className="w-3 h-3 mr-1" />
+                    {eventInfo.timeText}
+                  </div>
                 </div>
               </div>
-            );
-          }}
-          datesSet={updateTitle}
-          height="auto"
-          allDaySlot={false}
-          eventDrop={handleEventDrop}
-          eventResize={handleEventResize}
-          eventClick={(eventInfo: any) => handleEventClick(eventInfo.event)}
-        />
+            )}
+            datesSet={updateTitle}
+            height="auto"
+            allDaySlot={false}
+            eventDrop={(info: any) => handleEventDrop(info)}
+            eventResize={(info: any) => handleEventResize(info)}
+            eventClick={(eventInfo: any) => handleEventClick(eventInfo.event)}
+            dayCellClassNames="hover:bg-blue-50"
+            slotLabelClassNames="text-gray-500 font-medium"
+            dayHeaderClassNames="text-gray-700 font-semibold"
+            nowIndicatorClassNames="bg-blue-500"
+            slotEventOverlap={false}
+            slotMinTime="06:00:00"
+            slotMaxTime="22:00:00"
+          />
+        </div>
       </div>
 
-      {showModal && selectedEvent && (
+      {/* Event Modal */}
+      {showModal && (
         <EventModal
+          //@ts-ignore
           event={selectedEvent}
           onClose={handleCloseModal}
           onDelete={onDeleteOfTask}
@@ -683,21 +716,43 @@ const CalendarView: React.FC = () => {
         />
       )}
 
-      <div className="p-4 bg-white shadow-lg sticky bottom-0 w-full z-10">
-        <div className="flex items-center space-x-4">
-          <input
-            type="text"
-            className="border border-gray-300 rounded-lg p-2 flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter event details or ask a question..."
-            value={inputValue}
-            onChange={handleInputChange}
-          />
-          <button
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-            onClick={handleButtonClick}
-          >
-            {buttonText}
-          </button>
+      {/* Quick Add Input */}
+      <div className="sticky bottom-0 w-full z-10 bg-white border-t border-gray-200 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center space-x-4">
+            <div className="flex-grow relative">
+              <input
+                type="text"
+                className="w-full px-4 py-3 pr-10  bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                placeholder="Quick add event or type a command..."
+                value={inputValue}
+                onChange={handleInputChange}
+              />
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <MdEvent className="w-5 h-5" />
+              </div>
+            </div>
+            <button
+              className={`px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition-colors ${
+                buttonText === 'Add'
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-green-600 text-white hover:bg-green-700'
+              }`}
+              onClick={handleButtonClick}
+            >
+              {buttonText === 'Add' ? (
+                <>
+                  <MdAdd className="w-5 h-5" />
+                  <span>{buttonText}</span>
+                </>
+              ) : (
+                <>
+                  <MdSend className="w-5 h-5" />
+                  <span>{buttonText}</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
