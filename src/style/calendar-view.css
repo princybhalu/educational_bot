@@ -45,3 +45,20 @@
 .rdrDayToday {
   color: #003366;
 }
+
+.fc-event-main{
+  background-color: #CEE6FF;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-left: 2px solid #308cee;
+  padding: 4px;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+.fc-daygrid-event-harness{
+  background-color: #CEE6FF;
+  overflow: hidden;
+}

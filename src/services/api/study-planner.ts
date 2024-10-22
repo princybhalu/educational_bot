@@ -65,7 +65,7 @@ export const GetTaskBetweenRangeApiCall = (
         schedule_id: '23f0f3cb-a893-4261-9f57-100bd4cb6253',
         title: 'Study Maths Chapter 1',
         created_by: '5808f946-ca84-427e-b325-c5f9532614fa',
-        date: '2024-10-19T00:00:00.000Z',
+        date: '2024-10-21T00:00:00.000Z',
         start_time_utc: '09:00:00',
         end_time_utc: '11:45:00',
         type: 'study',
@@ -73,8 +73,41 @@ export const GetTaskBetweenRangeApiCall = (
           chapter: '1',
           subject: 'Mathematics',
           topic: '',
+          description: "new topic hi test ....................."
         },
       },
+      {
+        id: 'accc80a1-hbcj-4a20-868a-ad12d4908d8f',
+        schedule_id: '23f0f3cb-a893-4261-9f57-100bd4cb6253',
+        title: 'Study SS Chapter 1',
+        created_by: '5808f946-ca84-427e-b325-c5f9532614fa',
+        date: '2024-10-22T00:00:00.000Z',
+        start_time_utc: '09:00:00',
+        end_time_utc: '11:45:00',
+        type: 'study',
+        meta_data: {
+          chapter: '1',
+          subject: 'SS',
+          topic: '',
+          description: "new topic hi test ....................."
+        },
+      },
+      {
+        id: 'accc80a1-hert-4a20-868a-ad12d4908d8f',
+        schedule_id: '23f0f3cb-a893-4261-9f57-100bd4cb6253',
+        title: 'Study SS Chapter 2',
+        created_by: '5808f946-ca84-427e-b325-c5f9532614fa',
+        date: '2024-10-22T00:00:00.000Z',
+        start_time_utc: '12:00:00',
+        end_time_utc: '12:30:00',
+        type: 'study',
+        meta_data: {
+          chapter: '2',
+          subject: 'SS',
+          topic: '2.1',
+          description: "new topic hi test ....................."
+        },
+      }
     ],
   };
   return http.get({

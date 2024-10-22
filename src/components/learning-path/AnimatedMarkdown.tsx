@@ -4,11 +4,13 @@ import Markdown from 'react-markdown'; // Assuming you're using react-markdown
 interface AnimatedMarkdownProps {
   content: string;
   typingSpeed?: number;
+  setIsAnimationCompleted?: (a :boolean) => void | null
 }
 
 const AnimatedMarkdown: React.FC<AnimatedMarkdownProps> = ({
   content,
   typingSpeed = 50, // Default typing speed (ms per character)
+  setIsAnimationCompleted = null
 }) => {
   const [displayedContent, setDisplayedContent] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -26,6 +28,7 @@ const AnimatedMarkdown: React.FC<AnimatedMarkdownProps> = ({
         currentIndex++;
       } else {
         clearInterval(typingInterval);
+        if(setIsAnimationCompleted) setIsAnimationCompleted(true);
         setIsTyping(false);
       }
     }, typingSpeed);

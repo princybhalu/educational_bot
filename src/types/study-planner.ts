@@ -14,4 +14,6 @@ export interface EventOFCalender {
     topic?: string; // Optional field
     description?: string;
   };
+  start?: string;
+  end?: string;
 }

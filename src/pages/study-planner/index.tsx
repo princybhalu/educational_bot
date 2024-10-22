@@ -19,7 +19,7 @@ const StudyPlannerDashboard = () => {
           {/* Breadcrumb */}
           <div className="px-6 py-4 flex items-center space-x-2 text-sm">
             <button
-              onClick={() => navigate('/study-planner')}
+              onClick={() => navigate('/dashboard')}
               className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 transition-colors"
             >
               <MdHome className="w-4 h-4" />

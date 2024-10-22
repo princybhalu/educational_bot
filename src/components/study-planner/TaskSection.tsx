@@ -1,3 +1,4 @@
+import NoDataFound from '../shared/NoDataFound';
 import React, { useEffect, useState } from 'react';
 import { FaBook, FaClipboardList } from 'react-icons/fa';
 import { IoMdClose } from 'react-icons/io';
@@ -271,7 +272,7 @@ const TaskSection: React.FC<{ setActiveScheduledId: any }> = ({
         )}
 
         {/* TODO : css chnages */}
-        {!isLoading && tasks && tasks.length === 0 && <>No Data</>}
+        {!isLoading && tasks && tasks.length === 0 && <><NoDataFound /></>}
       </div>
     </>
   );

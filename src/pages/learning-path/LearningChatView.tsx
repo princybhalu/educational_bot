@@ -15,6 +15,7 @@ import {
 import Markdown from 'react-markdown';
 import AnimatedMarkdown from '../../components/learning-path/AnimatedMarkdown';
 import { useAppSelector } from 'store/TypedHooks';
+import NoDataFound from '../../components/shared/NoDataFound';
 
 export interface ChatResponse {
   Status: string;
@@ -47,6 +48,7 @@ const LearningChatView: React.FC = () => {
   const [chatContent, setChatContent] = useState(null);
   const doutRef = useRef();
   const [num, setNum] = useState(0);
+  const [isAnimationCompleted, setIsAnimationCompleted] = useState(false);
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -89,25 +91,25 @@ const LearningChatView: React.FC = () => {
   useEffect(() => {
     const tempApiCall = async () => {
       try {
-        try {
-          const res = await CreateProgrssApiCall({
-            type: type,
-            relevant_id: relevantId,
-          });
-          console.log({ res });
-        } catch (err) {
-          console.log(err);
-          //@ts-ignore
-          if (err.status === 409) {
-            try {
-              const res = await GetProgressApiCall(relevantId ?? '');
-            } catch (err) {
-              console.log(err);
-            }
-          }
-        } finally {
-          setIsCreatedProgress(true);
-        }
+        // try {
+        //   const res = await CreateProgrssApiCall({
+        //     type: type,
+        //     relevant_id: relevantId,
+        //   });
+        //   console.log({ res });
+        // } catch (err) {
+        //   console.log(err);
+        //   //@ts-ignore
+        //   if (err.status === 409) {
+        //     try {
+        //       const res = await GetProgressApiCall(relevantId ?? '');
+        //     } catch (err) {
+        //       console.log(err);
+        //     }
+        //   }
+        // } finally {
+        //   setIsCreatedProgress(true);
+        // }
 
         const res1 = await ChatApiCall(
           {
@@ -174,6 +176,10 @@ const LearningChatView: React.FC = () => {
 
   console.log({ chatContent });
 
+  useEffect(() => {
+    console.log({isAnimationCompleted});
+  } , [isAnimationCompleted])
+
   return (
     <>
       {isLoading && (
@@ -205,16 +211,36 @@ const LearningChatView: React.FC = () => {
             <div className={`topic-card ${isChatOpen ? 'shrink-card' : ''}`}>
               <div className="topic-name">
                 <h2 className="font-semibold">
-                  {' '}
-                  {topicName && topicName.length > 20 && isChatOpen
+                  {topicName}
+                  {/* {topicName && topicName.length > 20 && isChatOpen
                     ? `${topicName.substring(0, 20)}...`
-                    : topicName}
+                    : topicName} */}
                 </h2>
                 {/* <div className="card-name">chapter Name</div> */}
               </div>
-              <div className="card-content">
-                <AnimatedMarkdown content={mainContent} typingSpeed={20} />
-              </div>
+              {!isChatOpen && (
+                <>
+                  <div className="card-content">
+                    {isAnimationCompleted && (
+                      <>
+                        <div className="card-content relative">
+                          {' '}
+                          <Markdown>{mainContent}</Markdown>
+                        </div>
+                      </>
+                    )}
+
+                    {!isAnimationCompleted && (
+                      <AnimatedMarkdown
+                        content={mainContent}
+                        typingSpeed={20}
+                        //@ts-ignore
+                        setIsAnimationCompleted={setIsAnimationCompleted}
+                      />
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -248,7 +274,7 @@ const LearningChatView: React.FC = () => {
                                 <div className="ai-chat-avatar-with-icon">
                                   <div className="ai-chat-avatar">AI</div>
                                   <div className="ai-chat-icon">
-                                    <div>
+                                    {/* <div>
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 20 20"
@@ -261,7 +287,7 @@ const LearningChatView: React.FC = () => {
                                           clipRule="evenodd"
                                         />
                                       </svg>
-                                    </div>
+                                    </div> */}
                                     <div
                                       onClick={() => handleCopy(data.content)}
                                     >
@@ -269,7 +295,7 @@ const LearningChatView: React.FC = () => {
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 20 20"
                                         fill="#003366"
-                                        className="size-5"
+                                        className="size-7"
                                       >
                                         <path d="M7 3.5A1.5 1.5 0 0 1 8.5 2h3.879a1.5 1.5 0 0 1 1.06.44l3.122 3.12A1.5 1.5 0 0 1 17 6.622V12.5a1.5 1.5 0 0 1-1.5 1.5h-1v-3.379a3 3 0 0 0-.879-2.121L10.5 5.379A3 3 0 0 0 8.379 4.5H7v-1Z" />
                                         <path d="M4.5 6A1.5 1.5 0 0 0 3 7.5v9A1.5 1.5 0 0 0 4.5 18h7a1.5 1.5 0 0 0 1.5-1.5v-5.879a1.5 1.5 0 0 0-.44-1.06L9.44 6.439A1.5 1.5 0 0 0 8.378 6H4.5Z" />
@@ -288,21 +314,24 @@ const LearningChatView: React.FC = () => {
                               </div>
                             ) : (
                               <div className="user-chat-message">
-                                <div className="user-chat-avatar-with-icon">
-                                  <div className="user-chat-icon">
-                                    <div>
-                                      <PenToSquare />
+                                <div className="">
+                                  <div className="user-chat-avatar-with-icon my-auto">
+                                    <div className="user-chat-icon">
+                                      <div>
+                                        <PenToSquare />
+                                      </div>
+                                    </div>
+                                    <div className="user-chat-avatar-with-icon">
+                                      {/* TODO: First later of user name */}
+                                      <div className="user-chat-avatar">
+                                        {user?.name.toUpperCase()[0]}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="user-chat-text">
                                   {data.content}
-                                </div>
-                                <div className="user-chat-avatar-with-icon">
-                                  {/* TODO: First later of user name */}
-                                  <div className="user-chat-avatar">
-                                    {user?.name.toUpperCase()[0]}
-                                  </div>
                                 </div>
                               </div>
                             )}
@@ -313,7 +342,7 @@ const LearningChatView: React.FC = () => {
                       //@ts-ignore
                       chatContent.length === 0 && (
                         <>
-                          <div>no Data ...</div>
+                          <NoDataFound />
                         </>
                       )}
                   </div>

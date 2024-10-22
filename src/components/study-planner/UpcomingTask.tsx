@@ -8,6 +8,7 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import { GetTaskBetweenRangeApiCall } from 'services/api/study-planner';
 import { useNavigate } from 'react-router-dom';
 import '../../style/calendar-view.css';
+import NoDataFound from '../shared/NoDataFound';
 
 // Define the data structure
 interface ScheduleData {
@@ -168,7 +169,7 @@ const UpcomingExams: React.FC<UpcomingExamsProps> = ({
           ))
         ) : (
           <p className="text-gray-500">
-            No exams found in the selected date range.
+            <NoDataFound />
           </p>
         )}
       </div>
@@ -221,7 +222,7 @@ const UpcomingTask: React.FC<{ activeScheduledId: string }> = ({
         )}
 
         {!isLoading && upcomingExamsData && upcomingExamsData?.length === 0 && (
-          <> No Data </>
+          <> <NoDataFound /> </>
         )}
 
         {!isLoading && upcomingExamsData && upcomingExamsData.length > 0 && (
