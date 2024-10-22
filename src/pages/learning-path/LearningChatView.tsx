@@ -15,6 +15,7 @@ import {
 import Markdown from 'react-markdown';
 import AnimatedMarkdown from '../../components/learning-path/AnimatedMarkdown';
 import { useAppSelector } from 'store/TypedHooks';
+import NoDataFound from '../../components/shared/NoDataFound';
 
 export interface ChatResponse {
   Status: string;
@@ -246,6 +247,7 @@ const LearningChatView: React.FC = () => {
                             {data.role === 'assistant' ? (
                               <div className="ai-chat-message">
                                 <div className="ai-chat-avatar-with-icon">
+                                  {/* TODO : add logo here */}
                                   <div className="ai-chat-avatar">AI</div>
                                   <div className="ai-chat-icon">
                                     <div>
@@ -313,16 +315,17 @@ const LearningChatView: React.FC = () => {
                       //@ts-ignore
                       chatContent.length === 0 && (
                         <>
-                          <div>no Data ...</div>
+                          <NoDataFound displayText="No Any Douts Here" />
                         </>
                       )}
                   </div>
                 )}
                 {isCopied && (
-                  <span className="text-white ml-2 w-full bg-green-500 text-center rounded-lg border">
+                  <span className="text-white ml-2 w-full bg-green-500 text-center rounded-lg border z-20">
                     Copied!
                   </span>
                 )}
+
                 {/* TODO: Add gradient color for footer */}
                 <div ref={ref} className="footer-input-and-send-btn">
                   <div className="footer-input-section">

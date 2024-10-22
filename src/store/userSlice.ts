@@ -53,11 +53,18 @@ const authSlice = createSlice({
       state.isLoggedIn = false;
       state.error = action.payload; // Set error message from payload
     },
+    // TODO : same add this in profling
+    updateUserDetails: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+      }
+    },
   },
 });
 
 // Export the actions to use in components
-export const { loginSuccess, logout, loginFailure } = authSlice.actions;
+export const { loginSuccess, logout, loginFailure, updateUserDetails } =
+  authSlice.actions;
 
 // Export the reducer to configure the store
 export default authSlice.reducer;

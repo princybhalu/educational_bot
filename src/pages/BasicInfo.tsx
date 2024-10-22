@@ -5,6 +5,8 @@ import * as Yup from 'yup';
 import '../style/basic-info.css';
 import { BasicInfoApiCall } from '../services/api/user';
 import { useNavigate } from 'react-router-dom';
+import { updateUserDetails } from 'store/userSlice';
+import { useDispatch } from 'react-redux';
 
 interface IFormInputs {
   board: string;
@@ -15,7 +17,8 @@ interface IFormInputs {
 const validationSchema = Yup.object().shape({
   board: Yup.string().required('Board is required'),
   field: Yup.string().required('Field is required'),
-  standard: Yup.number().typeError('Standard must be a number')
+  standard: Yup.number()
+    .typeError('Standard must be a number')
     .min(1, 'Standard must be at least 1')
     .max(12, 'Standard must be less than or equal to 12')
     .required('Standard is required'),
@@ -31,11 +34,13 @@ const BasicInfo = () => {
   });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const onSubmit = async (data: IFormInputs) => {
     console.log(data);
     try {
       const res = await BasicInfoApiCall(data);
+      dispatch(updateUserDetails({ ...data }));
       navigate('/profiling');
     } catch (err) {
       console.log(err);

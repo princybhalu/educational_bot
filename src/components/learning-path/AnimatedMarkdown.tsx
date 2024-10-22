@@ -21,7 +21,7 @@ const AnimatedMarkdown: React.FC<AnimatedMarkdownProps> = ({
     const contentLength = content.length;
 
     const typingInterval = setInterval(() => {
-      if (currentIndex < contentLength) {
+      if (currentIndex < contentLength - 1) {
         setDisplayedContent((prev) => prev + content[currentIndex]);
         currentIndex++;
       } else {
