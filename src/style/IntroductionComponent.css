@@ -1,0 +1,102 @@
+/* LearningComponent.css */
+.container {
+  width: 80%;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 65px;
+  font-weight: 600;
+  color: #003366;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.buttonOfIntroduction {
+  padding: 10px 20px;
+  margin: 0 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #1a3e7a;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+.buttonOfIntroduction.active {
+  background-color: #1a3e7a;
+  color: #ffffff;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.text-content {
+  width: 100%;
+  max-width: 50%;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.text-content h2 {
+  font-size: 24px;
+  color: #1a3e7a;
+}
+
+.text-content p {
+  font-size: 16px;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.text-content ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.text-content ul li {
+  font-size: 16px;
+  color: #060607;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.image-content {
+  width: 100%;
+  max-width: 40%;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.image-content img {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .text-content,
+  .image-content {
+    max-width: 100%;
+  }
+  .buttons {
+    flex-direction: column;
+  }
+  .buttonOfIntroduction {
+    margin: 10px 0;
+  }
+}

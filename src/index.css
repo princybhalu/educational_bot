@@ -175,6 +175,19 @@ body {
   animation: starsAnimation 10s ease-in-out infinite;
 }
 
+.gradient-setup {
+  background: radial-gradient(
+      circle at left bottom,
+      #0033666a 0%,
+      transparent 30%
+    ),
+    radial-gradient(circle at right top, #ff70106d 0%, transparent 30%),
+    #ffffff92;
+  background: radial-gradient(circle at left top, #0033666a 0%, transparent 30%),
+    radial-gradient(circle at right bottom, #ff70106d 0%, transparent 30%),
+    #ffffff92;
+}
+
 @media (max-width: 768px) {
   .left-side-image,
   .right-side-image {
@@ -192,5 +205,35 @@ body {
     right: -5vw;
     top: 5%;
     animation: rightSideAnimationMobile 10s ease-in-out infinite;
+  }
+}
+
+/* Background Animation */
+.gradient-setup {
+  position: relative;
+  animation: gradientAnimation 10s ease-in-out infinite;
+  background-size: 200% 200%;
+}
+
+@keyframes gradientAnimation {
+  40%,
+  60% {
+    background: radial-gradient(
+        circle at left bottom,
+        #00336657 0%,
+        transparent 70%
+      ),
+      radial-gradient(circle at right top, #ff701055 0%, transparent 70%),
+      #ffffff92;
+  }
+  0%,
+  100% {
+    background: radial-gradient(
+        circle at left top,
+        #00336657 0%,
+        transparent 70%
+      ),
+      radial-gradient(circle at right bottom, #ff701055 0%, transparent 70%),
+      #ffffff92;
   }
 }

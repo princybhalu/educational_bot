@@ -1,0 +1,125 @@
+.container1 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px 100px;
+  background-color: #e0e7ff;
+  border-radius: 10px;
+  /* margin: 50px; */
+}
+
+.left-section {
+  max-width: 50%;
+  flex: 1 1 300px;
+  margin-bottom: 20px;
+}
+
+.left-section h1 {
+  font-family: 'Nunito', sans-serif;
+  font-size: 36px;
+  color: #1a202c;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.left-section p {
+  font-size: 16px;
+  color: #4a5568;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.left-section p strong {
+  font-weight: bold;
+}
+
+.button {
+  display: inline-block;
+  padding: 15px 30px;
+  background-color: #2b6cb0;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.right-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  transform: rotate(-2deg);
+  flex: 1 1 300px;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  width: 150px;
+  transform: rotate(2deg);
+}
+
+.card p {
+  font-size: 14px;
+  color: #4a5568;
+  margin-bottom: 10px;
+}
+
+.card .number {
+  font-size: 36px;
+  color: #1a202c;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card .number span {
+  font-size: 24px;
+  color: #4a5568;
+  font-weight: bold;
+}
+
+.card .line {
+  display: inline-block;
+  width: 3px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.line-blue {
+  background-color: #4299e1;
+}
+
+.line-yellow {
+  background-color: #ecc94b;
+}
+
+.line-green {
+  background-color: #48bb78;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    margin: 20px;
+  }
+  .left-section {
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+  .right-section {
+    grid-template-columns: 1fr;
+    justify-content: flex-start;
+    transform: none;
+  }
+  .card {
+    transform: none;
+    width: 100%;
+  }
+}

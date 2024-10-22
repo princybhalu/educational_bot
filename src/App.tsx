@@ -7,7 +7,7 @@ import NotificationWrapper from './components/notifiction/Notifiction';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import { store, persistor } from './store';
-import ErrorBoundary from './components/error-boundry/error-boundry';
+// import ErrorBoundary from './components/error-boundry/error-boundry';
 
 const LoadingSpinner = () => (
   <div className="flex h-screen w-screen items-center justify-center">
