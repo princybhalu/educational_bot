@@ -86,7 +86,8 @@ export default function Profiling() {
   const [questionList, setQuestionList] = useState(data);
   const [isCalledCreateProfile, setIsCalledCreateProfile] = useState(false);
   const [teacherDescription, setTeacherDescription] = useState([]);
-  const [textWiseDescriptionOfTeacher , setTextWiseDescriptionOfTeacher] = useState("");
+  const [textWiseDescriptionOfTeacher, setTextWiseDescriptionOfTeacher] =
+    useState('');
 
   const handleClickOnQuestion = (index: number) => {
     console.log(index - 1, ' index - 1');
@@ -147,12 +148,6 @@ export default function Profiling() {
           return;
         }
 
-        console.log(
-          res.data.profile_data.length,
-          questionList.length,
-          res.data.profile_data[res.data.profile_data.length - 1].answer
-        );
-
         //  checking profile is completed or not
         if (
           res.data.profile_data.length === questionList.length &&
@@ -175,8 +170,8 @@ export default function Profiling() {
 
         // logic of create question list
         const resProfileData = res.data.profile_data;
-        const resNextQuestion = res.data.next_question;
-        resProfileData.splice(-1, 1);
+        // const resNextQuestion = res.data.next_question;
+        const resNextQuestion = resProfileData.splice(-1, 1);
         if (!resProfileData || resProfileData.length === 0) {
           setDisplayQuestionIndex(0);
           return;
@@ -185,20 +180,23 @@ export default function Profiling() {
           (item: any, index: number) => {
             item.status = QuestionStatus.COMPLETED;
             item.sequence = index + 1;
-            return item;
+            return { ...item };
           }
         );
         const newQuestionListData = [...tempProfileData];
         setDisplayQuestionIndex(newQuestionListData.length);
         newQuestionListData.push({
-          ...resNextQuestion,
+          ...resNextQuestion[0],
           status: QuestionStatus.ACTIVE,
           answer: '',
           sequence: newQuestionListData.length + 1,
         });
         // add disable questions
         questionList.splice(0, newQuestionListData.length);
-        console.log({ questionList, newQuestionListData });
+        console.log('final question list : ', {
+          newQuestionListData,
+          questionList,
+        });
         setQuestionList([...newQuestionListData, ...questionList]);
 
         // without api call need to call
@@ -425,7 +423,9 @@ export default function Profiling() {
                 <TeacherDescription
                   setScreenName={setScreenName}
                   teacherDescription={teacherDescription}
-                  setTextWiseDescriptionOfTeacher={setTextWiseDescriptionOfTeacher}
+                  setTextWiseDescriptionOfTeacher={
+                    setTextWiseDescriptionOfTeacher
+                  }
                 />
               </>
             )}
@@ -467,9 +467,7 @@ export default function Profiling() {
                   alt="Icon 4"
                   className="w-9 md:w-24 absolute top-16 md:top-20 right-0 md:-right-32 rotate-12"
                 />
-                <h1 className="hidden  md:block">
-                  Guide us
-                </h1>
+                <h1 className="hidden  md:block">Guide us</h1>
                 <div className="flex gap-2 flex-col md:flex-row flex-wrap justify-center items-center">
                   <h1 className="text-nowrap">Ai Teacher</h1>
                   <h2 className=" bg-red px-2.5 py-1 rounded-lg line-clamp-1">

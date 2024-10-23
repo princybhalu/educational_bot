@@ -390,6 +390,31 @@ import {
   NOTIFICATION_TYPE_INFO,
 } from '../../components/notifiction/Notifiction';
 
+const cn = (input: string) => {
+  // Split the date and time
+  const [date, timeWithPeriod] = input.split(', ');
+  const [time, period] = timeWithPeriod.split(' ');
+
+  // Reformat the date from MM/DD/YYYY to YYYY-MM-DD
+  const [month, day, year] = date.split('/');
+
+  // Convert 12-hour time to 24-hour time
+  /* eslint-disable */
+  let [hours, minutes, seconds] = time.split(':');
+  if (period === 'PM' && hours !== '12') {
+    hours = (parseInt(hours, 10) + 12).toString();
+  } else if (period === 'AM' && hours === '12') {
+    hours = '00';
+  }
+
+  // Combine into ISO format
+  const result = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hours}:${minutes}:${seconds}Z`;
+
+  console.log(result);
+
+  return result;
+};
+
 const convertEventTimes = (eventsArray: EventOFCalender[]) => {
   return eventsArray.map((event) => {
     const eventDate = new Date(event.date);
@@ -397,12 +422,19 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     // Combine date and time
     const startDateTimeUtc = new Date(
       `${event.date.split('T')[0]}T${event.start_time_utc}Z`
-    ).toLocaleString('en-US', {timeZone: 'Asia/Kolkata'});
+    ).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
     const endDateTimeUtc = new Date(
       `${event.date.split('T')[0]}T${event.end_time_utc}Z`
-    ).toLocaleString('en-US', {timeZone: 'Asia/Kolkata'});
+    ).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
 
-    console.log(endDateTimeUtc, startDateTimeUtc);
+    console.log(
+      event.title,
+      event,
+      endDateTimeUtc,
+      startDateTimeUtc,
+      new Date(startDateTimeUtc).toISOString().slice(0, 19) + 'Z',
+      new Date(endDateTimeUtc).toISOString().slice(0, 19) + 'Z'
+    );
     // Convert to local timezone
     // const startLocal = new Date(startDateTimeUtc.toLocaleString());
     // const endLocal = new Date(endDateTimeUtc.toLocaleString());
@@ -410,8 +442,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     // console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
     return {
       ...event,
-      start: new Date(startDateTimeUtc).toISOString().slice(0, 19) + 'Z', // Add start in ISO format
-      end: new Date(endDateTimeUtc).toISOString().slice(0, 19) + 'Z', // Add end in ISO format
+      start: cn(startDateTimeUtc), // Add start in ISO format
+      end: cn(endDateTimeUtc), // Add end in ISO format
     };
   });
 };

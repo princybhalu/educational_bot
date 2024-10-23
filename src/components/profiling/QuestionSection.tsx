@@ -24,14 +24,16 @@ const QuestionSection: React.FC<QuestionSectionProps> = ({
   questions,
   displayQuestionIndex,
 }) => {
-  console.log({ displayQuestionIndex });
+  console.log('in q', { displayQuestionIndex, questions });
   const [currentIndex, setCurrentIndex] =
     useState<number>(displayQuestionIndex);
   const [answer, setAnswer] = useState<string>('');
   const [isMoving, setIsMoving] = useState<boolean>(false);
   console.log({ questions });
   const handleNext = () => {
-    if (currentIndex < questions.length - 1 && !isMoving) {
+    console.log('out  : ', questions, currentIndex);
+    if (currentIndex < 5 && !isMoving) {
+      console.log('inner ');
       setIsMoving(true);
       setTimeout(() => {
         setCurrentIndex((prevIndex) => prevIndex + 1);
@@ -50,7 +52,7 @@ const QuestionSection: React.FC<QuestionSectionProps> = ({
     }
   };
 
-  const handleSubmit = (question: Question) => {
+  const handleSubmit = async (question: Question) => {
     console.log(
       `Submitted answer for question ${currentIndex + 1}:`,
       answer,
@@ -58,7 +60,7 @@ const QuestionSection: React.FC<QuestionSectionProps> = ({
     );
     if (question.status === QuestionStatus.COMPLETED) {
       console.log('completed ques');
-      handleAskQuetion(
+      await handleAskQuetion(
         {
           question_id: question.question_id,
           sequence: question.sequence,
@@ -68,7 +70,7 @@ const QuestionSection: React.FC<QuestionSectionProps> = ({
         question.status
       );
     } else {
-      handleAskQuetion(
+      await handleAskQuetion(
         {
           question_id: question.question_id,
           sequence: question.sequence,
@@ -126,7 +128,7 @@ const QuestionSection: React.FC<QuestionSectionProps> = ({
               </div>
               <div className="flex flex-col gap-6 flex-1 px-4 max-w-[90%] md:max-w-[80%]">
                 <h1 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-blue-900">
-                  {question.question}
+                  {question.generated_question ?? question.question}
                 </h1>
                 <textarea
                   className={`border-b-2 border-[#405E7F] outline-none p-2 resize-none rounded-md h-12 text-xs sm:h-16 md:h-20 md:text-base ${index % 2 ? 'bg-[#F0F8FF]' : 'bg-[#CEE6FF]'}`}
