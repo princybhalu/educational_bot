@@ -70,7 +70,7 @@ const Landing: FC = () => {
         <BeatExam />
         <CareerAccordion />
         <PricingPlans />
-        <Approach />
+        {/* <Approach /> */}
         <AIMentorSection />
       </div>
     </>

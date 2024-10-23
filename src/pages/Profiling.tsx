@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import MascotTextComponent from '../components/profiling/MascotTextComponent';
 import TeacherDescription from '../components/profiling/TeacherDescription';
 import ModelOfConfirm from '../components/profiling/ModelOfConfirm';
+import TQ from './tq';
 
 const data = [
   {
@@ -75,7 +76,9 @@ interface Question {
 
 export default function Profiling() {
   const user = useSelector((state: any) => state.auth.user);
-  const [screenName, setScreenName] = useState(ProfileScreenName.ONLY_AVATAR);
+  const [screenName, setScreenName] = useState(
+    ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER
+  );
   const [displayQuestionIndex, setDisplayQuestionIndex] = useState<number>(0);
   const [currentCategoryKey, setCurrentCategoryKey] = useState<string | null>(
     null
@@ -427,7 +430,9 @@ export default function Profiling() {
       )}
 
       {screenName === ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER_FINAL && (
-        <></>
+        <>
+          <TQ />
+        </>
       )}
 
       {screenName ===

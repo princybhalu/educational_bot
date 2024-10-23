@@ -54,7 +54,7 @@ const TopNavbar = () => {
               Log in
             </NavLink>
             <NavLink
-              to="/get-started"
+              to="/register"
               className="text-white bg-richblue-900 px-5 py-2 rounded-lg hover:bg-richblue-800 transition-colors duration-200"
             >
               Get Started

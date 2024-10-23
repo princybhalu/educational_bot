@@ -1,7 +1,9 @@
 import React from 'react';
 import chat from '../../assets/landing-page/chat.png';
+import { useNavigate } from 'react-router-dom';
 
 const AIMentorSection: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="bg-white text-center ">
       <div className="flex justify-center mb-6 mt-20 ">
@@ -20,7 +22,10 @@ const AIMentorSection: React.FC = () => {
         managing your stress, your guide ensures you’re never alone in your
         academic journey.
       </p>
-      <button className="bg-blue-600 text-white px-6 py-3 mb-10 rounded-md hover:bg-blue-700 transition duration-300">
+      <button
+        className="bg-blue-600 text-white px-6 py-3 mb-10 rounded-md hover:bg-blue-700 transition duration-300"
+        onClick={(e: any) => navigate('/register')}
+      >
         Start Your Exam Prep Now
       </button>
       <footer className="mt-12 bg-blue-900 text-white py-4 px-4">

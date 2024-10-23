@@ -132,6 +132,7 @@
 
 import React, { useState, useEffect } from 'react';
 import IntroductionImage from '../../assets/landing-page/introduction.png';
+import IntroductionImage1 from '../../assets/landing-page/aiMethod.png';
 
 const IntroductionComponent: React.FC = () => {
   const [tabState, setTabState] = useState({
@@ -243,7 +244,9 @@ const IntroductionComponent: React.FC = () => {
             <div className="relative group">
               <div className="absolute inset-0 bg-[#003366]/0 group-hover:bg-[#003366]/5 transition-colors duration-300"></div>
               <img
-                src={IntroductionImage}
+                src={
+                  tabState.isOldMethod ? IntroductionImage : IntroductionImage1
+                }
                 alt="Learning illustration"
                 className="relative w-full h-auto object-cover transform transition-transform duration-500 group-hover:scale-105"
               />
