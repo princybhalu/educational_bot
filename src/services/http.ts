@@ -107,6 +107,7 @@ const Http = async (apiDataProps: IAPIOptions) => {
   };
 
   const handleError = async (error: any) => {
+    if (error.status === 401) window.location.href = '/login';
     const { Status: status, data } = error.data;
     console.log({ status, data });
     if (messageSettings && !messageSettings.hideErrorMessage) {

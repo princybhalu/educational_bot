@@ -17,6 +17,7 @@ import MascotTextComponent from '../components/profiling/MascotTextComponent';
 import TeacherDescription from '../components/profiling/TeacherDescription';
 import ModelOfConfirm from '../components/profiling/ModelOfConfirm';
 import TQ from './tq';
+import DropletAnimation from '../components/avatar';
 
 const data = [
   {
@@ -76,9 +77,7 @@ interface Question {
 
 export default function Profiling() {
   const user = useSelector((state: any) => state.auth.user);
-  const [screenName, setScreenName] = useState(
-    ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER
-  );
+  const [screenName, setScreenName] = useState(ProfileScreenName.ONLY_AVATAR);
   const [displayQuestionIndex, setDisplayQuestionIndex] = useState<number>(0);
   const [currentCategoryKey, setCurrentCategoryKey] = useState<string | null>(
     null
@@ -420,20 +419,24 @@ export default function Profiling() {
               </div>
             </div>
 
+            {teacherDescription.length > 0 && (
+              <>
+                <TeacherDescription
+                  setScreenName={setScreenName}
+                  teacherDescription={teacherDescription}
+                />
+              </>
+            )}
             {/* 2nd section */}
-            <TeacherDescription
-              setScreenName={setScreenName}
-              teacherDescription={teacherDescription}
-            />
           </div>
         </>
       )}
 
-      {screenName === ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER_FINAL && (
+      {/* {screenName === ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER_FINAL && (
         <>
           <TQ />
         </>
-      )}
+      )} */}
 
       {screenName ===
         ProfileScreenName.CHECKING_GIVE_DESCRIPTION_OF_TEACHER && (
@@ -442,7 +445,11 @@ export default function Profiling() {
         </>
       )}
 
-      {screenName === ProfileScreenName.LOADING_TEACHER_SCREEN && <></>}
+      {screenName === ProfileScreenName.LOADING_TEACHER_SCREEN && (
+        <>
+          <DropletAnimation />
+        </>
+      )}
     </>
   );
 }

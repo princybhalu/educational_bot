@@ -1,8 +1,10 @@
 import React from 'react';
 import TeacherReady from '../../assets/image/teacherReady.gif';
 import { ProfileScreenName } from '../../utils/enums';
+import { useNavigate } from 'react-router-dom';
 
 const AITeacherPrompt = ({ setScreenName }: { setScreenName: any }) => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-slate-800 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
@@ -29,7 +31,8 @@ const AITeacherPrompt = ({ setScreenName }: { setScreenName: any }) => {
           <button
             className="w-full bg-[#003366] text-white py-2 px-4 rounded-md transition-colors"
             onClick={() => {
-              setScreenName(ProfileScreenName.LOADING_TEACHER_SCREEN);
+              // setScreenName(ProfileScreenName.LOADING_TEACHER_SCREEN);
+              navigate('/dashboard');
             }}
           >
             Craft My AI Teacher

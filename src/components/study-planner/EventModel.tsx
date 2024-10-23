@@ -269,12 +269,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     const eventDate = new Date(event.date);
 
     // Combine date and time
-    const startDateTimeUtc = new Date(
-      `${event.date.split('T')[0]}T${event.start_time_utc}Z`
-    );
-    const endDateTimeUtc = new Date(
-      `${event.date.split('T')[0]}T${event.end_time_utc}Z`
-    );
+    const startDateTimeUtc = new Date(`${event.date} ${event.start_time_utc}`);
+    const endDateTimeUtc = new Date(`${event.date} ${event.end_time_utc}`);
 
     console.log(endDateTimeUtc, startDateTimeUtc);
     // Convert to local timezone
@@ -284,8 +280,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
     return {
       ...event,
-      start: startDateTimeUtc, // Add start in ISO format
-      end: endDateTimeUtc, // Add end in ISO format
+      start: startDateTimeUtc.toISOString(), // Add start in ISO format
+      end: endDateTimeUtc.toISOString(), // Add end in ISO format
     };
   });
 };
@@ -298,6 +294,7 @@ const EventModal: React.FC<EventModalProps> = ({
   setEvents,
   events,
 }) => {
+  console.log(event);
   const {
     register,
     handleSubmit,
@@ -348,6 +345,29 @@ const EventModal: React.FC<EventModalProps> = ({
       const res = event
         ? await UpdateTaskApiCall(reqBody, scheduleId)
         : await AddTaskApiCall(reqBody);
+
+      if (event) {
+        const tempbody = convertEventTimes([
+          {
+            ...reqBody,
+            start_time_utc: data.startTime,
+            end_time_utc: data.endTime,
+            //@ts-ignore
+            id: event?._def.publicId,
+            created_by: '',
+          },
+        ]);
+        if (events)
+          setEvents(
+            events.map((e) => {
+              //@ts-ignore
+              if (e.id === event?._def.publicId) return { ...e, ...tempbody };
+              return e;
+            })
+          );
+        onClose();
+        return;
+      }
 
       if (!res.data?.conflict) {
         const temp = convertEventTimes([res.data.tasks]);
