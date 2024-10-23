@@ -7,6 +7,10 @@ import rightStars from '../assets/landing-page/right-stars.svg';
 import IntroductionComponent from '../components/landing-sections/IntroductionComponent';
 import ExamPreparation from '../components/landing-sections/ExamPreparation';
 import BeatExam from '../components/landing-sections/BeatExam';
+import CareerAccordion from '../components/landing-sections/CareerAccordion';
+import PricingPlans from '../components/landing-sections/PricingPlans';
+import AIMentorSection from '../components/landing-sections/AIMentorSection';
+import Approach from '../components/landing-sections/Approach';
 
 const Landing: FC = () => {
   return (
@@ -64,6 +68,10 @@ const Landing: FC = () => {
         <IntroductionComponent />
         <ExamPreparation />
         <BeatExam />
+        <CareerAccordion />
+        <PricingPlans />
+        <Approach />
+        <AIMentorSection />
       </div>
     </>
   );
