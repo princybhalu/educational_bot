@@ -133,6 +133,7 @@ const Http = async (apiDataProps: IAPIOptions) => {
               type: NOTIFICATION_TYPE_ERROR,
               message: 'Unauthorized Access.',
             });
+            window.location.href = '/login';
             break;
           case StatusCode.ClientForbidden:
             Notification({

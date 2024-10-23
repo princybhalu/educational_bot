@@ -60,7 +60,7 @@ const LeftsideBar: React.FC<{
         </svg>
       ),
       screen: 'dailyStudyPlanner',
-      path: '/daily-study-planner',
+      path: '/study-planner',
       allowedRoles: [
         /* Add roles as necessary */
       ],

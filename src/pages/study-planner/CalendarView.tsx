@@ -402,12 +402,12 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
       `${event.date.split('T')[0]}T${event.end_time_utc}Z`
     );
 
-    console.log(endDateTimeUtc, startDateTimeUtc);
+    // console.log(endDateTimeUtc, startDateTimeUtc);
     // Convert to local timezone
     // const startLocal = new Date(startDateTimeUtc.toLocaleString());
     // const endLocal = new Date(endDateTimeUtc.toLocaleString());
     // console.log(startLocal , endLocal);
-    console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
+    // console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
     return {
       ...event,
       start: startDateTimeUtc, // Add start in ISO format
@@ -417,7 +417,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
 };
 
 const CalendarView: React.FC = () => {
-  const scheduleId = '9f2c77ec-c42a-44d4-bc8e-3d92bf9087c6';
+  // const scheduleId = '9f2c77ec-c42a-44d4-bc8e-3d92bf9087c6';
+  const { scheduleId } = useParams();
   const calendarRef = useRef<FullCalendar>(null);
   const date = new Date();
   const navigate = useNavigate();
@@ -550,7 +551,7 @@ const CalendarView: React.FC = () => {
     }
     try {
       const res = await GetTaskBetweenRangeApiCall(
-        scheduleId,
+        scheduleId ?? '',
         startDate,
         endDate
       );
@@ -567,8 +568,9 @@ const CalendarView: React.FC = () => {
         query,
       });
       if (!res.data?.conflict) {
+        const temp = convertEventTimes([res.data.tasks]);
         //@ts-ignore
-        setEvents((prev) => [...prev, res.data.tasks]);
+        setEvents((prev) => [...prev, ...temp]);
         // setEvents((prevEvents) => [...(res.data.tasks || {}), ...prevEvents]);
       } else {
         Notification({
@@ -585,7 +587,7 @@ const CalendarView: React.FC = () => {
   const UpdateTask = async (body: any) => {
     try {
       const reqBody = { ...body };
-      const res = await UpdateTaskApiCall(reqBody, scheduleId);
+      const res = await UpdateTaskApiCall(reqBody, scheduleId ?? '');
       console.log(res);
     } catch (err) {
       console.log(err);
@@ -796,7 +798,7 @@ const CalendarView: React.FC = () => {
           event={selectedEvent}
           onClose={handleCloseModal}
           onDelete={onDeleteOfTask}
-          scheduleId={scheduleId}
+          scheduleId={scheduleId ?? ''}
           setEvents={setEvents}
           events={events}
         />

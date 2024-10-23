@@ -264,6 +264,32 @@ interface EventModalProps {
   events: EventOFCalender[] | null;
 }
 
+const convertEventTimes = (eventsArray: EventOFCalender[]) => {
+  return eventsArray.map((event) => {
+    const eventDate = new Date(event.date);
+
+    // Combine date and time
+    const startDateTimeUtc = new Date(
+      `${event.date.split('T')[0]}T${event.start_time_utc}Z`
+    );
+    const endDateTimeUtc = new Date(
+      `${event.date.split('T')[0]}T${event.end_time_utc}Z`
+    );
+
+    console.log(endDateTimeUtc, startDateTimeUtc);
+    // Convert to local timezone
+    // const startLocal = new Date(startDateTimeUtc.toLocaleString());
+    // const endLocal = new Date(endDateTimeUtc.toLocaleString());
+    // console.log(startLocal , endLocal);
+    console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
+    return {
+      ...event,
+      start: startDateTimeUtc, // Add start in ISO format
+      end: endDateTimeUtc, // Add end in ISO format
+    };
+  });
+};
+
 const EventModal: React.FC<EventModalProps> = ({
   scheduleId,
   event,
@@ -318,13 +344,14 @@ const EventModal: React.FC<EventModalProps> = ({
           description: data.description,
         },
       };
-
+      console.log({ data, reqBody });
       const res = event
         ? await UpdateTaskApiCall(reqBody, scheduleId)
         : await AddTaskApiCall(reqBody);
 
       if (!res.data?.conflict) {
-        setEvents([res.data.tasks, ...(events || [])]);
+        const temp = convertEventTimes([res.data.tasks]);
+        setEvents([...temp, ...(events || [])]);
         onClose();
       } else {
         Notification({

@@ -9,6 +9,7 @@ import { GetTaskBetweenRangeApiCall } from 'services/api/study-planner';
 import { useNavigate } from 'react-router-dom';
 import '../../style/calendar-view.css';
 import NoDataFound from '../shared/NoDataFound';
+import DropletAnimation from '../avatar';
 
 // Define the data structure
 interface ScheduleData {
@@ -169,7 +170,7 @@ const UpcomingExams: React.FC<UpcomingExamsProps> = ({
           ))
         ) : (
           <p className="text-gray-500">
-            <NoDataFound />
+            <NoDataFound displayText="No Upcoming Task Found" />
           </p>
         )}
       </div>
@@ -192,6 +193,7 @@ const UpcomingTask: React.FC<{ activeScheduledId: string }> = ({
         startDate,
         endDate
       );
+      console.log(res);
       setUpcomingExamsData(res.data);
     } catch (err) {
       console.log(err);
@@ -213,7 +215,7 @@ const UpcomingTask: React.FC<{ activeScheduledId: string }> = ({
         {isLoading && (
           <>
             {' '}
-            <div> Loading.. </div>{' '}
+            <DropletAnimation />
           </>
         )}
 
@@ -221,14 +223,14 @@ const UpcomingTask: React.FC<{ activeScheduledId: string }> = ({
           <> somethings goes wrong </>
         )}
 
-        {!isLoading && upcomingExamsData && upcomingExamsData?.length === 0 && (
+        {/* {!isLoading && upcomingExamsData && upcomingExamsData?.length === 0 && (
           <>
             {' '}
-            <NoDataFound />{' '}
+            <NoDataFound displayText='Not Any Upcoming Task Found' />{' '}
           </>
-        )}
+        )} */}
 
-        {!isLoading && upcomingExamsData && upcomingExamsData.length > 0 && (
+        {!isLoading && upcomingExamsData && (
           <>
             {/* Fix Heigth adjustment */}
             <UpcomingExams

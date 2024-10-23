@@ -5,8 +5,8 @@ import QuestionCards from '../../components/profiling/QuestionSection';
 
 // Lazy load components
 const Landing = lazy(() => import('../../pages/Landing'));
-const Login = lazy(() => import('../../pages/Login'));
-const Register = lazy(() => import('../../pages/Register'));
+const Login = lazy(() => import('../../pages/login1'));
+const Register = lazy(() => import('../../pages/register1'));
 const Dashboard = lazy(() => import('../../pages/Dashboard'));
 const Profiling = lazy(() => import('../../pages/Profiling'));
 const BasicInfo = lazy(() => import('../../pages/BasicInfo'));
@@ -19,6 +19,7 @@ const LearningChatView = lazy(
 const CalendarView = lazy(
   () => import('../../pages/study-planner/CalendarView')
 );
+const NotFound = lazy(() => import('../../components/shared/NotFoundPage'));
 
 export const routes: RouteConfig[] = [
   {
@@ -97,5 +98,10 @@ export const routes: RouteConfig[] = [
     // isProfilingRequired: true,
     element: LearningChatView,
     islayout: true,
+  },
+  {
+    path: '*',
+    key: 'not-found',
+    element: NotFound,
   },
 ];

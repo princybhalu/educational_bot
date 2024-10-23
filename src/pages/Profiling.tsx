@@ -11,10 +11,11 @@ import ProfilingTitle2 from '../assets/image/profiling_title_2.gif';
 import ProfilingTitle3 from '../assets/image/profiling_title_3.gif';
 import ProfilingTitle4 from '../assets/image/profiling_title_4.gif';
 import TimeLIneSetion from '../components/profiling/TimeLineSection';
-import TimeLIneSetionOfWeb from '../components/profiling/TimeLineSectionOFWeb';
 import QuestionSection from '../components/profiling/QuestionSection';
 import { useSelector } from 'react-redux';
 import MascotTextComponent from '../components/profiling/MascotTextComponent';
+import TeacherDescription from '../components/profiling/TeacherDescription';
+import ModelOfConfirm from '../components/profiling/ModelOfConfirm';
 
 const data = [
   {
@@ -82,6 +83,7 @@ export default function Profiling() {
   // when apicall to set this then also add status fields in data bcz from backend it is not come
   const [questionList, setQuestionList] = useState(data);
   const [isCalledCreateProfile, setIsCalledCreateProfile] = useState(false);
+  const [teacherDescription, setTeacherDescription] = useState([]);
 
   const handleClickOnQuestion = (index: number) => {
     console.log(index - 1, ' index - 1');
@@ -125,16 +127,45 @@ export default function Profiling() {
         const res = await AskQuetionApiCall(body);
         console.log(res);
 
+        //TODO : MODIFIED setTeacherDescription for to past teacher dicription
         if (res.data.is_profile_completed) {
+          console.log(res.data.psychological_profile);
+          const tempArray: any = [];
+          const temp = Object.keys(res.data.psychological_profile).map(
+            (category, index) => {
+              tempArray.push({
+                id: index + 1,
+                text: res.data.psychological_profile[category].text,
+              });
+            }
+          );
+          setTeacherDescription(tempArray);
           setScreenName(ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER);
           return;
         }
+
+        console.log(
+          res.data.profile_data.length,
+          questionList.length,
+          res.data.profile_data[res.data.profile_data.length - 1].answer
+        );
 
         //  checking profile is completed or not
         if (
           res.data.profile_data.length === questionList.length &&
           res.data.profile_data[res.data.profile_data.length - 1].answer
         ) {
+          console.log(res.data.psychological_profile);
+          const tempArray: any = [];
+          const temp = Object.keys(res.data.psychological_profile).map(
+            (category, index) => {
+              tempArray.push({
+                id: index + 1,
+                text: res.data.psychological_profile[category].text,
+              });
+            }
+          );
+          setTeacherDescription(tempArray);
           setScreenName(ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER);
           return;
         }
@@ -343,9 +374,70 @@ export default function Profiling() {
       {/* GIVE_DESCRIPTION_OF_TEACHER */}
       {screenName === ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER && (
         <>
-          <div> this is descrition </div>
+          <div
+            className="h-screen"
+            style={{
+              backgroundColor:
+                'radial-gradient(circle at left top, #0033666a 0%, transparent 30%),radial-gradient(circle at right bottom, #ff70106d 0%, transparent 30%),#ffffff92;',
+            }}
+          >
+            {/* haeding */}
+            <div className="w-full">
+              <div className="relative max-w-max mx-auto py-16 text-3xl sm:text-4xl md:text-5xl font-bold flex flex-col gap-3 items-center Darker-Grotesque transition-all duration-100">
+                <img
+                  src={ProfilingTitle1}
+                  alt="Icon 1"
+                  className="w-9 md:w-24 absolute top-5 left-20 md:left-0"
+                />
+                <img
+                  src={ProfilingTitle3}
+                  alt="Icon 3"
+                  className="w-9 md:w-24 rotate-12 absolute top-5 right-20 md:right-0"
+                />
+                <img
+                  src={ProfilingTitle2}
+                  alt="Icon 2"
+                  className="w-9 md:w-24 absolute top-16 md:top-36  left-0 md:-left-28 -rotate-12"
+                />
+
+                <img
+                  src={ProfilingTitle4}
+                  alt="Icon 4"
+                  className="w-9 md:w-24 absolute top-16 md:top-20 right-0 md:-right-32 rotate-12"
+                />
+                <h1 className="hidden  md:block">
+                  Guide us to shape your teacher
+                </h1>
+                <div className="flex gap-2 flex-col md:flex-row flex-wrap justify-center items-center">
+                  <h1 className="text-nowrap">Your Problems</h1>
+                  <h2 className=" bg-red px-2.5 py-1 rounded-lg line-clamp-1">
+                    That We Identified For You
+                  </h2>
+                </div>
+              </div>
+            </div>
+
+            {/* 2nd section */}
+            <TeacherDescription
+              setScreenName={setScreenName}
+              teacherDescription={teacherDescription}
+            />
+          </div>
         </>
       )}
+
+      {screenName === ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER_FINAL && (
+        <></>
+      )}
+
+      {screenName ===
+        ProfileScreenName.CHECKING_GIVE_DESCRIPTION_OF_TEACHER && (
+        <>
+          <ModelOfConfirm setScreenName={setScreenName} />
+        </>
+      )}
+
+      {screenName === ProfileScreenName.LOADING_TEACHER_SCREEN && <></>}
     </>
   );
 }

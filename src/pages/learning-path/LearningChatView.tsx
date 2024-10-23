@@ -16,6 +16,7 @@ import Markdown from 'react-markdown';
 import AnimatedMarkdown from '../../components/learning-path/AnimatedMarkdown';
 import { useAppSelector } from 'store/TypedHooks';
 import NoDataFound from '../../components/shared/NoDataFound';
+import DropletAnimation from '../../components/avatar';
 
 export interface ChatResponse {
   Status: string;
@@ -91,25 +92,25 @@ const LearningChatView: React.FC = () => {
   useEffect(() => {
     const tempApiCall = async () => {
       try {
-        // try {
-        //   const res = await CreateProgrssApiCall({
-        //     type: type,
-        //     relevant_id: relevantId,
-        //   });
-        //   console.log({ res });
-        // } catch (err) {
-        //   console.log(err);
-        //   //@ts-ignore
-        //   if (err.status === 409) {
-        //     try {
-        //       const res = await GetProgressApiCall(relevantId ?? '');
-        //     } catch (err) {
-        //       console.log(err);
-        //     }
-        //   }
-        // } finally {
-        //   setIsCreatedProgress(true);
-        // }
+        try {
+          const res = await CreateProgrssApiCall({
+            type: type,
+            relevant_id: relevantId,
+          });
+          console.log({ res });
+        } catch (err) {
+          console.log(err);
+          //@ts-ignore
+          if (err.status === 409) {
+            try {
+              const res = await GetProgressApiCall(relevantId ?? '');
+            } catch (err) {
+              console.log(err);
+            }
+          }
+        } finally {
+          setIsCreatedProgress(true);
+        }
 
         const res1 = await ChatApiCall(
           {
@@ -184,7 +185,7 @@ const LearningChatView: React.FC = () => {
     <>
       {isLoading && (
         <>
-          <div>Loading..</div>
+          <DropletAnimation />
         </>
       )}
 

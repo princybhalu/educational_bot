@@ -25,13 +25,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/login" replace />;
   }
 
-  if (
-    window.location.pathname !== '/basic-info' &&
-    user &&
-    (!user.board || !user.field || !user.standard)
-  ) {
-    return <Navigate to="/basic-info" replace />;
-  }
+  // if (
+  //   window.location.pathname !== '/basic-info' &&
+  //   user &&
+  //   (!user.board || !user.field || !user.standard)
+  // ) {
+  //   return <Navigate to="/basic-info" replace />;
+  // }
 
   // If profiling is incomplete, redirect to profiling page
   if (profilingIncomplete && !hasCompletedProfiling) {
