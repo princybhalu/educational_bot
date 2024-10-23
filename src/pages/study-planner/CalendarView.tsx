@@ -501,9 +501,9 @@ const CalendarView: React.FC = () => {
       const view = calendarApi.view;
       setCurrentTitle(view.title);
     }
-
-    const startDate = info.start;
-    const endDate = info.end;
+    console.log({ info });
+    const startDate = info.startStr;
+    const endDate = info.endStr;
     await GetEventBetweenRange(startDate, endDate);
   };
 
@@ -819,7 +819,7 @@ const CalendarView: React.FC = () => {
             nowIndicatorClassNames="bg-blue-500"
             slotEventOverlap={false}
             slotMinTime="00:00:00"
-            slotMaxTime="24:00:00"
+            slotMaxTime="23:59:00"
             timeZone="Asia/Kolkata"
           />
         </div>
