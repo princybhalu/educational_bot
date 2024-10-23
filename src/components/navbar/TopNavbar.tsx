@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { CiMenuFries } from 'react-icons/ci';
 import { IoMdClose } from 'react-icons/io';
+import logo from '../../assets/image/logo.png';
 
 // eslint-disable-next-line react/prop-types
 const NavItem = ({ to, children }: { to: any; children: any }) => (
@@ -33,9 +34,10 @@ const TopNavbar = () => {
     <div className="w-full h-full border-b text-base bg-white">
       <nav className="w-full max-w-[1280px] mx-auto py-4 px-4 md:px-2">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl md:text-4xl text-logoColor font-bold">
+          {/* <h1 className="text-2xl md:text-4xl text-logoColor font-bold">
             Logo here
-          </h1>
+          </h1> */}
+          <img src={logo} alt="Brand logo" loading="lazy" className="w-16" />
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex gap-6">

@@ -19,6 +19,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { GetOAuthUrlApiCall, RegisterApiCall } from '../services/api/auth';
 import { BasicInfoApiCall } from '../services/api/user';
 import illustration from '../assets/landing-page/illustration.jpg';
+import logo from '../assets/image/logo.png';
 
 // Registration validation schema
 const registerValidationSchema = Yup.object().shape({
@@ -105,6 +106,9 @@ const Register: React.FC = () => {
         <div className="max-w-md w-full mx-auto">
           {!showBasicInfo ? (
             <>
+              <div className="flex justify-center mb-8">
+                <img src={logo} alt="Company logo" className="w-24 h-auto" />
+              </div>
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
                 Create an account
               </h2>

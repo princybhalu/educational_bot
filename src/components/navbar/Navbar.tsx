@@ -2,6 +2,7 @@ import React from 'react';
 import MenuIcon from '../../assets/icons/MenuIcon';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import logo from '../../assets/image/logo.png';
 
 interface NavbarProps {
   IsIsMobileMenuOpenFun: (isOpen: boolean) => void;
@@ -28,10 +29,12 @@ const Navbar: React.FC<NavbarProps> = ({
           </button>
         </div>
         {/* Central title */}
-        <div className="text-center flex-grow">
-          <h2 className="text-xl font-semibold text-white my-auto">
+        <div className="text-center flex-grow w-full flex items-center justify-center">
+          {/* <h2 className="text-xl font-semibold text-white my-auto">
             Education AI
-          </h2>
+          </h2> */}
+          <img src={logo} alt="Brand logo" loading="lazy" className="w-16" />
+
         </div>
       </div>
     </nav>
