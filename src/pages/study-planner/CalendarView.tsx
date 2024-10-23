@@ -397,12 +397,12 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     // Combine date and time
     const startDateTimeUtc = new Date(
       `${event.date.split('T')[0]}T${event.start_time_utc}Z`
-    );
+    ).toLocaleString('en-US', {timeZone: 'Asia/Kolkata'});
     const endDateTimeUtc = new Date(
       `${event.date.split('T')[0]}T${event.end_time_utc}Z`
-    );
+    ).toLocaleString('en-US', {timeZone: 'Asia/Kolkata'});
 
-    // console.log(endDateTimeUtc, startDateTimeUtc);
+    console.log(endDateTimeUtc, startDateTimeUtc);
     // Convert to local timezone
     // const startLocal = new Date(startDateTimeUtc.toLocaleString());
     // const endLocal = new Date(endDateTimeUtc.toLocaleString());
@@ -410,8 +410,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     // console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
     return {
       ...event,
-      start: startDateTimeUtc, // Add start in ISO format
-      end: endDateTimeUtc, // Add end in ISO format
+      start: new Date(startDateTimeUtc).toISOString().slice(0, 19) + 'Z', // Add start in ISO format
+      end: new Date(endDateTimeUtc).toISOString().slice(0, 19) + 'Z', // Add end in ISO format
     };
   });
 };
@@ -786,8 +786,9 @@ const CalendarView: React.FC = () => {
             dayHeaderClassNames="text-gray-700 font-semibold"
             nowIndicatorClassNames="bg-blue-500"
             slotEventOverlap={false}
-            slotMinTime="06:00:00"
-            slotMaxTime="22:00:00"
+            slotMinTime="00:00:00"
+            slotMaxTime="24:00:00"
+            timeZone="Asia/Kolkata"
           />
         </div>
       </div>

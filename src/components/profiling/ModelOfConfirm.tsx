@@ -31,8 +31,8 @@ const AITeacherPrompt = ({ setScreenName }: { setScreenName: any }) => {
           <button
             className="w-full bg-[#003366] text-white py-2 px-4 rounded-md transition-colors"
             onClick={() => {
-              // setScreenName(ProfileScreenName.LOADING_TEACHER_SCREEN);
-              navigate('/dashboard');
+              setScreenName(ProfileScreenName.LOADING_TEACHER_SCREEN);
+              // navigate('/dashboard');
             }}
           >
             Craft My AI Teacher

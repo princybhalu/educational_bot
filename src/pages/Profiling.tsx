@@ -16,8 +16,8 @@ import { useSelector } from 'react-redux';
 import MascotTextComponent from '../components/profiling/MascotTextComponent';
 import TeacherDescription from '../components/profiling/TeacherDescription';
 import ModelOfConfirm from '../components/profiling/ModelOfConfirm';
-import TQ from './tq';
-import DropletAnimation from '../components/avatar';
+import TeacherDescriptionByTextArea from '../components/profiling/TeacherDescriptionByTextArea';
+import LoadingAnimationOfTeacher from '../components/profiling/LoadingAnimationOfTeacher';
 
 const data = [
   {
@@ -86,6 +86,7 @@ export default function Profiling() {
   const [questionList, setQuestionList] = useState(data);
   const [isCalledCreateProfile, setIsCalledCreateProfile] = useState(false);
   const [teacherDescription, setTeacherDescription] = useState([]);
+  const [textWiseDescriptionOfTeacher , setTextWiseDescriptionOfTeacher] = useState("");
 
   const handleClickOnQuestion = (index: number) => {
     console.log(index - 1, ' index - 1');
@@ -424,6 +425,7 @@ export default function Profiling() {
                 <TeacherDescription
                   setScreenName={setScreenName}
                   teacherDescription={teacherDescription}
+                  setTextWiseDescriptionOfTeacher={setTextWiseDescriptionOfTeacher}
                 />
               </>
             )}
@@ -432,11 +434,62 @@ export default function Profiling() {
         </>
       )}
 
-      {/* {screenName === ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER_FINAL && (
+      {screenName === ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER_FINAL && (
         <>
-          <TQ />
+          <div
+            className="h-screen"
+            style={{
+              backgroundColor:
+                'radial-gradient(circle at left top, #0033666a 0%, transparent 30%),radial-gradient(circle at right bottom, #ff70106d 0%, transparent 30%),#ffffff92;',
+            }}
+          >
+            {/* haeding */}
+            <div className="w-full">
+              <div className="relative max-w-max mx-auto py-16 text-3xl sm:text-4xl md:text-5xl font-bold flex flex-col gap-3 items-center Darker-Grotesque transition-all duration-100">
+                <img
+                  src={ProfilingTitle1}
+                  alt="Icon 1"
+                  className="w-9 md:w-24 absolute top-5 left-20 md:left-0"
+                />
+                <img
+                  src={ProfilingTitle3}
+                  alt="Icon 3"
+                  className="w-9 md:w-24 rotate-12 absolute top-5 right-20 md:right-0"
+                />
+                <img
+                  src={ProfilingTitle2}
+                  alt="Icon 2"
+                  className="w-9 md:w-24 absolute top-16 md:top-36  left-0 md:-left-28 -rotate-12"
+                />
+
+                <img
+                  src={ProfilingTitle4}
+                  alt="Icon 4"
+                  className="w-9 md:w-24 absolute top-16 md:top-20 right-0 md:-right-32 rotate-12"
+                />
+                <h1 className="hidden  md:block">
+                  Guide us
+                </h1>
+                <div className="flex gap-2 flex-col md:flex-row flex-wrap justify-center items-center">
+                  <h1 className="text-nowrap">Ai Teacher</h1>
+                  <h2 className=" bg-red px-2.5 py-1 rounded-lg line-clamp-1">
+                    That You Need
+                  </h2>
+                </div>
+              </div>
+            </div>
+
+            {teacherDescription.length > 0 && (
+              <>
+                <TeacherDescriptionByTextArea
+                  setScreenName={setScreenName}
+                  content={textWiseDescriptionOfTeacher}
+                />
+              </>
+            )}
+          </div>
         </>
-      )} */}
+      )}
 
       {screenName ===
         ProfileScreenName.CHECKING_GIVE_DESCRIPTION_OF_TEACHER && (
@@ -447,7 +500,7 @@ export default function Profiling() {
 
       {screenName === ProfileScreenName.LOADING_TEACHER_SCREEN && (
         <>
-          <DropletAnimation />
+          <LoadingAnimationOfTeacher />
         </>
       )}
     </>

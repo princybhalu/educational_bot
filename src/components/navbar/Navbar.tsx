@@ -17,7 +17,7 @@ const Navbar: React.FC<NavbarProps> = ({
   const user = { ...user1 };
 
   return (
-    <nav className="bg-[#003366] text-white p-2">
+    <nav className="bg-[#CEE6FF] text-black p-2">
       <div className="flex justify-between items-center">
         {/* Mobile menu icon */}
         <div className="lg:hidden">

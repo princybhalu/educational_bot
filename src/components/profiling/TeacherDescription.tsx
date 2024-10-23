@@ -337,7 +337,12 @@ interface ProblemItem {
 const ProblemsScreen: React.FC<{
   setScreenName: (a: string) => void;
   teacherDescription: ProblemItem[];
-}> = ({ setScreenName, teacherDescription }) => {
+  setTextWiseDescriptionOfTeacher: any;
+}> = ({
+  setScreenName,
+  teacherDescription,
+  setTextWiseDescriptionOfTeacher,
+}) => {
   const [items, setItems] = useState<ProblemItem[]>(teacherDescription);
   const [newProblem, setNewProblem] = useState('');
 
@@ -361,14 +366,15 @@ const ProblemsScreen: React.FC<{
 
   const handleConfirm = async () => {
     try {
-      // const req = {
-      //   answer :
-      // }
-      // const res  = await AskQuetionApiCall();
+      const req = {
+        answer: teacherDescription.map((item) => item.text).join(' '),
+      };
+      const res = await AskQuetionApiCall(req);
+      setTextWiseDescriptionOfTeacher(res.data.tailored_teacher);
+      setScreenName(ProfileScreenName.GIVE_DESCRIPTION_OF_TEACHER_FINAL);
     } catch (err) {
       console.log(err);
     }
-    setScreenName(ProfileScreenName.CHECKING_GIVE_DESCRIPTION_OF_TEACHER);
   };
 
   // Leading (left swipe) action for delete

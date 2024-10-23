@@ -10,11 +10,11 @@ import { store, persistor } from './store';
 import DropletAnimation from './components/avatar';
 // import ErrorBoundary from './components/error-boundry/error-boundry';
 
-const LoadingSpinner = () => (
-  <div className="flex h-screen w-screen items-center justify-center">
-    <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-  </div>
-);
+// const LoadingSpinner = () => (
+//   <div className="flex h-screen w-screen items-center justify-center">
+//     <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+//   </div>
+// );
 
 const App: React.FC = () => {
   return (

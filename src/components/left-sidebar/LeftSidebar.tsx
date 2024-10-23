@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CloseIcon from '../../assets/icons/CloseIcon';
 import { useSelector } from 'react-redux';
+import  logo from '../../assets/image/logo.jpeg';
 
 const LeftsideBar: React.FC<{
   currentScreen: string;
@@ -74,7 +75,7 @@ const LeftsideBar: React.FC<{
     <>
       {/* Sidebar for laptop view */}
       <aside
-        className={`bg-[#003366] text-white ${isCompact ? 'w-16' : 'w-64'} hidden lg:flex flex-col justify-between transition-all duration-300`}
+        className={`bg-[#CEE6FF] text-black ${isCompact ? 'w-16' : 'w-64'} hidden lg:flex flex-col justify-between transition-all duration-300`}
       >
         <div className="p-4">
           {filteredMenuItems.map((item, index) => (
@@ -141,9 +142,12 @@ const LeftsideBar: React.FC<{
       {/* Mobile menu */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden">
-          <div className="bg-[#003366] text-white h-full w-64 p-4">
+          <div className="bg-[#CEE6FF] text-black h-full w-64 p-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">LOGO HREE</h2>
+              <h2 className="text-xl font-bold bg-white">
+                {' '}
+                <img src={logo} className='w-20 h-10'/>{' '}
+              </h2>
               <button onClick={() => IsIsMobileMenuOpenFun(false)}>
                 <CloseIcon />
               </button>
