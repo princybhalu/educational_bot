@@ -35,7 +35,7 @@
 
 // export default MascotTextComponent;
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DropletAnimation from '../avatar';
 
 interface MascotTextComponentProps {
@@ -49,28 +49,35 @@ const MascotTextComponent: React.FC<MascotTextComponentProps> = ({
   direction,
   typingSpeed = 50, // Default typing speed (ms per character)
 }) => {
+  const isTextRight = direction === 'right';
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const isTextRight = direction === 'right';
+  const textQueue = useRef<string[]>([]);
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     setIsTyping(true);
-    setDisplayedText(''); // Reset text when new text prop is received
+    setDisplayedText('');
+    textQueue.current = text.split('');
 
-    let currentIndex = 0;
-    const textLength = text.length;
-
-    const typingInterval = setInterval(() => {
-      if (currentIndex < textLength-1) {
-        setDisplayedText((prev) => prev + text[currentIndex]);
-        currentIndex++;
+    const typeNextCharacter = () => {
+      if (textQueue.current.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const nextChar = textQueue.current.shift()!;
+        setDisplayedText((prev) => prev + nextChar);
+        timeoutRef.current = setTimeout(typeNextCharacter, typingSpeed);
       } else {
-        clearInterval(typingInterval);
         setIsTyping(false);
       }
-    }, typingSpeed);
+    };
 
-    return () => clearInterval(typingInterval);
+    timeoutRef.current = setTimeout(typeNextCharacter, typingSpeed);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [text, typingSpeed]);
 
   return (
