@@ -240,7 +240,7 @@ import {
   Notification,
   NOTIFICATION_TYPE_INFO,
 } from '../../components/notifiction/Notifiction';
-
+/*
 const schema = yup.object().shape({
   title: yup.string().required('Title is required'),
   description: yup.string(),
@@ -254,7 +254,30 @@ const schema = yup.object().shape({
   subject: yup.string(),
   topic: yup.string(),
 });
+*/
+const schema = yup.object().shape({
+  title: yup.string().required('Title is required'),
+  description: yup.string(),
+  startTime: yup.date().required('Start time is required'),
+  endTime: yup
+    .date()
+    .required('End time is required')
+    .min(yup.ref('startTime'), "End time can't be before start time")
+    .test('duration', 'Duration cannot exceed 4 hours', function (endTime) {
+      const startTime = this.parent.startTime;
+      if (!startTime || !endTime) return true; // Skip validation if either date is missing
 
+      // Calculate duration in milliseconds
+      const duration = endTime.getTime() - startTime.getTime();
+      const fourHoursInMs = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+
+      return duration <= fourHoursInMs;
+    }),
+  type: yup.string().required('Event type is required'),
+  chapter: yup.string(),
+  subject: yup.string(),
+  topic: yup.string(),
+});
 interface EventModalProps {
   scheduleId: string;
   event?: EventOFCalender;

@@ -432,8 +432,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
       event,
       endDateTimeUtc,
       startDateTimeUtc,
-      new Date(startDateTimeUtc).toISOString().slice(0, 19) + 'Z',
-      new Date(endDateTimeUtc).toISOString().slice(0, 19) + 'Z'
+      cn(startDateTimeUtc),
+      cn(startDateTimeUtc)
     );
     // Convert to local timezone
     // const startLocal = new Date(startDateTimeUtc.toLocaleString());
@@ -819,7 +819,7 @@ const CalendarView: React.FC = () => {
             nowIndicatorClassNames="bg-blue-500"
             slotEventOverlap={false}
             slotMinTime="00:00:00"
-            slotMaxTime="23:59:00"
+            slotMaxTime="24:00:00"
             timeZone="Asia/Kolkata"
           />
         </div>
