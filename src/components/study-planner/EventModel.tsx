@@ -329,8 +329,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
       event,
       endDateTimeUtc,
       startDateTimeUtc,
-      new Date(startDateTimeUtc).toISOString().slice(0, 19) + 'Z',
-      new Date(endDateTimeUtc).toISOString().slice(0, 19) + 'Z'
+      // new Date(startDateTimeUtc).toISOString().slice(0, 19) + 'Z',
+      // new Date(endDateTimeUtc).toISOString().slice(0, 19) + 'Z'
     );
     // Convert to local timezone
     // const startLocal = new Date(startDateTimeUtc.toLocaleString());
@@ -339,8 +339,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     // console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
     return {
       ...event,
-      start: cn(startDateTimeUtc), // Add start in ISO format
-      end: cn(endDateTimeUtc), // Add end in ISO format
+      start: event.start_time_utc, // Add start in ISO format
+      end: event.end_time_utc, // Add end in ISO format
     };
   });
 };

@@ -420,20 +420,20 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     const eventDate = new Date(event.date);
 
     // Combine date and time
-    const startDateTimeUtc = new Date(
-      `${event.date.split('T')[0]}T${event.start_time_utc}Z`
-    ).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
-    const endDateTimeUtc = new Date(
-      `${event.date.split('T')[0]}T${event.end_time_utc}Z`
-    ).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+    // const startDateTimeUtc = new Date(
+    //   `${event.date.split('T')[0]}T${event.start_time_utc}Z`
+    // ).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+    // const endDateTimeUtc = new Date(
+    //   `${event.date.split('T')[0]}T${event.end_time_utc}Z`
+    // ).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
 
     console.log(
       event.title,
       event,
-      endDateTimeUtc,
-      startDateTimeUtc,
-      cn(startDateTimeUtc),
-      cn(startDateTimeUtc)
+      event.start_time_utc,
+      event.end_time_utc,
+      // new Date(startDateTimeUtc).toISOString().slice(0, 19) + 'Z',
+      // new Date(endDateTimeUtc).toISOString().slice(0, 19) + 'Z'
     );
     // Convert to local timezone
     // const startLocal = new Date(startDateTimeUtc.toLocaleString());
@@ -442,8 +442,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     // console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
     return {
       ...event,
-      start: cn(startDateTimeUtc), // Add start in ISO format
-      end: cn(endDateTimeUtc), // Add end in ISO format
+      start: event.start_time_utc, // Add start in ISO format
+      end: event.end_time_utc, // Add end in ISO format
     };
   });
 };
@@ -574,13 +574,14 @@ const CalendarView: React.FC = () => {
         currentDate.getFullYear(),
         currentDate.getMonth(),
         1
-      );
+      ).toLocaleString();
       endDate = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth() + 1,
         0
-      );
+      ).toLocaleString();
     }
+    console.log("======", startDate, endDate);
     try {
       const res = await GetTaskBetweenRangeApiCall(
         scheduleId ?? '',
@@ -819,7 +820,7 @@ const CalendarView: React.FC = () => {
             nowIndicatorClassNames="bg-blue-500"
             slotEventOverlap={false}
             slotMinTime="00:00:00"
-            slotMaxTime="24:00:00"
+            slotMaxTime="23:59:00"
             timeZone="Asia/Kolkata"
           />
         </div>
