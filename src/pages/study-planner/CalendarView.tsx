@@ -389,6 +389,7 @@ import {
   Notification,
   NOTIFICATION_TYPE_INFO,
 } from '../../components/notifiction/Notifiction';
+import DropletAnimation from '../../components/avatar';
 
 const cn = (input: string) => {
   // Split the date and time
@@ -470,11 +471,12 @@ const CalendarView: React.FC = () => {
     null
   );
   const [tempTaskId, setTempTaskId] = useState(null);
+  const [displayLoadingAvatar, setDisplayLoadingAvatar] = useState(false);
 
   const handleEventClick = (eventData: any) => {
     console.log(eventData)
     setSelectedEvent(eventData);
-    setTempTaskId(eventData['_def']['publicId'])
+    setTempTaskId(eventData?.['_def']?.['publicId']);
     setShowModal(true);
   };
 
@@ -600,6 +602,7 @@ const CalendarView: React.FC = () => {
 
   const GetResOfQuery = async (query: string) => {
     try {
+      setDisplayLoadingAvatar(true);
       const res = await AddTaskByQueryApiCall({
         schedule_id: scheduleId,
         query,
@@ -618,6 +621,8 @@ const CalendarView: React.FC = () => {
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setDisplayLoadingAvatar(false);
     }
   };
 
@@ -861,24 +866,29 @@ const CalendarView: React.FC = () => {
               </div>
             </div>
             <button
-              className={`px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition-colors ${
+              className={`px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition-colors transition-rotate ${
                 buttonText === 'Add'
                   ? 'text-white bg-[#003366] hover:text-[#003366] hover:text-white'
                   : 'bg-green-600 text-white hover:bg-green-700'
               }`}
               onClick={handleButtonClick}
             >
-              {buttonText === 'Add' ? (
-                <>
-                  <MdAdd className="w-5 h-5" />
-                  <span>{buttonText}</span>
-                </>
-              ) : (
-                <>
-                  <MdSend className="w-5 h-5" />
-                  <span>{buttonText}</span>
-                </>
+              {displayLoadingAvatar && (
+                  <div className="w-6 h-6 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
               )}
+
+              {!displayLoadingAvatar &&
+                (buttonText === 'Add' ? (
+                  <>
+                    <MdAdd className="w-5 h-5" />
+                    <span>{buttonText}</span>
+                  </>
+                ) : (
+                  <>
+                    <MdSend className="w-5 h-5" />
+                    <span>{buttonText}</span>
+                  </>
+                ))}
             </button>
           </div>
         </div>
