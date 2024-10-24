@@ -50,6 +50,7 @@ const LearningChatView: React.FC = () => {
   const doutRef = useRef();
   const [num, setNum] = useState(0);
   const [isAnimationCompleted, setIsAnimationCompleted] = useState(false);
+  const [displayLoadingAvatar, setDisplayLoadingAvatar] = useState(false);
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -62,6 +63,7 @@ const LearningChatView: React.FC = () => {
       };
       //@ts-ignore
       if (doutRef.current && doutRef.current.value) {
+        setDisplayLoadingAvatar(true);
         //@ts-ignore
         reqBody.query = doutRef.current ? doutRef.current.value : '';
         //@ts-ignore
@@ -79,6 +81,7 @@ const LearningChatView: React.FC = () => {
           console.log(res1.data.messages);
           setChatContent(res1.data.messages);
           setIsChatOpen(true);
+          setDisplayLoadingAvatar(false);
         }
       } else {
         //@ts-ignore
@@ -86,6 +89,7 @@ const LearningChatView: React.FC = () => {
       }
     } catch (err) {
       console.log(err);
+      setDisplayLoadingAvatar(false);
     }
   };
 
@@ -371,7 +375,15 @@ const LearningChatView: React.FC = () => {
                   </div>
                   <div className="send-container">
                     <button className="send-btn" onClick={() => submitDout()}>
-                      <ArrowUp />
+                      {displayLoadingAvatar ? (
+                        <>
+                          <div className="w-6 h-6 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                        </>
+                      ) : (
+                        <>
+                          <ArrowUp />
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>

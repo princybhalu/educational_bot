@@ -2,7 +2,7 @@ import React from 'react';
 import chat from '../../assets/landing-page/chat.png';
 import { useNavigate } from 'react-router-dom';
 
-const AIMentorSection: React.FC = () => {
+const AIMentorSection: React.FC<{handlNavigationToRegister : any}> = ({ handlNavigationToRegister }) => {
   const navigate = useNavigate();
   return (
     <div className="bg-white text-center ">
@@ -24,7 +24,7 @@ const AIMentorSection: React.FC = () => {
       </p>
       <button
         className="bg-blue-600 text-white px-6 py-3 mb-10 rounded-md hover:bg-blue-700 transition duration-300"
-        onClick={(e: any) => navigate('/register')}
+        onClick={handlNavigationToRegister}
       >
         Start Your Exam Prep Now
       </button>

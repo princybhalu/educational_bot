@@ -11,8 +11,15 @@ import CareerAccordion from '../components/landing-sections/CareerAccordion';
 import PricingPlans from '../components/landing-sections/PricingPlans';
 import AIMentorSection from '../components/landing-sections/AIMentorSection';
 import Approach from '../components/landing-sections/Approach';
+import { useNavigate } from 'react-router-dom';
 
 const Landing: FC = () => {
+  const navigate = useNavigate();
+
+  const handlNavigationToRegister = () => {
+    navigate('/register');
+  }
+
   return (
     <>
       <div className="home-layout w-full h-full min-h-screen">
@@ -32,7 +39,7 @@ const Landing: FC = () => {
                   Experience education designed for your unique learning style
                   with the power of AI.
                 </p>
-                <div className="text-white bg-richblue-900 px-4 md:px-5 py-2 text-md md:text-lg rounded-lg cursor-pointer">
+                <div className="text-white bg-richblue-900 px-4 md:px-5 py-2 text-md md:text-lg rounded-lg cursor-pointer" onClick={handlNavigationToRegister}>
                   Get Started
                 </div>
               </div>
@@ -66,12 +73,12 @@ const Landing: FC = () => {
           </div>
         </div>
         <IntroductionComponent />
-        <ExamPreparation />
-        <BeatExam />
+        <ExamPreparation  handlNavigationToRegister={handlNavigationToRegister}/>
+        <BeatExam  handlNavigationToRegister={handlNavigationToRegister}/>
         <CareerAccordion />
         {/* <PricingPlans /> */}
         {/* <Approach /> */}
-        <AIMentorSection />
+        <AIMentorSection  handlNavigationToRegister={handlNavigationToRegister} />
       </div>
     </>
   );
