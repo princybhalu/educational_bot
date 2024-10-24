@@ -53,7 +53,7 @@ const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
   </div>
 );
 
-const BeatExam: React.FC = () => {
+const BeatExam: React.FC<{handlNavigationToRegister : any}> = ({ handlNavigationToRegister }) => {
   return (
     <section className="w-full py-40 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -86,7 +86,7 @@ const BeatExam: React.FC = () => {
               </p>
 
               <div className="flex items-center">
-                <button className="group relative inline-flex items-center justify-center px-6 py-3 bg-[#003366] text-white rounded-lg font-medium hover:bg-[#002347] transition-all duration-200 transform hover:translate-y-[-2px] hover:shadow-lg">
+                <button className="group relative inline-flex items-center justify-center px-6 py-3 bg-[#003366] text-white rounded-lg font-medium hover:bg-[#002347] transition-all duration-200 transform hover:translate-y-[-2px] hover:shadow-lg" onClick={handlNavigationToRegister}>
                   <span className="relative">
                     Let AI Help You Overcome Exam Stress
                   </span>

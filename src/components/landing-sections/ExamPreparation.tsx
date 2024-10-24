@@ -100,7 +100,7 @@ interface Stat {
 }
 
 // Define the ExamPreparation component
-const ExamPreparation: React.FC = () => {
+const ExamPreparation: React.FC<{handlNavigationToRegister : any}> = ({ handlNavigationToRegister }) => {
   // Stats array with proper typing
   const stats: Stat[] = [
     {
@@ -155,7 +155,7 @@ const ExamPreparation: React.FC = () => {
               <strong className="text-[#003366]">personalized for you.</strong>
             </p>
 
-            <button className="inline-flex items-center justify-center px-6 py-3 bg-[#003366] text-white rounded-lg font-medium hover:bg-[#002347] transition-colors duration-200 transform hover:scale-105">
+            <button className="inline-flex items-center justify-center px-6 py-3 bg-[#003366] text-white rounded-lg font-medium hover:bg-[#002347] transition-colors duration-200 transform hover:scale-105" onClick={handlNavigationToRegister}>
               Start Your Exam Prep Now
             </button>
           </div>
