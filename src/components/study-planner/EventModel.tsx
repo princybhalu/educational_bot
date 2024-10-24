@@ -279,6 +279,7 @@ const schema = yup.object().shape({
   topic: yup.string(),
 });
 interface EventModalProps {
+  taskId: string;
   scheduleId: string;
   event?: EventOFCalender;
   onClose: () => void;
@@ -347,6 +348,7 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
 
 const EventModal: React.FC<EventModalProps> = ({
   scheduleId,
+  taskId,
   event,
   onClose,
   onDelete,
@@ -380,18 +382,16 @@ const EventModal: React.FC<EventModalProps> = ({
   });
   const onSubmit = async (data: any) => {
     try {
-      const formattedDate = data.startTime.toLocaleDateString('en-US', {
-        month: '2-digit',
-        day: '2-digit',
-        year: 'numeric',
-      });
+      const formattedDate = data.startTime;
 
       const reqBody = {
         schedule_id: scheduleId,
         title: data.title,
         date: formattedDate,
-        start_time: data.startTime.toISOString(),
-        end_time: data.endTime.toISOString(),
+        // ========================== TODO ==========================
+        // startTime and endTime is not matching with the input i give in date picker
+        start_time: data.startTime,
+        end_time: data.endTime,
         type: data.type,
         meta_data: {
           chapter: data.chapter,
@@ -401,8 +401,10 @@ const EventModal: React.FC<EventModalProps> = ({
         },
       };
 
+      console.log("=================",data)
+
       const res = event
-        ? await UpdateTaskApiCall(reqBody, scheduleId)
+        ? await UpdateTaskApiCall(reqBody, scheduleId, taskId)
         : await AddTaskApiCall(reqBody);
 
       if (event) {

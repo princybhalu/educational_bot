@@ -469,13 +469,17 @@ const CalendarView: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<null | EventOFCalender>(
     null
   );
+  const [tempTaskId, setTempTaskId] = useState(null);
 
   const handleEventClick = (eventData: any) => {
+    console.log(eventData)
     setSelectedEvent(eventData);
+    setTempTaskId(eventData['_def']['publicId'])
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
+    setTempTaskId(null)
     setShowModal(false);
     setSelectedEvent(null);
   };
@@ -620,8 +624,8 @@ const CalendarView: React.FC = () => {
   const UpdateTask = async (body: any) => {
     try {
       const reqBody = { ...body };
-      const res = await UpdateTaskApiCall(reqBody, scheduleId ?? '');
-      console.log(res);
+      // const res = await UpdateTaskApiCall(reqBody, scheduleId ?? '', );
+      // console.log(res);
     } catch (err) {
       console.log(err);
     }
@@ -759,7 +763,8 @@ const CalendarView: React.FC = () => {
                       <div className="font-medium flex items-center justify-between text-black">
                         <span>{eventInfo.event.title}</span>
                         <div className="flex space-x-1">
-                          <button className="p-1 rounded">
+                          <button
+                          className="p-1 rounded">
                             <MdEdit className="w-4 h-4 text-black" />
                           </button>
                           <button
@@ -833,6 +838,7 @@ const CalendarView: React.FC = () => {
           onClose={handleCloseModal}
           onDelete={onDeleteOfTask}
           scheduleId={scheduleId ?? ''}
+          taskId={tempTaskId ?? ''}
           setEvents={setEvents}
           events={events}
         />

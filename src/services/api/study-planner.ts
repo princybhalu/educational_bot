@@ -127,9 +127,9 @@ export const RemoveTaskApiCall = (taskId: string) => {
 };
 
 // TODO : their is not any update api so we can not set rrsize and drop and edit events
-export const UpdateTaskApiCall = (body: any, scheduleId: string) => {
+export const UpdateTaskApiCall = (body: any, scheduleId: string, taskId: any) => {
   return http.post({
-    url: '/scheduler-service/task/' + scheduleId,
+    url: '/scheduler-service/task/' + taskId,
     data: {
       schedule_id: scheduleId,
       update_with: {
