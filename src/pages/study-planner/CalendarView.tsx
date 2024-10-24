@@ -389,6 +389,7 @@ import {
   Notification,
   NOTIFICATION_TYPE_INFO,
 } from '../../components/notifiction/Notifiction';
+import moment from 'moment-timezone';
 
 const cn = (input: string) => {
   // Split the date and time
@@ -420,12 +421,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     const eventDate = new Date(event.date);
 
     // Combine date and time
-    // const startDateTimeUtc = new Date(
-    //   `${event.date.split('T')[0]}T${event.start_time_utc}Z`
-    // ).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
-    // const endDateTimeUtc = new Date(
-    //   `${event.date.split('T')[0]}T${event.end_time_utc}Z`
-    // ).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+    const startDateTimeUtc = moment.tz(new Date(event.start_time_utc), 'Asia/Kolkata').toISOString(true);
+    const endDateTimeUtc = moment.tz(new Date(event.start_time_utc), 'Asia/Kolkata').toISOString(true)
 
     console.log(
       event.title,
@@ -442,8 +439,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     // console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
     return {
       ...event,
-      start: event.start_time_utc, // Add start in ISO format
-      end: event.end_time_utc, // Add end in ISO format
+      start: startDateTimeUtc, // Add start in ISO format
+      end: endDateTimeUtc, // Add end in ISO format
     };
   });
 };
@@ -474,7 +471,7 @@ const CalendarView: React.FC = () => {
   const handleEventClick = (eventData: any) => {
     console.log(eventData)
     setSelectedEvent(eventData);
-    setTempTaskId(eventData['_def']['publicId'])
+    setTempTaskId(eventData?.['_def']?.['publicId'])
     setShowModal(true);
   };
 

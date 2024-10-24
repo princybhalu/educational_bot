@@ -128,6 +128,7 @@ export const RemoveTaskApiCall = (taskId: string) => {
 
 // TODO : their is not any update api so we can not set rrsize and drop and edit events
 export const UpdateTaskApiCall = (body: any, scheduleId: string, taskId: any) => {
+  console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", body)
   return http.post({
     url: '/scheduler-service/task/' + taskId,
     data: {

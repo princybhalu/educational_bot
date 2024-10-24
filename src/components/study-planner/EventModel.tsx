@@ -240,6 +240,7 @@ import {
   Notification,
   NOTIFICATION_TYPE_INFO,
 } from '../../components/notifiction/Notifiction';
+import moment from 'moment-timezone';
 /*
 const schema = yup.object().shape({
   title: yup.string().required('Title is required'),
@@ -318,18 +319,14 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     const eventDate = new Date(event.date);
 
     // Combine date and time
-    const startDateTimeUtc = new Date(
-      `${event.date.split('T')[0]}T${event.start_time_utc}Z`
-    ).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
-    const endDateTimeUtc = new Date(
-      `${event.date.split('T')[0]}T${event.end_time_utc}Z`
-    ).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+    const startDateTimeUtc = moment.tz(new Date(event.start_time_utc), 'Asia/Kolkata').toISOString(true);
+    const endDateTimeUtc = moment.tz(new Date(event.end_time_utc), 'Asia/Kolkata').toISOString(true);
 
     console.log(
       event.title,
       event,
-      endDateTimeUtc,
-      startDateTimeUtc,
+      // endDateTimeUtc,
+      // startDateTimeUtc,
       // new Date(startDateTimeUtc).toISOString().slice(0, 19) + 'Z',
       // new Date(endDateTimeUtc).toISOString().slice(0, 19) + 'Z'
     );
@@ -340,8 +337,8 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     // console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
     return {
       ...event,
-      start: event.start_time_utc, // Add start in ISO format
-      end: event.end_time_utc, // Add end in ISO format
+      start: startDateTimeUtc, // Add start in ISO format
+      end: endDateTimeUtc, // Add end in ISO format
     };
   });
 };
@@ -382,7 +379,7 @@ const EventModal: React.FC<EventModalProps> = ({
   });
   const onSubmit = async (data: any) => {
     try {
-      const formattedDate = data.startTime;
+      const formattedDate = moment.tz(new Date(data.startTime), 'Asia/Kolkata').toISOString(true);
 
       const reqBody = {
         schedule_id: scheduleId,
@@ -390,8 +387,8 @@ const EventModal: React.FC<EventModalProps> = ({
         date: formattedDate,
         // ========================== TODO ==========================
         // startTime and endTime is not matching with the input i give in date picker
-        start_time: data.startTime,
-        end_time: data.endTime,
+        start_time: moment.tz(new Date(data.startTime), 'Asia/Kolkata').toISOString(true),
+        end_time: moment.tz(new Date(data.endTime), 'Asia/Kolkata').toISOString(true),
         type: data.type,
         meta_data: {
           chapter: data.chapter,
@@ -401,7 +398,7 @@ const EventModal: React.FC<EventModalProps> = ({
         },
       };
 
-      console.log("=================",data)
+      console.log("222222222222222222222222", reqBody)
 
       const res = event
         ? await UpdateTaskApiCall(reqBody, scheduleId, taskId)
@@ -529,10 +526,9 @@ const EventModal: React.FC<EventModalProps> = ({
                     <DatePicker
                       selected={field.value}
                       onChange={field.onChange}
-                      showTimeSelect
                       dateFormat="MMMM d, yyyy h:mm aa"
+                      showTimeSelect
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      minDate={new Date()} // Optional: prevent selecting past dates
                     />
                   )}
                 />
