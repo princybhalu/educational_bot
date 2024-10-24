@@ -6,7 +6,7 @@ interface AnimatedMarkdownProps {
   typingSpeed?: number;
   setIsAnimationCompleted?: (a: boolean) => void | null;
 }
-
+let lastIndex = 0 , lastDiasplayContent = "";
 const AnimatedMarkdown: React.FC<AnimatedMarkdownProps> = ({
   content,
   typingSpeed = 50, // Default typing speed (ms per character)
@@ -17,15 +17,16 @@ const AnimatedMarkdown: React.FC<AnimatedMarkdownProps> = ({
 
   useEffect(() => {
     setIsTyping(true);
-    setDisplayedContent(''); // Reset content when new content prop is received
-
-    let currentIndex = 0;
+    setDisplayedContent(lastDiasplayContent); // Reset content when new content prop is received
+    let currentIndex = lastIndex;
     const contentLength = content.length;
 
     const typingInterval = setInterval(() => {
       if (currentIndex < contentLength - 1) {
         setDisplayedContent((prev) => prev + content[currentIndex]);
         currentIndex++;
+        lastIndex++;
+        lastDiasplayContent += content[lastIndex];
       } else {
         clearInterval(typingInterval);
         if (setIsAnimationCompleted) setIsAnimationCompleted(true);
