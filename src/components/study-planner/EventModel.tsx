@@ -61,7 +61,7 @@
 //     // If it's a new event, create it, otherwise update the existing event
 //     // TODO: one case is missing if date start from diff date and end diff date then what happed
 //     const date = new Date(data.start_time); // Replace with your Date object
-//     const formattedDate =
+//     const date =
 //       (date.getMonth() + 1).toString().padStart(2, '0') +
 //       '/' +
 //       date.getDate().toString().padStart(2, '0') +
@@ -71,7 +71,7 @@
 //       const reqBody = {
 //         schedule_id: scheduleId,
 //         title: data.title,
-//         date: formattedDate,
+//         date: date,
 //         start_time: data.startTime.toISOString(),
 //         end_time: data.endTime.toISOString(),
 //         type: data.type,
@@ -379,14 +379,17 @@ const EventModal: React.FC<EventModalProps> = ({
   });
   const onSubmit = async (data: any) => {
     try {
-      const formattedDate = moment.tz(new Date(data.startTime), 'Asia/Kolkata').toISOString(true);
+      let date = moment.tz(new Date(data.startTime), 'Asia/Kolkata');
+      date.hour(0);
+      date.minute(0);
+      date.second(0);
+      date.millisecond(0);
+      const formattedDate = date.toISOString(true);
 
       const reqBody = {
         schedule_id: scheduleId,
         title: data.title,
         date: formattedDate,
-        // ========================== TODO ==========================
-        // startTime and endTime is not matching with the input i give in date picker
         start_time: moment.tz(new Date(data.startTime), 'Asia/Kolkata').toISOString(true),
         end_time: moment.tz(new Date(data.endTime), 'Asia/Kolkata').toISOString(true),
         type: data.type,
@@ -397,8 +400,6 @@ const EventModal: React.FC<EventModalProps> = ({
           description: data.description,
         },
       };
-
-      console.log("222222222222222222222222", reqBody)
 
       const res = event
         ? await UpdateTaskApiCall(reqBody, scheduleId, taskId)

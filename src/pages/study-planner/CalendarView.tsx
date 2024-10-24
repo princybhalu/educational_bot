@@ -539,9 +539,9 @@ const CalendarView: React.FC = () => {
 
     //api call
     UpdateTask({
-      start: info.event.start.toISOString(),
-      end: info.event.end ? info.event.end.toISOString() : null,
-    });
+      start_time: info.event.start,
+      end_time: info.event.end ? info.event.end : null,
+    }, updatedEvent.id);
   };
 
   const handleEventResize = (info: any) => {
@@ -556,7 +556,7 @@ const CalendarView: React.FC = () => {
     UpdateTask({
       start: info.event.start.toISOString(),
       end: info.event.end ? info.event.end.toISOString() : null,
-    });
+    }, resizedEvent.id);
   };
 
   const onDeleteOfTask = async () => {
@@ -571,19 +571,6 @@ const CalendarView: React.FC = () => {
   };
 
   const GetEventBetweenRange = async (startDate: any, endDate: any) => {
-    if (!startDate && !endDate) {
-      const currentDate = new Date();
-      startDate = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        1
-      ).toLocaleString();
-      endDate = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth() + 1,
-        0
-      ).toLocaleString();
-    }
     console.log("======", startDate, endDate);
     try {
       const res = await GetTaskBetweenRangeApiCall(
@@ -623,30 +610,30 @@ const CalendarView: React.FC = () => {
     }
   };
 
-  const UpdateTask = async (body: any) => {
+  const UpdateTask = async (body: any, id: any) => {
     try {
       const reqBody = { ...body };
-      // const res = await UpdateTaskApiCall(reqBody, scheduleId ?? '', );
-      // console.log(res);
+      const res = await UpdateTaskApiCall(reqBody, scheduleId ?? '', id);
+      console.log(res);
     } catch (err) {
       console.log(err);
     }
   };
 
-  useEffect(() => {
-    const currentDate = new Date();
-    const startOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      1
-    );
-    const endOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
-      0
-    );
-    GetEventBetweenRange(startOfMonth, endOfMonth);
-  }, []);
+  // useEffect(() => {
+  //   const currentDate = new Date();
+  //   const startOfMonth = new Date(
+  //     currentDate.getFullYear(),
+  //     currentDate.getMonth(),
+  //     1
+  //   );
+  //   const endOfMonth = new Date(
+  //     currentDate.getFullYear(),
+  //     currentDate.getMonth() + 1,
+  //     0
+  //   );
+  //   GetEventBetweenRange(startOfMonth, endOfMonth);
+  // }, []);
 
   console.log({ events });
 
