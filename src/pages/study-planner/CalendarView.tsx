@@ -392,59 +392,79 @@ import {
 import moment from 'moment-timezone';
 import DropletAnimation from '../../components/avatar';
 
-const cn = (input: string) => {
-  // Split the date and time
-  const [date, timeWithPeriod] = input.split(', ');
-  const [time, period] = timeWithPeriod.split(' ');
+// const cn = (input: string) => {
+//   // Split the date and time
+//   const [date, timeWithPeriod] = input.split(', ');
+//   const [time, period] = timeWithPeriod.split(' ');
 
-  // Reformat the date from MM/DD/YYYY to YYYY-MM-DD
-  const [month, day, year] = date.split('/');
+//   // Reformat the date from MM/DD/YYYY to YYYY-MM-DD
+//   const [month, day, year] = date.split('/');
 
-  // Convert 12-hour time to 24-hour time
-  /* eslint-disable */
-  let [hours, minutes, seconds] = time.split(':');
-  if (period === 'PM' && hours !== '12') {
-    hours = (parseInt(hours, 10) + 12).toString();
-  } else if (period === 'AM' && hours === '12') {
-    hours = '00';
-  }
+//   // Convert 12-hour time to 24-hour time
+//   /* eslint-disable */
+//   let [hours, minutes, seconds] = time.split(':');
+//   if (period === 'PM' && hours !== '12') {
+//     hours = (parseInt(hours, 10) + 12).toString();
+//   } else if (period === 'AM' && hours === '12') {
+//     hours = '00';
+//   }
 
-  // Combine into ISO format
-  const result = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hours}:${minutes}:${seconds}Z`;
+//   // Combine into ISO format
+//   const result = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hours}:${minutes}:${seconds}Z`;
 
-  console.log(result);
+//   console.log(result);
 
-  return result;
-};
+//   return result;
+// };
 
-const convertEventTimes = (eventsArray: EventOFCalender[]) => {
-  return eventsArray.map((event) => {
-    const eventDate = new Date(event.date);
+// const convertEventTimes = (eventsArray: EventOFCalender[]) => {
+//   return eventsArray.map((event) => {
+//     const eventDate = new Date(event.date);
 
-    // Combine date and time
-    const startDateTimeUtc = moment.tz(new Date(event.start_time_utc), 'Asia/Kolkata').toISOString(true);
-    const endDateTimeUtc = moment.tz(new Date(event.start_time_utc), 'Asia/Kolkata').toISOString(true)
+//     // Combine date and time
+//     const startDateTimeUtc = moment.tz(new Date(event.start_time_utc), 'Asia/Kolkata').toISOString(true);
+//     const endDateTimeUtc = moment.tz(new Date(event.start_time_utc), 'Asia/Kolkata').toISOString(true)
 
-    console.log(
-      event.title,
-      event,
-      event.start_time_utc,
-      event.end_time_utc,
-      // new Date(startDateTimeUtc).toISOString().slice(0, 19) + 'Z',
-      // new Date(endDateTimeUtc).toISOString().slice(0, 19) + 'Z'
-    );
-    // Convert to local timezone
-    // const startLocal = new Date(startDateTimeUtc.toLocaleString());
-    // const endLocal = new Date(endDateTimeUtc.toLocaleString());
-    // console.log(startLocal , endLocal);
-    // console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
+//     console.log(
+//       "in cobe",
+//       event.title,
+//       event,
+//       event.start_time_utc,
+//       event.end_time_utc,
+//       startDateTimeUtc,
+//       endDateTimeUtc,
+//       // cn(event.start_time_utc)
+
+//       // new Date(startDateTimeUtc).toISOString().slice(0, 19) + 'Z',
+//       // new Date(endDateTimeUtc).toISOString().slice(0, 19) + 'Z'
+//     );
+//     // Convert to local timezone
+//     // const startLocal = new Date(startDateTimeUtc.toLocaleString());
+//     // const endLocal = new Date(endDateTimeUtc.toLocaleString());
+//     // console.log(startLocal , endLocal);
+//     // console.log(startDateTimeUtc.toISOString(), endDateTimeUtc.toISOString());
+//     return {
+//       ...event,
+//       start: cn(event.start_time_utc), // Add start in ISO format
+//       end: event.end_time_utc, // Add end in ISO format
+//     };
+//   });
+// };
+
+function addStartEndFields(events: EventOFCalender[]) {
+  return events.map((event) => {
+    // Extract date, start time, and end time
+    const date = event.date.split('T')[0]; // Format: YYYY-MM-DD
+    const start = `${date}T${event.start_time_utc}Z`;
+    const end = `${date}T${event.end_time_utc}Z`;
+
     return {
       ...event,
-      start: startDateTimeUtc, // Add start in ISO format
-      end: endDateTimeUtc, // Add end in ISO format
+      start,
+      end,
     };
   });
-};
+}
 
 const CalendarView: React.FC = () => {
   // const scheduleId = '9f2c77ec-c42a-44d4-bc8e-3d92bf9087c6';
@@ -471,14 +491,14 @@ const CalendarView: React.FC = () => {
   const [displayLoadingAvatar, setDisplayLoadingAvatar] = useState(false);
 
   const handleEventClick = (eventData: any) => {
-    console.log(eventData)
+    console.log(eventData);
     setSelectedEvent(eventData);
-    setTempTaskId(eventData?.['_def']?.['publicId'])
+    setTempTaskId(eventData?.['_def']?.['publicId']);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
-    setTempTaskId(null)
+    setTempTaskId(null);
     setShowModal(false);
     setSelectedEvent(null);
   };
@@ -535,13 +555,16 @@ const CalendarView: React.FC = () => {
       start: info.event.start.toISOString(),
       end: info.event.end ? info.event.end.toISOString() : null,
     };
-    console.log('Event dropped:', updatedEvent);
+    console.log('Event dropped:', { updatedEvent, info });
 
     //api call
-    UpdateTask({
-      start_time: info.event.start,
-      end_time: info.event.end ? info.event.end : null,
-    }, updatedEvent.id);
+    UpdateTask(
+      {
+        start_time: info.event.start.toISOString(),
+        end_time: info.event.end ? info.event.end.toISOString() : null,
+      },
+      updatedEvent.id
+    );
   };
 
   const handleEventResize = (info: any) => {
@@ -551,12 +574,15 @@ const CalendarView: React.FC = () => {
       start: info.event.start.toISOString(),
       end: info.event.end ? info.event.end.toISOString() : null,
     };
-    console.log('Event resized:', resizedEvent);
+    console.log('Event resized:', { resizedEvent, info });
     //api call
-    UpdateTask({
-      start: info.event.start.toISOString(),
-      end: info.event.end ? info.event.end.toISOString() : null,
-    }, resizedEvent.id);
+    UpdateTask(
+      {
+        start: info.event.start.toISOString(),
+        end: info.event.end ? info.event.end.toISOString() : null,
+      },
+      resizedEvent.id
+    );
   };
 
   const onDeleteOfTask = async () => {
@@ -571,14 +597,14 @@ const CalendarView: React.FC = () => {
   };
 
   const GetEventBetweenRange = async (startDate: any, endDate: any) => {
-    console.log("======", startDate, endDate);
+    console.log('======', startDate, endDate);
     try {
       const res = await GetTaskBetweenRangeApiCall(
         scheduleId ?? '',
         startDate,
         endDate
       );
-      setEvents(convertEventTimes(res.data) || []);
+      setEvents(addStartEndFields(res.data) || []);
     } catch (err) {
       console.log(err);
     }
@@ -592,7 +618,7 @@ const CalendarView: React.FC = () => {
         query,
       });
       if (!res.data?.conflict) {
-        const temp = convertEventTimes([res.data.tasks]);
+        const temp = addStartEndFields([res.data.tasks]);
         //@ts-ignore
         setEvents((prev) => [...prev, ...temp]);
         // setEvents((prevEvents) => [...(res.data.tasks || {}), ...prevEvents]);
@@ -620,22 +646,7 @@ const CalendarView: React.FC = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const currentDate = new Date();
-  //   const startOfMonth = new Date(
-  //     currentDate.getFullYear(),
-  //     currentDate.getMonth(),
-  //     1
-  //   );
-  //   const endOfMonth = new Date(
-  //     currentDate.getFullYear(),
-  //     currentDate.getMonth() + 1,
-  //     0
-  //   );
-  //   GetEventBetweenRange(startOfMonth, endOfMonth);
-  // }, []);
-
-  console.log({ events });
+  console.log('renders : ', { events });
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -752,8 +763,7 @@ const CalendarView: React.FC = () => {
                       <div className="font-medium flex items-center justify-between text-black">
                         <span>{eventInfo.event.title}</span>
                         <div className="flex space-x-1">
-                          <button
-                          className="p-1 rounded">
+                          <button className="p-1 rounded">
                             <MdEdit className="w-4 h-4 text-black" />
                           </button>
                           <button
@@ -858,7 +868,7 @@ const CalendarView: React.FC = () => {
               onClick={handleButtonClick}
             >
               {displayLoadingAvatar && (
-                  <div className="w-6 h-6 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                <div className="w-6 h-6 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
               )}
 
               {!displayLoadingAvatar &&

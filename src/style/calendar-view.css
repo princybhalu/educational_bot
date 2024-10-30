@@ -62,3 +62,10 @@
   background-color: #cee6ff;
   overflow: hidden;
 }
+
+.fc .fc-day-today {
+  background-color: rgba(235, 178, 140, 0.373);
+}
+.fc .fc-timegrid-col.fc-day-today {
+  background-color: rgba(235, 178, 140, 0.373);
+}
