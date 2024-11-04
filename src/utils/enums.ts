@@ -8,6 +8,15 @@ export const ProfileScreenName = {
   LOADING_TEACHER_SCREEN: 'loading_teacher_screen',
 };
 
+export const ProfileScreenNameV2 = {
+  INTRODUCTION: 'introduction',
+  ASSESSMENT_TYPE: 'assessment_type',
+  QUESTIONS: 'questions',
+  DESCRIPTION: 'description',
+  ANALYSIS: 'analysis',
+  AI_CRAFTING: 'ai_crafting',
+};
+
 export const QuestionStatus = {
   ACTIVE: 'active',
   DISABLE: 'disable',

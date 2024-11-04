@@ -406,3 +406,29 @@ body {
   text-transform: uppercase;
   font-weight: 300;
 }
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.text-animated {
+  display: inline-block;
+  animation: typing 0.5s steps(30, end);
+}
+
+.cursor {
+  display: inline-block;
+  animation: blink 0.7s step-end infinite;
+  color: inherit;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}

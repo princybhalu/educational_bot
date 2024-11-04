@@ -8,7 +8,7 @@ const Landing = lazy(() => import('../../pages/Landing'));
 const Login = lazy(() => import('../../pages/login1'));
 const Register = lazy(() => import('../../pages/register1'));
 const Dashboard = lazy(() => import('../../pages/Dashboard'));
-const Profiling = lazy(() => import('../../pages/Profiling'));
+const Profiling = lazy(() => import('../../pages/Profliling_V2'));
 const BasicInfo = lazy(() => import('../../pages/BasicInfo'));
 const StudyPlannerDashboard = lazy(() => import('../../pages/study-planner'));
 const LearningPathDashboard = lazy(() => import('../../pages/learning-path'));
@@ -20,6 +20,7 @@ const CalendarView = lazy(
   () => import('../../pages/study-planner/CalendarView')
 );
 const NotFound = lazy(() => import('../../components/shared/NotFoundPage'));
+const NewTheming = lazy(() => import('../../pages/newTheming'));
 
 export const routes: RouteConfig[] = [
   {
@@ -55,9 +56,9 @@ export const routes: RouteConfig[] = [
   {
     path: '/profiling',
     key: 'profiling',
-    isProtected: true,
+    // isProtected: true,
     element: Profiling,
-    islayout: true,
+    // islayout: true,
   },
   {
     path: '/study-planner',
@@ -98,6 +99,13 @@ export const routes: RouteConfig[] = [
     // isProfilingRequired: true,
     element: LearningChatView,
     islayout: true,
+  },
+  {
+    path: '/new',
+    key: 'new',
+    isProtected: false,
+    islayout: false,
+    element: NewTheming,
   },
   {
     path: '*',
