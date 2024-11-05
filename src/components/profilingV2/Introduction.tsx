@@ -37,46 +37,50 @@ const InfoCard: React.FC<InfoCardProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       whileHover={{ scale: 1.02 }}
-      className={`group relative p-4 md:p-8 bg-[#12182a] rounded-xl backdrop-blur-sm border ${borderColor} hover:${hoverBorderColor} transition-all`}
+      className={`group relative p-4 md:p-8 bg-[#12182a] rounded-xl backdrop-blur-sm border ${borderColor} hover:${hoverBorderColor} transition-all flex flex-col justify-between h-full`}
     >
       <div
         className={`absolute inset-0 bg-gradient-to-br ${bgFromColor} ${bgToColor} rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
       />
 
-      <div className="relative z-10">
-        {/* Icon and Title Container */}
-        <div className="flex flex-row md:flex-col items-center mb-4 md:mb-6 space-x-2 md:space-x-0">
-          <div className="flex items-center justify-center w-12 h-12 md:h-16 md:w-16 bg-[#3b82f6]/20 rounded-2xl p-2 md:p-4 group-hover:scale-110 transition-transform duration-300">
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              className="text-[#3b82f6]"
-            >
-              <path
-                d={iconPath}
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+      <div className="relative z-10 ">
+        <div className="flex flex-col">
+          {/* Icon and Title Container */}
+          <div className="flex flex-row md:flex-col items-center mb-4 md:mb-6 space-x-2 md:space-x-0">
+            <div className="flex items-center justify-center w-12 h-12 md:h-16 md:w-16 bg-[#3b82f6]/20 rounded-2xl p-2 md:p-4 group-hover:scale-110 transition-transform duration-300">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                className="text-[#3b82f6]"
+              >
+                <path
+                  d={iconPath}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg md:text-2xl font-semibold text-[#3b82f6] md:mt-4">
+              {title}
+            </h3>
           </div>
-          <h3 className="text-lg md:text-2xl font-semibold text-[#3b82f6] md:mt-4">
-            {title}
-          </h3>
-        </div>
 
-        <p className="text-gray-300 mb-4 md:mb-6">{description}</p>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className={`w-full py-2 md:py-4 bg-${buttonGradientTo} rounded-lg text-white font-semibold transform transition-all duration-300 hover:shadow-lg hover:shadow-[#3b82f6]/25`}
-          onClick={() => onClickONCard(redirectTo)}
-        >
-          {buttonText}
-        </motion.button>
+          <p className="text-gray-300 mb-4 md:mb-6">{description}</p>
+        </div>
+        <div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`w-full py-2 md:py-4 bg-${buttonGradientTo} rounded-lg text-white font-semibold transform transition-all duration-300 hover:shadow-lg hover:shadow-[#3b82f6]/25`}
+            onClick={() => onClickONCard(redirectTo)}
+          >
+            {buttonText}
+          </motion.button>
+        </div>
       </div>
     </motion.div>
   );
@@ -94,10 +98,10 @@ const AssessmentChoice = ({
     console.log('set fun called : ', type);
   };
   return (
-    <div className="w-full min-h-screen max-w-4xl p-4 md:p-8 flex flex-col justify-centermmt-4">
+    <div className="w-full min-h-screen max-w-4xl p-6 md:p-12 flex flex-col justify-center-4">
       {/* Header Section */}
       <div className="text-center mb-6 md:mb-12">
-        <h1 className="text-xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] animate-gradient-x mb-4">
+        <h1 className="text-xl md:text-4xl font-bold text-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] animate-gradient-x mb-4">
           Choose Your Learning Path
         </h1>
         <div className="relative">
@@ -121,7 +125,7 @@ const AssessmentChoice = ({
           borderColor="border-[#60a5fa]/20"
           hoverBorderColor="hover:border-[#60a5fa]/40"
           buttonGradientFrom="from-[#60a5fa]"
-          buttonGradientTo="[#1d4ed8]"
+          buttonGradientTo="[#3b82f6]"
           onClickONCard={onClickONCard}
         />
 
@@ -136,7 +140,7 @@ const AssessmentChoice = ({
           borderColor="border-[#1d4ed8]/20"
           hoverBorderColor="hover:border-[#1d4ed8]/40"
           buttonGradientFrom="from-[#1d4ed8]"
-          buttonGradientTo="[#0ea5e9]"
+          buttonGradientTo="[#3b82f6]"
           onClickONCard={onClickONCard}
         />
       </div>
@@ -372,7 +376,7 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
 
                 {/* Added Title Section */}
                 <div className="text-center relative">
-                  <h1 className="text-xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] animate-gradient-x mb-2">
+                  <h1 className="text-xl md:text-3xl font-bold text-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] animate-gradient-x mb-2">
                     Let&rsquo;s create your perfect learning journey
                   </h1>
                   <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] rounded-full" />
@@ -409,7 +413,7 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
                 <div className="flex justify-center">
                   <button
                     onClick={() => scrollToComponent('assessment')}
-                    className="px-4 py-2 md:px-8 md:py-4 bg-[#0ea5e9] rounded-lg text-white font-semibold text-md md:text-lg transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden group"
+                    className="px-4 py-2 md:px-8 md:py-4 bg-[#3b82f6] rounded-lg text-white font-semibold text-md md:text-lg transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden group"
                   >
                     <span className="relative z-10">Continue Your Journey</span>
                     {/* <div className="absolute inset-0 bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

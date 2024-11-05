@@ -316,7 +316,7 @@ const Quiz: React.FC = () => {
   const progress = (currentQuestion / questions.length) * 100;
 
   return (
-    <div className="min-h-screen w-full max-w-4xl items-center justify-center">
+    <div className="min-h-screen w-full max-w-4xl flex flex-col items-center justify-center">
       <div className="w-full mx-auto flex flex-col items-center">
         <div className="avatar-container relative w-24 h-24 mb-4 transition-transform duration-300">
           <div

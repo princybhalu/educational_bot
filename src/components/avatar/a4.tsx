@@ -44,25 +44,23 @@ const ChatInterface = () => {
           textContainerRef.current.querySelector('.current-word');
         if (currentWordSpan) {
           const rect = currentWordSpan.getBoundingClientRect();
+          //@ts-ignore
           const containerRect =
             //@ts-ignore
             textContainerRef.current.getBoundingClientRect();
-
           const letterWidth = rect.width / word.length;
           setLinePosition({
             x: rect.left - containerRect.left + letterWidth * i,
-            y: rect.top - containerRect.top,
+            y: rect.top - containerRect.top + 80,
           });
         }
       }
-
       await new Promise((r) => setTimeout(r, 50));
     }
     return new Promise((r) => setTimeout(r, 100));
   };
 
   const writeMessage = async () => {
-    // Start draining color
     setBlobState('emerging');
     await drainColor();
     setAvatarState('empty');
@@ -113,13 +111,29 @@ const ChatInterface = () => {
       zIndex: 2,
     };
 
+    const dropStyle = {
+      ...baseStyle,
+      width: '20px',
+      height: '20px',
+      borderRadius: '20px',
+      animation:
+        'gradient 3s ease infinite, drip 2s cubic-bezier(1,0,.91,.19) infinite',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        width: 0,
+        height: 0,
+        borderLeft: '10px solid transparent',
+        borderRight: '10px solid transparent',
+        borderBottom: '30px solid currentColor',
+        top: '-22px',
+      },
+    };
+
     switch (blobState) {
       case 'emerging':
         return {
-          ...baseStyle,
-          width: '32px',
-          height: '32px',
-          borderRadius: '50%',
+          ...dropStyle,
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%) scale(1)',
@@ -127,17 +141,14 @@ const ChatInterface = () => {
         };
       case 'dropping':
         return {
-          ...baseStyle,
-          width: '32px',
-          height: '32px',
-          borderRadius: '50%',
+          ...dropStyle,
           top: '180%',
           left: '0%',
           transform: 'translate(-50%, 0)',
         };
       case 'morphing':
         return {
-          ...baseStyle,
+          ...dropStyle,
           width: '3px',
           height: '24px',
           borderRadius: '3px',
@@ -180,7 +191,6 @@ const ChatInterface = () => {
               animation: 'float 3s ease-in-out infinite',
             }}
           >
-            {/* Base Avatar */}
             <div
               className="w-full h-full rounded-full"
               style={{
@@ -189,7 +199,6 @@ const ChatInterface = () => {
               }}
             />
 
-            {/* White Fill Layer */}
             <div
               className="absolute top-0 left-0 w-full h-full rounded-full"
               style={{
@@ -199,7 +208,6 @@ const ChatInterface = () => {
               }}
             />
 
-            {/* Gradient Color Layer */}
             <div
               className="absolute top-0 left-0 w-full h-full rounded-full"
               style={{
@@ -213,7 +221,6 @@ const ChatInterface = () => {
               }}
             />
 
-            {/* Color Blob */}
             <div
               ref={blobRef}
               //@ts-ignore
@@ -241,7 +248,7 @@ const ChatInterface = () => {
             ))}
             {currentWord && (
               <span className="current-word word inline-block mx-1 text-purple-400">
-                {currentWord}
+                {currentWord} <span>|</span>
               </span>
             )}
           </p>
@@ -258,6 +265,12 @@ const ChatInterface = () => {
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
+        }
+
+        @keyframes drip {
+          0% { transform: translateY(0); }
+          70% { transform: translateY(100px); }
+          100% { transform: translateY(0); }
         }
       `}</style>
     </div>

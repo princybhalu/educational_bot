@@ -16,6 +16,7 @@ const ChatInterface = () => {
   const words = aiMessage.split(' ');
   const textContainerRef = useRef(null);
   const blobRef = useRef(null);
+  const mainTypingRef = useRef(null);
 
   const drainColor = async () => {
     for (let i = 0; i <= 100; i += 2) {
@@ -31,29 +32,22 @@ const ChatInterface = () => {
     }
   };
 
-  const typeWord = async (word: string) => {
+  const typeWord = async (word : string) => {
     let tempWord = '';
     for (let i = 0; i <= word.length; i++) {
       tempWord = word.slice(0, i);
       setCurrentWord(tempWord);
       setCurrentLetterIndex(i);
 
-      if (textContainerRef.current) {
-        const currentWordSpan =
-          //@ts-ignore
-          textContainerRef.current.querySelector('.current-word');
-        if (currentWordSpan) {
-          const rect = currentWordSpan.getBoundingClientRect();
-          const containerRect =
-            //@ts-ignore
-            textContainerRef.current.getBoundingClientRect();
-
-          const letterWidth = rect.width / word.length;
-          setLinePosition({
-            x: rect.left - containerRect.left + letterWidth * i,
-            y: rect.top - containerRect.top,
-          });
-        }
+      if (mainTypingRef.current) {
+        //@ts-ignore
+        const rect = mainTypingRef.current.getBoundingClientRect();
+        //@ts-ignore
+        const containerRect = textContainerRef.current.getBoundingClientRect();
+        setLinePosition({
+          x: rect.left - containerRect.left - 100,
+          y: rect.top - containerRect.top + 100,
+        });
       }
 
       await new Promise((r) => setTimeout(r, 50));
@@ -62,7 +56,6 @@ const ChatInterface = () => {
   };
 
   const writeMessage = async () => {
-    // Start draining color
     setBlobState('emerging');
     await drainColor();
     setAvatarState('empty');
@@ -105,12 +98,12 @@ const ChatInterface = () => {
   const getBlobStyles = () => {
     const baseStyle = {
       position: 'absolute',
-      background: 'linear-gradient(45deg, #60a5fa, #c084fc, #ec4899)',
+      backgroundColor: 'transparent',
       backgroundSize: '200% 200%',
       animation: 'gradient 3s ease infinite',
       transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-      boxShadow: '0 0 15px rgba(168, 85, 247, 0.6)',
       zIndex: 2,
+      overflow: 'hidden',
     };
 
     switch (blobState) {
@@ -119,7 +112,6 @@ const ChatInterface = () => {
           ...baseStyle,
           width: '32px',
           height: '32px',
-          borderRadius: '50%',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%) scale(1)',
@@ -130,9 +122,8 @@ const ChatInterface = () => {
           ...baseStyle,
           width: '32px',
           height: '32px',
-          borderRadius: '50%',
-          top: '180%',
-          left: '0%',
+          top: '200%',
+          left: '-300px',
           transform: 'translate(-50%, 0)',
         };
       case 'morphing':
@@ -140,17 +131,15 @@ const ChatInterface = () => {
           ...baseStyle,
           width: '3px',
           height: '24px',
-          borderRadius: '3px',
-          top: '180%',
-          left: '0%',
+          top: '200%',
+          left: '-300px',
           transform: 'translate(-50%, 0)',
         };
       case 'writing':
         return {
           ...baseStyle,
-          width: '3px',
+          width: '10px',
           height: '24px',
-          borderRadius: '3px',
           transform: `translate(${linePosition.x}px, ${linePosition.y}px)`,
           transition: 'transform 0.05s linear',
         };
@@ -159,7 +148,6 @@ const ChatInterface = () => {
           ...baseStyle,
           width: '32px',
           height: '32px',
-          borderRadius: '50%',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
@@ -180,45 +168,79 @@ const ChatInterface = () => {
               animation: 'float 3s ease-in-out infinite',
             }}
           >
-            {/* Base Avatar */}
-            <div
-              className="w-full h-full rounded-full"
-              style={{
-                background: '#1a1a1a',
-                boxShadow: 'inset 0 0 15px rgba(0,0,0,0.5)',
-              }}
-            />
+            <svg
+              viewBox="0 0 100 100"
+              className="w-full h-full absolute"
+              style={{ filter: 'drop-shadow(0 0 15px rgba(0,0,0,0.5))' }}
+            >
+              <circle cx="50" cy="50" r="50" fill="url(#baseGradient)" />
+            </svg>
 
-            {/* White Fill Layer */}
-            <div
-              className="absolute top-0 left-0 w-full h-full rounded-full"
+            <svg
+              viewBox="0 0 100 100"
+              className="w-full h-full absolute"
               style={{
-                background: 'white',
                 opacity: drainProgress / 100,
                 transition: 'opacity 0.1s ease-out',
               }}
-            />
+            >
+              <circle cx="50" cy="50" r="50" fill="white" />
+            </svg>
 
-            {/* Gradient Color Layer */}
-            <div
-              className="absolute top-0 left-0 w-full h-full rounded-full"
+            <svg
+              viewBox="0 0 100 100"
+              className="w-full h-full absolute"
               style={{
-                background: 'linear-gradient(45deg, #60a5fa, #c084fc, #ec4899)',
-                backgroundSize: '200% 200%',
-                animation: 'gradient 3s ease infinite',
                 opacity: 1 - drainProgress / 100,
-                transform: 'scale(1)',
-                transition: 'all 0.1s ease-out',
+                transition: 'opacity 0.1s ease-out',
                 zIndex: 1,
               }}
-            />
+            >
+              <defs>
+                <linearGradient
+                  id="colorGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    style={{ stopColor: '#60a5fa', stopOpacity: 0.9 }}
+                  />
+                  <stop
+                    offset="50%"
+                    style={{ stopColor: '#c084fc', stopOpacity: 0.8 }}
+                  />
+                  <stop
+                    offset="100%"
+                    style={{ stopColor: '#ec4899', stopOpacity: 0.9 }}
+                  />
+                </linearGradient>
+              </defs>
+              <circle cx="50" cy="50" r="50" fill="url(#colorGradient)" />
+              <ellipse
+                cx="35"
+                cy="45"
+                rx="15"
+                ry="10"
+                fill="rgba(255, 255, 255, 0.3)"
+                transform="rotate(-30, 35, 45)"
+              />
+            </svg>
 
-            {/* Color Blob */}
-            <div
+            <svg
+              viewBox="0 0 100 120"
               ref={blobRef}
               //@ts-ignore
               style={getBlobStyles()}
-            />
+              className="absolute"
+            >
+              <path
+                d="M50,10 C50,10 90,50 90,80 C90,110 70,120 50,120 C30,120 10,110 10,80 C10,50 50,10 50,10 Z"
+                fill="url(#colorGradient)"
+              />
+            </svg>
           </div>
         </div>
 
@@ -230,18 +252,14 @@ const ChatInterface = () => {
             {displayWords.map((word, index) => (
               <span
                 key={index}
-                className={`
-                  word inline-block mx-1
-                  transition-all duration-200 ease-out
-                  ${index === currentWordIndex ? 'text-purple-400' : 'text-white'}
-                `}
+                className={`word inline-block mx-1 transition-all duration-200 ease-out ${index === currentWordIndex ? 'text-purple-400' : 'text-white'}`}
               >
                 {word}
               </span>
             ))}
             {currentWord && (
               <span className="current-word word inline-block mx-1 text-purple-400">
-                {currentWord}
+                {currentWord} <span ref={mainTypingRef}>|</span>
               </span>
             )}
           </p>
