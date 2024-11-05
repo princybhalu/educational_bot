@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ProfileScreenNameV2 } from '../utils/enums';
 import Introduction from '../components/profilingV2/Introduction';
-import QuestionsComp from '../components/profilingV2/Questions3';
+import QuestionsComp from '../components/profilingV2/Questions6';
 import T1 from '../components/profilingV2/macos-diagonal-fold';
 
 export default function Profliling_V2() {
@@ -34,6 +34,8 @@ export default function Profliling_V2() {
             </div>
           </>
         )}
+
+        {CurrentScreen === ProfileScreenNameV2.ANALYSIS && <></>}
       </div>
     </>
   );
