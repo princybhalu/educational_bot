@@ -82,9 +82,10 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 
 interface QuizProps {
   setCurrentScreen: (a: string) => void;
+  setAnalysisData: (a: any) => void;
 }
 
-const Quiz: React.FC<QuizProps> = ({ setCurrentScreen }) => {
+const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'in' | 'out'>(
     'out'
@@ -283,6 +284,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen }) => {
             .feedback
         );
         if (questionList) setQuestionCompleted(questionList?.length);
+        setAnalysisData(res.data.psychological_profile);
         await writeFeedback(
           res.data.profile_meta[res.data.last_attempted_question].ai_response
             .feedback
@@ -375,6 +377,12 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen }) => {
 
         const res = await AskQuetionApiCall(null);
         if (res.data.profileData) res.data.profile_data = res.data.profileData;
+        // if my question answer is completed
+        if (res.data.is_profile_completed) {
+          setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+          setAnalysisData(res.data.psychological_profile);
+          return;
+        }
         if (res.data.profile_data) {
           //case of 1st  question
           if (res.data.profile_data.length === 1) {
@@ -408,20 +416,17 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen }) => {
           setCurrentQuestion(res.data.profile_data.length);
           setAnswer('');
           // preper data for question list
-          //@ts-ignore
-          const tempQuestionList = QuestionListByApi.map(
-            (ques: { _id: string }) => {
-              return (
-                res.data.profile_data.find(
-                  ({ question_id }: { question_id: string }) =>
-                    question_id === ques._id
-                ) ?? {
-                  ...ques,
-                  question_id: ques._id,
-                }
-              );
-            }
-          );
+          const tempQuestionList = QuestionListByApi.map((ques: any) => {
+            return (
+              res.data.profile_data.find(
+                ({ question_id }: { question_id: string }) =>
+                  question_id === ques._id
+              ) ?? {
+                ...ques,
+                question_id: ques._id,
+              }
+            );
+          });
           setQuestionList(tempQuestionList);
           setQuestionCompleted(res.data.profile_data.length);
         }

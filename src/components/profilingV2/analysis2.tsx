@@ -1,47 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-interface ProfileData {
-  learning_style: string;
-  learning_style_1: string;
-  learning_style_2: string;
-  learning_style_3: string;
-  strength: string;
-  recommended_approach: string;
-}
-
-const LearningProfile: React.FC = () => {
-  const [profileData, setProfileData] = useState<ProfileData>({
-    learning_style: '',
-    learning_style_1: '',
-    learning_style_2: '',
-    learning_style_3: '',
-    strength: '',
-    recommended_approach: '',
-  });
-
+const LearningProfile: React.FC<{ analysisData: any }> = ({ analysisData }) => {
   const [editValues, setEditValues] = useState<string>('');
   const [recommendedApproachEdit, setRecommendedApproachEdit] =
     useState<boolean>(false);
-
-  // Simulate API call to fetch data
-  useEffect(() => {
-    const fetchData = async () => {
-      // Simulated API data
-      const data: ProfileData = {
-        learning_style: 'Visual-Practical Learner with analytical approach',
-        learning_style_1: 'Visual-Practical Learner with analytical approach 1',
-        learning_style_2: 'Visual-Practical Learner with analytical approach 2',
-        learning_style_3: 'Visual-Practical Learner with analytical approach 3',
-        strength:
-          'Strong problem-solving abilities, Quick pattern recognition, Good at practical applications',
-        recommended_approach:
-          'Your AI teacher will use visual examples and practical scenarios...',
-      };
-      setProfileData(data);
-      setEditValues(data.recommended_approach);
-    };
-    fetchData();
-  }, []);
 
   const handleRecommendedApproachEdit = () => {
     setRecommendedApproachEdit((prev) => !prev);
@@ -65,7 +27,7 @@ const LearningProfile: React.FC = () => {
 
           {/* Dynamic Fields Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {Object.entries(profileData).map(([key, value]) => {
+            {Object.entries(analysisData).map(([key, value]) => {
               // Ensure that value is treated as a string
               const stringValue = value as string;
 

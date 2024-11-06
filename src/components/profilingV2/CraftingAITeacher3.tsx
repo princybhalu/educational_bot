@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FaCog, FaBrain, FaBolt } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const CraftingAITeacher: React.FC = () => {
   const [progressPercent, setProgressPercent] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -19,6 +21,7 @@ const CraftingAITeacher: React.FC = () => {
   const handleButtonClick = () => {
     console.log('Navigating to website...');
     // Replace with actual navigation code if needed
+    navigate('/dashboard');
   };
 
   return (
@@ -167,15 +170,15 @@ const CraftingAITeacher: React.FC = () => {
             className="h-full rounded-full sparkle"
             style={{
               width: `${progressPercent}%`,
-              animation: 'progress-bar 1s ease-in-out',
+              animation: 'progress-bar 0.5s linear',
               background: 'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
             }}
           />
         </div>
 
         {/* Steps */}
-        <div className="flex flex-col md:flex-row justify-between w-full items-center mb-4">
-          <div className="flex flex-row md:flex-col items-center text-gray-300 mb-4 md:mb-0">
+        {/* <div className="flex flex-col md:flex-row justify-between w-full items-center mb-4">
+          <div className="flex flex-row md:flex-col justify-center items-center text-gray-300 mb-4 md:mb-0">
             <FaCog className="text-blue-400 text-3xl mb-2 rotate-cog mr-2 md:mr-0" />
             <span>Configuring Preferences</span>
           </div>
@@ -185,6 +188,23 @@ const CraftingAITeacher: React.FC = () => {
           </div>
           <div className="flex flex-row md:flex-col items-center text-gray-300 mb-4 md:mb-0">
             <FaBolt className="text-pink-500 text-3xl mb-2 flash-bolt mr-2 md:mr-0" />
+            <span>Optimizing Responses</span>
+          </div>
+        </div> */}
+
+        <div className="flex flex-col md:flex-row justify-between w-full items-center gap-4">
+          <div className="flex flex-row md:flex-col items-center text-gray-300 gap-2 md:gap-4">
+            <FaCog className="text-blue-400 text-3xl rotate-cog" />
+            <span>Configuring Preferences</span>
+          </div>
+
+          <div className="flex flex-row md:flex-col items-center text-gray-300 gap-2 md:gap-4">
+            <FaBrain className="text-purple-400 text-3xl pulse-brain" />
+            <span>Training Neural Networks</span>
+          </div>
+
+          <div className="flex flex-row md:flex-col items-center text-gray-300 gap-2 md:gap-4">
+            <FaBolt className="text-pink-500 text-3xl flash-bolt" />
             <span>Optimizing Responses</span>
           </div>
         </div>
