@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import { QuestionsTypes } from '../../types/profiling';
+import {
+  AskQuetionApiCall,
+  CreateProfileApiCall,
+  GetAllQuestionListApiCall,
+} from '../../services/api/profiling';
+import { useSelector } from 'react-redux';
+import { ProfileScreenNameV2 } from '../../utils/enums';
 
 interface DrainParticle {
   id: number;
@@ -15,12 +23,10 @@ interface QuestionCardProps {
   questionNumber: number;
   totalQuestions: number;
   questionText: string;
-  onPrevious: () => void;
-  onSubmit: (answer: string) => void;
   isTransitioning: boolean;
   transitionDirection: 'in' | 'out';
-  setAnswers: (a: string[]) => void;
-  answers: string[];
+  setAnswer: (a: string) => void;
+  answer: string;
   isSubmitted: boolean;
 }
 
@@ -28,21 +34,24 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   questionNumber,
   totalQuestions,
   questionText,
-  onPrevious,
-  onSubmit,
   isTransitioning,
   transitionDirection,
-  setAnswers,
-  answers,
+  setAnswer,
+  answer,
   isSubmitted,
 }) => {
-  const [answer, setAnswer] = useState<string>(answers[questionNumber - 1]);
-
+  console.log({
+    questionNumber,
+    totalQuestions,
+    questionText,
+    isTransitioning,
+    transitionDirection,
+    setAnswer,
+    answer,
+    isSubmitted,
+  });
   const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setAnswer(e.target.value);
-    const updatedAnswers = [...answers];
-    updatedAnswers[questionNumber - 1] = e.target.value;
-    setAnswers(updatedAnswers);
   };
 
   return (
@@ -71,15 +80,16 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   );
 };
 
-const Quiz: React.FC = () => {
-  const [currentQuestion, setCurrentQuestion] = useState(1);
-  const [answers, setAnswers] = useState<string[]>(Array(10).fill(''));
+interface QuizProps {
+  setCurrentScreen: (a: string) => void;
+}
+
+const Quiz: React.FC<QuizProps> = ({ setCurrentScreen }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'in' | 'out'>(
     'out'
   );
   const [isAvatarActive, setIsAvatarActive] = useState(false);
-  const [feedbacks, setFeedbacks] = useState<string[]>(Array(10).fill(''));
   const [displayWords, setDisplayWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(-1);
   const [currentWord, setCurrentWord] = useState<string>('');
@@ -87,16 +97,19 @@ const Quiz: React.FC = () => {
   const [drainParticles, setDrainParticles] = useState<DrainParticle[]>([]);
   const [isTypingComplete, setIsTypingComplete] = useState(false);
 
-  const questions = [
-    'When learning something new, how do you prefer to start?',
-    'What motivates you to complete a task?',
-    'When learning something new, how do you prefer to start?',
-    'What motivates you to complete a task?',
-    'When learning something new, how do you prefer to start?',
-    'What motivates you to complete a task?',
-    'When learning something new, how do you prefer to start?',
-    'What motivates you to complete a task?',
-  ];
+  const user = useSelector((state: any) => state.auth.user);
+  const [questionList, setQuestionList] = useState<null | QuestionsTypes[]>(
+    null
+  );
+  const [isCalledCreateProfile, setIsCalledCreateProfile] = useState(false);
+  const [CurrentFullQuestion, setCurrentFullQuestion] =
+    useState<null | QuestionsTypes>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [answer, setAnswer] = useState<string>('');
+  const [questionCompleted, setQuestionCompleted] = useState<number>(0);
+  const [feedback, setFeedback] = useState<string>('');
+  const [isAiThinking, setIsAiThinking] = useState(false);
 
   const createDrainParticle = (): DrainParticle => {
     const angle = Math.random() * Math.PI * 2;
@@ -190,30 +203,6 @@ const Quiz: React.FC = () => {
     setIsTypingComplete(true);
   };
 
-  // const handleTransition = (direction: 'prev' | 'next') => {
-  //   setTransitionDirection('in');
-  //   setIsTransitioning(true);
-  //   setIsAvatarActive(true);
-
-  //   setTimeout(() => {
-  //     if (direction === 'prev') {
-  //       setCurrentQuestion(currentQuestion - 1);
-  //     } else {
-  //       setCurrentQuestion(currentQuestion + 1);
-  //     }
-  //     setTransitionDirection('out');
-  //     setDisplayWords([]);
-  //     setCurrentWord('');
-  //     setCurrentWordIndex(-1);
-  //     setIsTypingComplete(false);
-
-  //     setTimeout(() => {
-  //       setIsTransitioning(false);
-  //       setIsAvatarActive(false);
-  //     }, 500);
-  //   }, 500);
-  // };
-
   const handleTransition = (direction: 'prev' | 'next') => {
     setTransitionDirection('in');
     setIsTransitioning(true);
@@ -248,14 +237,23 @@ const Quiz: React.FC = () => {
     setTimeout(() => {
       if (direction === 'prev') {
         setCurrentQuestion(currentQuestion - 1);
+        if (questionList) {
+          setAnswer(questionList[currentQuestion - 2].answer ?? '');
+          setCurrentFullQuestion(questionList[currentQuestion - 2]);
+        }
       } else {
         setCurrentQuestion(currentQuestion + 1);
+        if (questionList) {
+          setAnswer(questionList[currentQuestion]?.answer ?? '');
+          setCurrentFullQuestion(questionList[currentQuestion]);
+        }
       }
       setTransitionDirection('out');
       setDisplayWords([]);
       setCurrentWord('');
       setCurrentWordIndex(-1);
       setIsTypingComplete(false);
+      setFeedback('');
 
       setTimeout(() => {
         setIsTransitioning(false);
@@ -271,32 +269,63 @@ const Quiz: React.FC = () => {
   };
 
   const handleSubmit = async (answer: string) => {
+    setIsAiThinking(true);
     try {
       // Call your API here
-      // const response = await fetch('your-api-endpoint', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     questionNumber: currentQuestion,
-      //     answer: answer,
-      //   }),
-      // });
+      const res = await AskQuetionApiCall({
+        question_id: CurrentFullQuestion?.question_id,
+        answer: answer,
+      });
+      setIsAiThinking(false);
+      if (res.data.is_profile_completed) {
+        setFeedback(
+          res.data.profile_meta[res.data.last_attempted_question].ai_response
+            .feedback
+        );
+        if (questionList) setQuestionCompleted(questionList?.length);
+        await writeFeedback(
+          res.data.profile_meta[res.data.last_attempted_question].ai_response
+            .feedback
+        );
+        return;
+      }
 
-      // const data = await response.json();
-      const data = {
-        feedback: 'Thank you for your thoughtful response! Your ',
-      };
-      const feedback =
-        data.feedback ||
-        'Thank you for your thoughtful response! Your answer shows good insight into your learning preferences.';
+      if (res.data.profile_data) {
+        // TODO :hnadle case of last one
+        // if my question answer is completed
 
-      const updatedFeedbacks = [...feedbacks];
-      updatedFeedbacks[currentQuestion - 1] = feedback;
-      setFeedbacks(updatedFeedbacks);
+        // setCurrentFullQuestion(
+        //   res.data.profile_data[res.data.profile_data.length - 1]
+        // );
+        // setCurrentQuestion(res.data.profile_data.length);
+        // setAnswer('');
 
-      await writeFeedback(feedback);
+        // preper data for question list
+        const tempQuestionList =
+          questionList &&
+          questionList.map((ques: { question_id: any }) => {
+            return (
+              res.data.profile_data.find(
+                ({ question_id }: { question_id: string }) =>
+                  question_id === ques.question_id
+              ) ?? ques
+            );
+          });
+        setQuestionList(tempQuestionList);
+        setQuestionCompleted(res.data.profile_data.length - 1);
+        console.log(
+          res.data.profile_data[res.data.profile_data.length - 2].ai_response
+            .feedback
+        );
+        setFeedback(
+          res.data.profile_data[res.data.profile_data.length - 2].ai_response
+            .feedback
+        );
+        await writeFeedback(
+          res.data.profile_data[res.data.profile_data.length - 2].ai_response
+            .feedback
+        );
+      }
     } catch (error) {
       console.error('Error submitting answer:', error);
       const errorFeedback =
@@ -306,18 +335,124 @@ const Quiz: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (currentQuestion < questions.length) {
+    if (questionList && currentQuestion < questionList.length) {
       handleTransition('next');
     } else {
-      console.log('Quiz completed:', answers);
+      console.log('Quiz completed:', answer);
     }
   };
 
-  const progress = (currentQuestion / questions.length) * 100;
+  const progress =
+    questionList && (questionCompleted / questionList.length) * 100;
+
+  useEffect(() => {
+    const ApisCall = async () => {
+      try {
+        let QuestionListByApi = questionList ? questionList : [];
+        //get question list api call
+        if (!questionList) {
+          try {
+            const res = await GetAllQuestionListApiCall();
+            setQuestionList(res.data);
+            QuestionListByApi = res.data;
+          } catch (err) {
+            console.log('err in get question list', err);
+          }
+        }
+
+        if (!isCalledCreateProfile) {
+          try {
+            const res = await CreateProfileApiCall(user.id);
+            if (res.data.is_profile_completed) {
+              setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+              return;
+            }
+            setIsCalledCreateProfile(true);
+          } catch (err) {
+            console.log('err in get profile : ', err);
+          }
+        }
+
+        const res = await AskQuetionApiCall(null);
+        if (res.data.profileData) res.data.profile_data = res.data.profileData;
+        if (res.data.profile_data) {
+          //case of 1st  question
+          if (res.data.profile_data.length === 1) {
+            setCurrentFullQuestion(res.data.profile_data[0]);
+            const tempQuestionList = QuestionListByApi.map((ques: any) => {
+              return {
+                ...ques,
+                question_id: ques._id,
+              };
+            });
+            setQuestionList(tempQuestionList);
+            return;
+          }
+
+          // if my question answer is completed
+          if (res.data.is_profile_completed) {
+            setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+            return;
+          } else if (
+            questionList &&
+            res.data.profile_data.length === questionList.length &&
+            res.data.profile_data[questionList.length - 1].answers
+          ) {
+            setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+            return;
+          }
+
+          setCurrentFullQuestion(
+            res.data.profile_data[res.data.profile_data.length - 1]
+          );
+          setCurrentQuestion(res.data.profile_data.length);
+          setAnswer('');
+          // preper data for question list
+          //@ts-ignore
+          const tempQuestionList = QuestionListByApi.map(
+            (ques: { _id: string }) => {
+              return (
+                res.data.profile_data.find(
+                  ({ question_id }: { question_id: string }) =>
+                    question_id === ques._id
+                ) ?? {
+                  ...ques,
+                  question_id: ques._id,
+                }
+              );
+            }
+          );
+          setQuestionList(tempQuestionList);
+          setQuestionCompleted(res.data.profile_data.length);
+        }
+      } catch (err) {
+        console.log(err);
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    ApisCall();
+  }, []);
+
+  console.log({
+    questionList,
+    isLoading,
+    questionCompleted,
+    currentQuestion,
+    t: questionCompleted < currentQuestion && !isTypingComplete,
+    t1: questionCompleted < currentQuestion,
+    t2: !isTypingComplete,
+  });
 
   return (
     <div className="min-h-screen bg-black w-full flex flex-col items-center justify-center">
       <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
+        {isAiThinking && (
+          <>
+            <h1 className="text-white">setIsAiThinking</h1>
+          </>
+        )}
         <div className="avatar-container relative w-24 h-24 mb-4 transition-transform duration-300">
           <div
             className={`relative w-24 h-24 mb-4 transition-transform duration-300 ${isAvatarActive ? 'avatar-active' : ''}`}
@@ -389,77 +524,103 @@ const Quiz: React.FC = () => {
           </div>
         )}
 
-        <div className="w-full px-4 mb-8">
-          <div className="flex justify-between items-center mb-2 text-white">
-            <span className="text-sm font-medium">Progress</span>
-            <span className="text-sm font-medium">
-              {currentQuestion}/{questions.length} Questions
-            </span>
-          </div>
+        {isLoading && (
+          <>
+            <div> loading........ </div>
+          </>
+        )}
 
-          <div className="w-full h-2 bg-gray-700 rounded-full">
-            <div
-              className="h-full rounded-full transition-all duration-300 ease-in-out"
-              style={{
-                width: `${progress}%`,
-                background: 'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
-              }}
-            />
-          </div>
-        </div>
-        <div className="question-card-container w-full perspective-1000">
-          <QuestionCard
-            questionNumber={currentQuestion}
-            totalQuestions={questions.length}
-            questionText={questions[currentQuestion - 1]}
-            onPrevious={handlePrevious}
-            onSubmit={handleSubmit}
-            isTransitioning={isTransitioning}
-            transitionDirection={transitionDirection}
-            answers={answers}
-            setAnswers={setAnswers}
-            isSubmitted={feedbacks[currentQuestion - 1] !== ''}
-          />
-        </div>
+        {!isLoading && CurrentFullQuestion && (
+          <>
+            <div className="w-full px-4 mb-8">
+              <div className="flex justify-between items-center mb-2 text-white">
+                <span className="text-sm font-medium">Progress</span>
+                <span className="text-sm font-medium">
+                  {questionCompleted} / {questionList && questionList.length}{' '}
+                  Questions
+                </span>
+              </div>
 
-        <div className="flex justify-between w-full mt-4">
-          <button
-            onClick={handlePrevious}
-            disabled={currentQuestion <= 1}
-            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-              currentQuestion <= 1
-                ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                : 'bg-gray-700 hover:bg-gray-600 text-white'
-            }`}
-          >
-            Previous
-          </button>
-          {!feedbacks[currentQuestion - 1] ? (
-            <button
-              onClick={() => handleSubmit(answers[currentQuestion - 1])}
-              disabled={!answers[currentQuestion - 1]?.trim()}
-              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                !answers[currentQuestion - 1]?.trim()
-                  ? 'bg-blue-500/50 text-gray-300 cursor-not-allowed'
-                  : 'bg-blue-500 hover:bg-blue-600 text-white'
-              }`}
-            >
-              Submit
-            </button>
-          ) : (
-            <button
-              onClick={handleNext}
-              disabled={!isTypingComplete}
-              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                isTypingComplete
-                  ? 'bg-green-500 hover:bg-green-600 text-white'
-                  : 'bg-green-500/50 text-gray-300 cursor-not-allowed'
-              }`}
-            >
-              Next
-            </button>
-          )}
-        </div>
+              <div className="w-full h-2 bg-gray-700 rounded-full">
+                <div
+                  className="h-full rounded-full transition-all duration-300 ease-in-out"
+                  style={{
+                    width: `${progress}%`,
+                    background:
+                      'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
+                  }}
+                />
+              </div>
+            </div>
+            <div className="question-card-container w-full perspective-1000">
+              <QuestionCard
+                questionNumber={currentQuestion}
+                totalQuestions={(questionList && questionList.length) ?? 10}
+                questionText={CurrentFullQuestion.ai_response?.question ?? ''}
+                isTransitioning={isTransitioning}
+                transitionDirection={transitionDirection}
+                answer={answer}
+                setAnswer={setAnswer}
+                isSubmitted={!!CurrentFullQuestion.ai_response?.feedback}
+              />
+            </div>
+
+            <div className="flex justify-between w-full mt-4">
+              <button
+                onClick={handlePrevious}
+                disabled={currentQuestion <= 1}
+                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                  currentQuestion <= 1
+                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-700 hover:bg-gray-600 text-white'
+                }`}
+              >
+                Previous
+              </button>
+              {!CurrentFullQuestion.ai_response?.feedback && !feedback ? (
+                <button
+                  onClick={() => handleSubmit(answer)}
+                  disabled={!answer?.trim()}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    !answer?.trim()
+                      ? 'bg-blue-500/50 text-gray-300 cursor-not-allowed'
+                      : 'bg-blue-500 hover:bg-blue-600 text-white'
+                  }`}
+                >
+                  Submit
+                </button>
+              ) : questionList && questionList.length === currentQuestion ? (
+                <button
+                  onClick={() => {
+                    setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+                  }}
+                  disabled={!isTypingComplete}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    isTypingComplete
+                      ? 'bg-green-500 hover:bg-green-600 text-white'
+                      : 'bg-green-500/50 text-gray-300 cursor-not-allowed'
+                  }`}
+                >
+                  Finish
+                </button>
+              ) : (
+                <button
+                  onClick={handleNext}
+                  disabled={
+                    questionCompleted < currentQuestion && !isTypingComplete
+                  }
+                  className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    !(questionCompleted < currentQuestion && !isTypingComplete)
+                      ? 'bg-green-500 hover:bg-green-600 text-white'
+                      : 'bg-green-500/50 text-gray-300 cursor-not-allowed'
+                  }`}
+                >
+                  Next
+                </button>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       <style>{`

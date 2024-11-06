@@ -8,7 +8,7 @@ import CraftingAITeacher from '../components/profilingV2/CraftingAITeacher3';
 
 export default function Profliling_V2() {
   const [CurrentScreen, setCurrentScreen] = useState(
-    ProfileScreenNameV2.INTRODUCTION
+    ProfileScreenNameV2.QUESTIONS
   );
 
   return (
@@ -23,7 +23,7 @@ export default function Profliling_V2() {
       {CurrentScreen === ProfileScreenNameV2.QUESTIONS && (
         <>
           {/* <T1 /> */}
-          <QuestionsComp />
+          <QuestionsComp setCurrentScreen={setCurrentScreen} />
         </>
       )}
 
