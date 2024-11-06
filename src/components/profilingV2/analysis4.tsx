@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Edit2, Save, ArrowRight, Lightbulb } from 'lucide-react';
 import { ProfileScreenNameV2 } from '../../utils/enums';
+import { AskQuetionApiCall } from 'services/api/profiling';
 
 interface LearningData {
   text: string;
@@ -46,6 +47,17 @@ const LearningProfile: React.FC<{
     return colors[scale as keyof typeof colors] || 'bg-gray-500';
   };
 
+  const handleSave = async () => {
+    try {
+      const res = await AskQuetionApiCall({
+        answer: recommendedApproach,
+      });
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full bg-gray-900 p-4 md:p-8 lg:p-10">
       <div className="max-w-5xl mx-auto space-y-6 md:space-y-8">
@@ -71,7 +83,10 @@ const LearningProfile: React.FC<{
               </h3>
             </div>
             <button
-              onClick={() => setIsEditing(!isEditing)}
+              onClick={() => {
+                setIsEditing(!isEditing);
+                if (isEditing) handleSave();
+              }}
               className="text-blue-300 hover:text-blue-200 transition-colors p-2"
             >
               {isEditing ? (

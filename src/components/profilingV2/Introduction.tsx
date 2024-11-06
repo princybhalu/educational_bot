@@ -329,7 +329,7 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
                   <div
                     className="w-full h-full rounded-full"
                     style={{
-                      background: '#12182a',
+                      background: '#ffffff',
                       boxShadow: 'inset 0 0 15px rgba(0,0,0,0.5)',
                     }}
                   />
@@ -383,34 +383,38 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
                 </div>
               </div>
 
-              <div
-                ref={textContainerRef}
-                className="bg-[#12182a] rounded-lg p-4 md:p-8 shadow-lg border border-[#1d2235] mb-6"
-              >
-                <p className="text-md md:text-lg text-white leading-relaxed relative">
-                  {displayWords.map((word, index) => (
-                    <span
-                      key={index}
-                      className={`word inline-block mx-1 transition-all duration-200 ease-out ${
-                        index === currentWordIndex
-                          ? 'text-[#3b82f6]'
-                          : 'text-white'
-                      }`}
-                    >
-                      {word}
-                    </span>
-                  ))}
-                  {currentWord && (
-                    <span className="current-word word inline-block mx-1 text-[#3b82f6]">
-                      {currentWord} <span> | </span>
-                    </span>
-                  )}
-                </p>
-              </div>
+              {displayWords.length > 1 && (
+                <>
+                  <div
+                    ref={textContainerRef}
+                    className="bg-[#12182a] rounded-lg p-4 md:p-8 shadow-lg border border-[#1d2235] mb-6 initDiv"
+                  >
+                    <p className="text-md md:text-lg text-white leading-relaxed relative">
+                      {displayWords.map((word, index) => (
+                        <span
+                          key={index}
+                          className={`word inline-block mx-1 transition-all duration-200 ease-out ${
+                            index === currentWordIndex
+                              ? 'text-[#3b82f6]'
+                              : 'text-white'
+                          }`}
+                        >
+                          {word}
+                        </span>
+                      ))}
+                      {currentWord && (
+                        <span className="current-word word inline-block mx-1 text-[#3b82f6]">
+                          {currentWord} <span> | </span>
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </>
+              )}
 
               {/* Next Button */}
               {isTypingComplete && (
-                <div className="flex justify-center">
+                <div className="flex justify-center initDiv">
                   <button
                     onClick={() => scrollToComponent('assessment')}
                     className="px-4 py-2 md:px-8 md:py-4 bg-[#3b82f6] rounded-lg text-white font-semibold text-md md:text-lg transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden group"
@@ -481,6 +485,22 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
             width: 0px;
             background: transparent;
           }
+
+          .initDiv {
+            animation: fadeInAnimation ease 0.5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeInAnimation {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+       }
+        }
          
         `}</style>
       </div>

@@ -432,3 +432,291 @@ body {
     opacity: 0;
   }
 }
+
+.message-bubble {
+  position: relative;
+  background: #626363; /* Light grey background */
+  color: #f9f0f0;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 14px;
+  max-width: 200px;
+}
+
+.message-bubble::before {
+  content: '';
+  position: absolute;
+  top: 10px; /* Aligns the arrow vertically with the bubble */
+  left: -10px; /* Positions the arrow to the left of the bubble */
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 10px 10px 0;
+  border-color: transparent #626363 transparent transparent;
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+  99% {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+  100% {
+    opacity: 1;
+    width: auto;
+    height: auto;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes disappear {
+  0% {
+    opacity: 1;
+  }
+  99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.container {
+  display: flex;
+  height: calc(100vh);
+  align-items: center;
+  justify-content: center;
+}
+.container .card {
+  width: calc(50vw);
+}
+
+.chat-thread > *,
+.chat-thread > * > .message {
+  opacity: 0;
+  animation: fadeIn 1s ease-in-out 0s forwards;
+}
+
+.chat-thread > *:nth-child(1):not(.message-reply) {
+  animation-delay: 1s;
+}
+
+.chat-thread > *:nth-child(2):not(.message-reply) {
+  animation-delay: 2s;
+}
+
+.chat-thread > *:nth-child(3):not(.message-reply) {
+  animation-delay: 3s;
+}
+
+.chat-thread > *:nth-child(4):not(.message-reply) {
+  animation-delay: 4s;
+}
+
+.chat-thread > *:nth-child(5):not(.message-reply) {
+  animation-delay: 5s;
+}
+
+.chat-thread > *:nth-child(6):not(.message-reply) {
+  animation-delay: 6s;
+}
+
+.chat-thread > *:nth-child(7):not(.message-reply) {
+  animation-delay: 7s;
+}
+
+.chat-thread > *:nth-child(8):not(.message-reply) {
+  animation-delay: 8s;
+}
+
+.chat-thread > *:nth-child(9):not(.message-reply) {
+  animation-delay: 9s;
+}
+
+.chat-thread > *:nth-child(10):not(.message-reply) {
+  animation-delay: 10s;
+}
+
+.chat-thread .message p {
+  margin: 0;
+  animation: 3s appear 0s forwards;
+}
+
+.chat-thread .message .typing-indicator {
+  will-change: transform;
+  display: flex;
+  animation: 0s disappear 3s forwards;
+}
+
+.chat-thread .message .typing-indicator span {
+  height: 10px;
+  width: 10px;
+  float: left;
+  margin: 0 1px;
+  background-color: #9e9ea1;
+  display: block;
+  border-radius: 50%;
+  opacity: 0.4;
+}
+
+.chat-thread .message .typing-indicator span:nth-of-type(1) {
+  animation: 1s blink infinite 0.3333s;
+}
+
+.chat-thread .message .typing-indicator span:nth-of-type(2) {
+  animation: 1s blink infinite 0.6666s;
+}
+
+.chat-thread .message .typing-indicator span:nth-of-type(3) {
+  animation: 1s blink infinite 1s;
+}
+
+.message {
+  display: flex;
+  margin: 1rem 0;
+  width: 100%;
+  background-color: #ecf0f1;
+}
+
+.message::after {
+  content: '';
+  position: absolute;
+  left: 75px;
+  border-left: 25px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 25px solid #ecf0f1;
+}
+
+.message + .message {
+  margin-top: 0;
+}
+
+.message .avatar {
+  width: 75px;
+  height: 75px;
+  background: url('http://lorempixel.com/75/75');
+  margin-right: 20px;
+  border-radius: 50%;
+}
+
+.message .message-content {
+  display: flex;
+  align-items: center;
+  padding: 0.75em 1.5em;
+  background: #ecf0f1;
+  border-radius: 20px;
+}
+
+.message.message-reply {
+  justify-content: flex-end;
+}
+
+.message.message-reply .avatar {
+  margin: 0 0 0 20px;
+}
+
+.message.message-reply .message-content {
+  float: right;
+  background-color: #0076ff;
+  color: #fff;
+}
+
+.message.message-reply .message-content p:before {
+  content: '';
+  position: absolute;
+  left: auto;
+  right: -20px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 20px solid #0076ff;
+}
+
+.chat-actions {
+  text-align: center;
+  align-items: center;
+}
+
+.chat-actions button {
+  margin-top: 1rem;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
+.dot {
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.dot.active {
+  opacity: 1;
+}
+
+.initDiv {
+  animation: fadeInAnimation ease 0.5s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.initDiv1 {
+  animation: fadeOutAnimation2 ease 0.5s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeOutAnimation2 {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

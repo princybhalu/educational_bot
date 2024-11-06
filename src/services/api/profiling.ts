@@ -32,3 +32,10 @@ export const CreateProfileApiCall = (userId: string) => {
     },
   });
 };
+
+export const GiveDescriptionApiCall = (body: any) => {
+  return http.post({
+    url: '/knowledge-base-service/psychological-profie/description',
+    data: body,
+  });
+};

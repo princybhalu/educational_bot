@@ -30,7 +30,7 @@ const tempData = {
 
 export default function Profliling_V2() {
   const [CurrentScreen, setCurrentScreen] = useState(
-    ProfileScreenNameV2.DESCRIPTION
+    ProfileScreenNameV2.INTRODUCTION
   );
   const [analysisData, setAnalysisData] = useState(tempData);
 
@@ -63,7 +63,10 @@ export default function Profliling_V2() {
 
       {CurrentScreen === ProfileScreenNameV2.ANALYSIS && (
         <>
-          <Analysis analysisData={analysisData} setCurrentScreen={setCurrentScreen} />
+          <Analysis
+            analysisData={analysisData}
+            setCurrentScreen={setCurrentScreen}
+          />
         </>
       )}
 

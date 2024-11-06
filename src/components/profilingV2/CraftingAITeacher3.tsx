@@ -9,11 +9,11 @@ const CraftingAITeacher: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (progressPercent < 100) {
-        setProgressPercent((prev) => prev + 5);
+        setProgressPercent((prev) => prev + 1);
       } else {
         clearInterval(interval);
       }
-    }, 500);
+    }, 50);
 
     return () => clearInterval(interval);
   }, [progressPercent]);
@@ -92,9 +92,16 @@ const CraftingAITeacher: React.FC = () => {
 
         .title-container {
           position: relative;
+          left: 25%;
           display: inline-block;
           animation: floating 3s ease-in-out infinite;
         }
+
+        @media (max-width: 600px) {
+  .title-container {
+    left: 0%;
+  }
+}
 
         .glowing-text {
           background: linear-gradient(45deg, #3b82f6, #60a5fa);
@@ -138,7 +145,7 @@ const CraftingAITeacher: React.FC = () => {
         </div>
 
         {/* Title with Sparkle Effect */}
-        <div className="title-container text-center mb-8">
+        <div className="title-container justify-center  text-center mx-auto mb-8">
           <div
             className="sparkle-point"
             style={{ top: '-20px', left: '10%' }}
@@ -159,19 +166,17 @@ const CraftingAITeacher: React.FC = () => {
             className="sparkle-point"
             style={{ bottom: '-10px', right: '15%' }}
           />
-          <h2 className="glowing-text text-4xl md:text-5xl">
+          <h2 className="glowing-text text-4xl md:text-">
             Crafting Your AI Teacher
           </h2>
         </div>
 
         {/* Progress Bar with Sparkle Effect */}
-        <div className="w-full bg-gray-700 h-4 text-center rounded-full mb-6">
+        <div className="w-full bg-gray-700 h-4 rounded-full overflow-hidden">
           <div
-            className="h-full rounded-full sparkle"
+            className="h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-blue-400 via-blue-700 to-sky-500"
             style={{
               width: `${progressPercent}%`,
-              animation: 'progress-bar 0.5s linear',
-              background: 'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
             }}
           />
         </div>
@@ -192,20 +197,57 @@ const CraftingAITeacher: React.FC = () => {
           </div>
         </div> */}
 
-        <div className="flex flex-col md:flex-row justify-between w-full items-center gap-4">
-          <div className="flex flex-row md:flex-col items-center text-gray-300 gap-2 md:gap-4">
+        {/* <div className="flex flex-col md:flex-row justify-between w-full items-center gap-4">
+          <div className="flex flex-row md:flex-col items-center text-gray-300 gap-2 md:gap-4 border  border-gray-600 p-4 rounded-md">
+
             <FaCog className="text-blue-400 text-3xl rotate-cog" />
             <span>Configuring Preferences</span>
           </div>
 
-          <div className="flex flex-row md:flex-col items-center text-gray-300 gap-2 md:gap-4">
+          <div className="flex flex-row md:flex-col items-center text-gray-300 gap-2 md:gap-4 border  border-gray-600 p-4 rounded-md">
             <FaBrain className="text-purple-400 text-3xl pulse-brain" />
             <span>Training Neural Networks</span>
           </div>
 
-          <div className="flex flex-row md:flex-col items-center text-gray-300 gap-2 md:gap-4">
+          <div className="flex flex-row md:flex-col items-center text-gray-300 gap-2 md:gap-4 border  border-gray-600 p-4 rounded-md">
             <FaBolt className="text-pink-500 text-3xl flash-bolt" />
             <span>Optimizing Responses</span>
+          </div>
+        </div> */}
+
+        <div className="flex flex-col md:grid md:grid-cols-3 gap-6 w-full items-center mt-8">
+          {/* Step 1: Configuring Preferences */}
+          <div className="flex flex-col items-center text-center bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 border border-gray-600">
+            <FaCog className="text-blue-400 text-4xl md:text-5xl mb-4 rotate-cog" />
+            <h3 className="text-md md:text-xl  font-semibold text-white">
+              Configuring Preferences
+            </h3>
+            <p className="text-gray-400 mt-2 text-sm">
+              Setting up your preferences for a personalized AI experience.
+            </p>
+          </div>
+
+          {/* Step 2: Training Neural Networks */}
+          <div className="flex flex-col items-center text-center bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 border border-gray-600">
+            <FaBrain className="text-purple-400 text-4xl md:text-5xl mb-4 pulse-brain" />
+            <h3 className="text-md md:text-xl font-semibold text-white">
+              Training Neural Networks
+            </h3>
+            <p className="text-gray-400 mt-2 text-sm">
+              Optimizing the AI model to improve response accuracy.
+            </p>
+          </div>
+
+          {/* Step 3: Optimizing Responses */}
+          <div className="flex flex-col items-center text-center bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 border border-gray-600">
+            <FaBolt className="text-pink-500 text-4xl md:text-5xl mb-4 flash-bolt" />
+            <h3 className="text-md md:text-xl font-semibold text-white">
+              Optimizing Responses
+            </h3>
+            <p className="text-gray-400 mt-2 text-sm">
+              Fine-tuning the AIr&squo;s responses to ensure high-quality
+              interactions.
+            </p>
           </div>
         </div>
 
@@ -213,7 +255,7 @@ const CraftingAITeacher: React.FC = () => {
         {progressPercent === 100 && (
           <button
             onClick={handleButtonClick}
-            className="mt-8 bg-blue-500 item-center hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300"
+            className="mt-8 bg-blue-500 mx-auto flex jutify-center item-center hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 initDiv"
           >
             Let&rsquo;s Visit Website
           </button>

@@ -72,7 +72,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         value={answer}
         onChange={handleTextAreaChange}
         placeholder="Write your answer here..."
-        className="w-full p-3 rounded-lg bg-gray-700 text-white resize-none mb-4"
+        className="w-full p-3 rounded-lg bg-gray-700 text-white resize-none mb-4 focus:outline-none"
         rows={3}
         disabled={isSubmitted}
       />
@@ -287,21 +287,12 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
         setAnalysisData(res.data.psychological_profile);
         await writeFeedback(
           res.data.profile_meta[res.data.last_attempted_question].ai_response
-            .feedback
+            .feedback + ' '
         );
         return;
       }
 
       if (res.data.profile_data) {
-        // TODO :hnadle case of last one
-        // if my question answer is completed
-
-        // setCurrentFullQuestion(
-        //   res.data.profile_data[res.data.profile_data.length - 1]
-        // );
-        // setCurrentQuestion(res.data.profile_data.length);
-        // setAnswer('');
-
         // preper data for question list
         const tempQuestionList =
           questionList &&
@@ -325,7 +316,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
         );
         await writeFeedback(
           res.data.profile_data[res.data.profile_data.length - 2].ai_response
-            .feedback
+            .feedback + ' '
         );
       }
     } catch (error) {
@@ -428,7 +419,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
             );
           });
           setQuestionList(tempQuestionList);
-          setQuestionCompleted(res.data.profile_data.length);
+          setQuestionCompleted(res.data.profile_data.length - 1);
         }
       } catch (err) {
         console.log(err);
@@ -442,7 +433,6 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
 
   console.log({
     questionList,
-    isLoading,
     questionCompleted,
     currentQuestion,
     t: questionCompleted < currentQuestion && !isTypingComplete,
@@ -458,12 +448,12 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
             <h1 className="text-white">setIsAiThinking</h1>
           </>
         )}
-        <div className="avatar-container relative w-24 h-24 mb-4 transition-transform duration-300">
+        <div className="avatar-container relative w-24 h-24 mb-4 transition-all duration-300">
           <div
-            className={`relative w-24 h-24 mb-4 transition-transform duration-300 ${isAvatarActive ? 'avatar-active' : ''}`}
+            className={`relative w-24 h-24 mb-4 ease-in duration-300 ${isAvatarActive ? 'avatar-active' : ''}`}
           >
             <div
-              className="w-full h-full rounded-full"
+              className="w-full h-full rounded-full ease-in duration-300"
               style={{
                 background: 'rgb(18, 24, 38)',
                 boxShadow: 'inset 0 0 15px rgba(0,0,0,0.5)',
@@ -571,17 +561,31 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
             </div>
 
             <div className="flex justify-between w-full mt-4">
-              <button
-                onClick={handlePrevious}
-                disabled={currentQuestion <= 1}
-                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                  currentQuestion <= 1
-                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-700 hover:bg-gray-600 text-white'
-                }`}
-              >
-                Previous
-              </button>
+              {currentQuestion <= 1 ? (
+                <>
+                  {' '}
+                  <button
+                    onClick={() =>
+                      setCurrentScreen(ProfileScreenNameV2.INTRODUCTION)
+                    }
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors bg-gray-700 hover:bg-gray-600 text-white`}
+                  >
+                    Back
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={handlePrevious}
+                  disabled={currentQuestion <= 1}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    currentQuestion <= 1
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                      : 'bg-gray-700 hover:bg-gray-600 text-white'
+                  }`}
+                >
+                  Previous
+                </button>
+              )}
               {!CurrentFullQuestion.ai_response?.feedback && !feedback ? (
                 <button
                   onClick={() => handleSubmit(answer)}
@@ -592,7 +596,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
                       : 'bg-blue-500 hover:bg-blue-600 text-white'
                   }`}
                 >
-                  Submit
+                  Send
                 </button>
               ) : questionList && questionList.length === currentQuestion ? (
                 <button
@@ -611,11 +615,16 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
               ) : (
                 <button
                   onClick={handleNext}
+                  //@ts-ignore
                   disabled={
-                    questionCompleted < currentQuestion && !isTypingComplete
+                    (!feedback && questionCompleted < currentQuestion) ||
+                    (feedback && !isTypingComplete)
                   }
                   className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                    !(questionCompleted < currentQuestion && !isTypingComplete)
+                    !(
+                      (!feedback && questionCompleted < currentQuestion) ||
+                      (feedback && !isTypingComplete)
+                    )
                       ? 'bg-green-500 hover:bg-green-600 text-white'
                       : 'bg-green-500/50 text-gray-300 cursor-not-allowed'
                   }`}

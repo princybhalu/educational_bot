@@ -1,6 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProfileScreenNameV2 } from '../../utils/enums';
+import {
+  CreateProfileApiCall,
+  GiveDescriptionApiCall,
+} from 'services/api/profiling';
+import { useSelector } from 'react-redux';
 
 interface DrainParticle {
   id: number;
@@ -34,8 +39,10 @@ const Introduction: React.FC<IntroductionProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string>('');
   const [showFeedback, setShowFeedback] = useState<boolean>(false);
+  const [isCalledCreateProfile, setIsCalledCreateProfile] = useState(false);
 
   const textContainerRef = useRef<HTMLDivElement>(null);
+  const user = useSelector((state: any) => state.auth.user);
 
   const initialMessage =
     "Hi! I'm here to help you craft your ideal AI teacher. Tell me about your learning style, preferences, and goals so I can better support your journey! ";
@@ -139,14 +146,31 @@ const Introduction: React.FC<IntroductionProps> = ({
     setIsSubmitting(true);
     try {
       await new Promise((r) => setTimeout(r, 2000));
-      const mockFeedback =
-        "Thank you for sharing! I understand your learning style better now. Based on your input, I'll create a personalized learning experience that matches your preferences and goals.";
 
-      setShowFeedback(true);
-      await writeMessage1(mockFeedback, () => {
-        setIsSubmitting(false);
-        setFeedback(mockFeedback);
-      });
+      if (isCalledCreateProfile) {
+        const res = await GiveDescriptionApiCall({
+          description: userInput,
+        });
+        if (res.data.is_profile_completed) {
+          setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+          return;
+        }
+
+        if (textContainerRef.current) {
+          textContainerRef.current.classList.add('initDiv1');
+          setTimeout(() => {
+            if (textContainerRef.current) {
+              textContainerRef.current.style.display = 'none';
+            }
+          }, 100);
+        }
+        const mockFeedback = res.data.feedback + ' ';
+        setShowFeedback(true);
+        await writeMessage1(mockFeedback, () => {
+          setIsSubmitting(false);
+          setFeedback(mockFeedback);
+        });
+      }
     } catch (error) {
       setIsSubmitting(false);
     }
@@ -154,6 +178,21 @@ const Introduction: React.FC<IntroductionProps> = ({
 
   useEffect(() => {
     writeMessage(initialMessage, () => setIsTypingComplete(true));
+
+    const tempApiCall = async () => {
+      try {
+        const res = await CreateProfileApiCall(user.id);
+        if (res.data.is_profile_completed) {
+          setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+          return;
+        }
+        setIsCalledCreateProfile(true);
+      } catch (err) {
+        console.log('err in get profile : ', err);
+      }
+    };
+
+    tempApiCall().then();
   }, []);
 
   return (
@@ -165,7 +204,7 @@ const Introduction: React.FC<IntroductionProps> = ({
             className="relative w-24 h-24 mb-8"
             style={{ animation: 'float 3s ease-in-out infinite' }}
           >
-            <div className="w-full h-full rounded-full bg-[#12182a] shadow-inner">
+            <div className="w-full h-full rounded-full bg-[#ffffff] shadow-inner">
               {drainParticles.map((particle) => (
                 <div
                   key={particle.id}
@@ -205,32 +244,38 @@ const Introduction: React.FC<IntroductionProps> = ({
           </div>
         </div>
 
+        {/* Initial Message */}
         {/* Messages Container */}
         <div className="space-y-4">
-          {/* Initial Message */}
-          <div
-            ref={textContainerRef}
-            className="bg-[#12182a] rounded-lg px-2 py-4 md:p-6 shadow-lg border border-[#1d2235]"
-          >
-            <p className="text-sm md:text-lg text-white leading-relaxed">
-              {displayWords.map((word, index) => (
-                <span
-                  key={index}
-                  className={`word inline-block mx-1 transition-all duration-200 ease-out ${
-                    index === currentWordIndex ? 'text-[#3b82f6]' : 'text-white'
-                  }`}
-                >
-                  {word}
-                </span>
-              ))}
-              {currentWord && (
-                <span className="word inline-block mx-1 text-[#3b82f6]">
-                  {currentWord}
-                  <span className="animate-pulse">|</span>
-                </span>
-              )}
-            </p>
-          </div>
+          {displayWords.length > 1 && (
+            <>
+              <div
+                ref={textContainerRef}
+                className="bg-[#12182a] rounded-lg px-2 py-4 md:p-6 shadow-lg border border-[#1d2235]"
+              >
+                <p className="text-sm md:text-lg text-white leading-relaxed">
+                  {displayWords.map((word, index) => (
+                    <span
+                      key={index}
+                      className={`word inline-block mx-1 transition-all duration-200 ease-out ${
+                        index === currentWordIndex
+                          ? 'text-[#3b82f6]'
+                          : 'text-white'
+                      }`}
+                    >
+                      {word}
+                    </span>
+                  ))}
+                  {currentWord && (
+                    <span className="word inline-block mx-1 text-[#3b82f6]">
+                      {currentWord}
+                      <span className="animate-pulse">|</span>
+                    </span>
+                  )}
+                </p>
+              </div>
+            </>
+          )}
 
           {/* Feedback Message */}
           {/* <AnimatePresence>
@@ -252,7 +297,7 @@ const Introduction: React.FC<IntroductionProps> = ({
             <>
               <div
                 // ref={textContainerRef1/}
-                className="bg-[#12182a] rounded-lg px-2 py-4 md:p-6 shadow-lg border border-[#1d2235]"
+                className="bg-[#12182a] rounded-lg px-2 py-4 md:p-6 shadow-lg border border-[#1d2235] initDiv"
               >
                 <p className="text-sm md:text-lg text-white leading-relaxed">
                   {displayWords1.map((word, index) => (
@@ -323,7 +368,7 @@ const Introduction: React.FC<IntroductionProps> = ({
         </AnimatePresence>
 
         {/* Continue Button */}
-        <AnimatePresence>
+        {/* <AnimatePresence>
           {showFeedback && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -342,7 +387,7 @@ const Introduction: React.FC<IntroductionProps> = ({
               </motion.button>
             </motion.div>
           )}
-        </AnimatePresence>
+        </AnimatePresence> */}
       </div>
 
       <style>{`
