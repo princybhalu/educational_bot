@@ -311,7 +311,7 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
 
   return (
     <>
-      <div className="min-h-screen w-full overflow-hidden">
+      <div className="min-h-screen w-full overflow-hidden bg-black">
         <div className="h-screen overflow-y-auto snap-y snap-mandatory">
           <div
             ref={introRef}

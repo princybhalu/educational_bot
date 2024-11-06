@@ -2,70 +2,55 @@ import React, { useState, useEffect } from 'react';
 
 interface ProfileData {
   learning_style: string;
-  strengths: string[];
+  learning_style_1: string;
+  learning_style_2: string;
+  learning_style_3: string;
+  strength: string;
   recommended_approach: string;
 }
 
-interface ProfileDataEdit {
-  learning_style: boolean;
-  strengths: boolean;
-  recommended_approach: boolean;
-}
-
 const LearningProfile: React.FC = () => {
-  const [profileData, setProfileData] = useState<ProfileData>({
-    learning_style: '',
-    strengths: [],
-    recommended_approach: '',
-  });
+  const [profileData, setProfileData] = useState({});
+  const [editValues, setEditValues] = useState<string>('');
 
-  const [editValues, setEditValues] = useState<ProfileData>({
-    learning_style: '',
-    strengths: [],
-    recommended_approach: '',
-  });
-
-  const [isEditing, setIsEditing] = useState<ProfileDataEdit>({
-    learning_style: false,
-    strengths: false,
-    recommended_approach: false,
-  });
+  // State for recommended approach to handle separately
+  const [recommendedApproachEdit, setRecommendedApproachEdit] =
+    useState<boolean>(false);
 
   // Simulate API call to fetch data
   useEffect(() => {
     const fetchData = async () => {
       // Simulated API data
-      const data: ProfileData = {
+      const data = {
         learning_style: 'Visual-Practical Learner with analytical approach',
-        strengths: [
-          'Strong problem-solving abilities',
-          'Quick pattern recognition',
-          'Good at practical applications',
-        ],
+        learning_style_1: 'Visual-Practical Learner with analytical approach 1',
+        learning_style_2: 'Visual-Practical Learner with analytical approach 2',
+        learning_style_3: 'Visual-Practical Learner with analytical approach 3',
+        strength:
+          'Strong problem-solving abilities, Quick pattern recognition, Good at practical applications',
         recommended_approach:
           'Your AI teacher will use visual examples and practical scenarios...',
       };
       setProfileData(data);
-      setEditValues(data);
+      setEditValues(data.recommended_approach);
     };
     fetchData();
   }, []);
 
-  const handleEdit = (key: keyof ProfileData) => {
-    setIsEditing((prev) => ({ ...prev, [key]: !prev[key] }));
+  const handleRecommendedApproachEdit = () => {
+    setRecommendedApproachEdit((prev) => !prev);
   };
 
-  const handleChange = (key: keyof ProfileData, value: string | string[]) => {
-    setEditValues((prev) => ({ ...prev, [key]: value }));
+  const handleRecommendedApproachChange = (value: string) => {
+    setEditValues(value);
   };
 
-  const handleSave = (key: keyof ProfileData) => {
-    setProfileData((prev) => ({ ...prev, [key]: editValues[key] }));
-    handleEdit(key);
-  };
-
-  const handleCreateTeacher = () => {
-    console.log('Creating teacher profile...');
+  const handleRecommendedApproachSave = () => {
+    // setProfileData((prev) => ({
+    //   ...prev,
+    //   recommended_approach: editValues.recommended_approach,
+    // }));
+    handleRecommendedApproachEdit();
   };
 
   return (
@@ -75,91 +60,53 @@ const LearningProfile: React.FC = () => {
           Your Learning Profile
         </h2>
 
-        {/* Learning Style Section */}
-        <div className="mb-4 p-4 bg-gray-700 rounded-md">
-          <h3 className="text-blue-400 font-semibold mb-2">Learning Style</h3>
-          {isEditing.learning_style ? (
-            <textarea
-              value={editValues.learning_style}
-              onChange={(e) => handleChange('learning_style', e.target.value)}
-              className="w-full p-2 bg-gray-800 text-white rounded-md"
-            />
-          ) : (
-            <p className="text-gray-300">{profileData.learning_style}</p>
-          )}
-          <button
-            onClick={() =>
-              isEditing.learning_style
-                ? handleSave('learning_style')
-                : handleEdit('learning_style')
-            }
-            className="mt-2 text-sm text-blue-300"
-          >
-            {isEditing.learning_style ? 'Save' : 'Edit'}
-          </button>
-        </div>
+        {/* Dynamic Fields Section */}
+        {Object.entries(profileData).map(([key, value]) => {
+          // Ensure that value is treated as a string
+          const stringValue = value as string;
 
-        {/* Strengths Section */}
-        <div className="mb-4 p-4 bg-gray-700 rounded-md">
-          <h3 className="text-purple-400 font-semibold mb-2">Strengths</h3>
-          {isEditing.strengths ? (
-            <textarea
-              value={editValues.strengths.join('\n')}
-              onChange={(e) =>
-                handleChange('strengths', e.target.value.split('\n'))
-              }
-              className="w-full p-2 bg-gray-800 text-white rounded-md"
-            />
-          ) : (
-            <ul className="text-gray-300 list-disc pl-5">
-              {profileData.strengths.map((strength, index) => (
-                <li key={index}>{strength}</li>
-              ))}
-            </ul>
-          )}
-          <button
-            onClick={() =>
-              isEditing.strengths
-                ? handleSave('strengths')
-                : handleEdit('strengths')
-            }
-            className="mt-2 text-sm text-purple-300"
-          >
-            {isEditing.strengths ? 'Save' : 'Edit'}
-          </button>
-        </div>
+          // Skip recommended_approach
+          if (key === 'recommended_approach') return null;
+
+          return (
+            <div key={key} className="mb-4 p-4 bg-gray-700 rounded-md">
+              <h3 className="text-blue-400 font-semibold mb-2">
+                {key.replace(/_/g, ' ')}
+              </h3>
+              <p className="text-gray-300">{stringValue}</p>
+            </div>
+          );
+        })}
 
         {/* Recommended Approach Section */}
         <div className="mb-4 p-4 bg-blue-700 rounded-md">
           <h3 className="text-pink-300 font-semibold mb-2">
             Recommended Approach
           </h3>
-          {isEditing.recommended_approach ? (
+          {recommendedApproachEdit ? (
             <textarea
-              value={editValues.recommended_approach}
-              onChange={(e) =>
-                handleChange('recommended_approach', e.target.value)
-              }
+              value={editValues}
+              onChange={(e) => handleRecommendedApproachChange(e.target.value)}
               className="w-full p-2 bg-gray-800 text-white rounded-md"
             />
           ) : (
-            <p className="text-gray-300">{profileData.recommended_approach}</p>
+            <p className="text-gray-300">{editValues}</p>
           )}
           <button
-            onClick={() =>
-              isEditing.recommended_approach
-                ? handleSave('recommended_approach')
-                : handleEdit('recommended_approach')
+            onClick={
+              recommendedApproachEdit
+                ? handleRecommendedApproachSave
+                : handleRecommendedApproachEdit
             }
             className="mt-2 text-sm text-pink-300"
           >
-            {isEditing.recommended_approach ? 'Save' : 'Edit'}
+            {recommendedApproachEdit ? 'Save' : 'Edit'}
           </button>
         </div>
 
         {/* Create Teacher Button */}
         <button
-          onClick={handleCreateTeacher}
+          onClick={() => console.log('Creating teacher profile...')}
           className="mt-6 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-500"
         >
           Let&apos;s Create Teacher
