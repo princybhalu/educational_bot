@@ -428,6 +428,24 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
             </div>
           </div>
 
+          {/* Message Bubble */}
+          <div className="relative bg-gray-800 rounded-2xl p-4 min-w-48">
+            <div className="flex gap-2 h-6 items-center px-4">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`
+                  w-3 h-3 rounded-full
+                  transition-all duration-300
+                  bg-gray-600 scale-100
+                `}
+                />
+              ))}
+            </div>
+
+            {/* Bubble Tail */}
+            <div className="absolute -left-2 top-1/2 -mt-2 w-4 h-4 bg-gray-800 transform rotate-45" />
+          </div>
           {isTypingComplete && (
             <>
               {' '}

@@ -443,30 +443,56 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
   return (
     <div className="min-h-screen bg-black w-full flex flex-col items-center justify-center">
       <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
-        {isAiThinking && (
+        {/* {isAiThinking && (
           <>
             <h1 className="text-white">setIsAiThinking</h1>
           </>
-        )}
+        )} */}
         <div className="avatar-container relative w-24 h-24 mb-4 transition-all duration-300">
           <div
             className={`relative w-24 h-24 mb-4 ease-in duration-300 ${isAvatarActive ? 'avatar-active' : ''}`}
           >
-            <div
+            {/* <div
               className="w-full h-full rounded-full ease-in duration-300"
               style={{
                 background: 'rgb(18, 24, 38)',
                 boxShadow: 'inset 0 0 15px rgba(0,0,0,0.5)',
               }}
-            />
+            /> */}
 
-            <div
+            {/* <div
               className={`absolute top-0 left-0 w-full h-full rounded-full transition-all duration-300
               ${isAvatarActive ? 'avatar-glow' : ''}`}
               style={{
                 background: 'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
                 backgroundSize: '200% 200%',
                 animation: 'gradient 3s ease infinite',
+                transform: 'scale(1)',
+                zIndex: 1,
+              }}
+            /> */}
+
+            {/* Base Circle with Fade Effect */}
+            <div
+              className={`w-full h-full rounded-full ease-in duration-300 ${
+                isAiThinking ? 'animate-pulse' : ''
+              }`}
+              style={{
+                background: 'rgb(18, 24, 38)',
+                boxShadow: 'inset 0 0 15px rgba(0,0,0,0.5)',
+                opacity: isAiThinking ? '0.8' : '1',
+                transition: 'opacity 0.5s ease-in-out',
+              }}
+            />
+
+            {/* Glowing Circle with Dynamic Gradient Animation */}
+            <div
+              className={`absolute top-0 left-0 w-full h-full rounded-full transition-all duration-300
+          ${isAvatarActive ? 'avatar-glow opacity-100' : 'opacity-70'}`}
+              style={{
+                background: 'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
+                backgroundSize: '200% 200%',
+                animation: `gradient ${isAiThinking ? '1.5s' : '3s'} ease infinite`,
                 transform: 'scale(1)',
                 zIndex: 1,
               }}
