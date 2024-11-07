@@ -97,6 +97,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
   const [drainProgress, setDrainProgress] = useState<number>(0);
   const [drainParticles, setDrainParticles] = useState<DrainParticle[]>([]);
   const [isTypingComplete, setIsTypingComplete] = useState(false);
+  const [a1, setA1] = useState(false);
 
   const user = useSelector((state: any) => state.auth.user);
   const [questionList, setQuestionList] = useState<null | QuestionsTypes[]>(
@@ -189,7 +190,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
 
     await drainColor();
     await new Promise((r) => setTimeout(r, 600));
-
+    setA1(true);
     const words = feedback.split(' ');
     for (let i = 0; i < words.length; i++) {
       setCurrentWordIndex(i);
@@ -198,7 +199,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
       setCurrentWord('');
       await new Promise((r) => setTimeout(r, 50));
     }
-
+    setA1(false);
     await new Promise((r) => setTimeout(r, 600));
     await fillColor();
     setIsTypingComplete(true);
@@ -490,10 +491,9 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
               className={`absolute top-0 left-0 w-full h-full rounded-full transition-all duration-300
           ${isAvatarActive ? 'avatar-glow opacity-100' : 'opacity-7'}`}
               style={{
-                background:
-                  displayWords.length > 1
-                    ? ''
-                    : 'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
+                background: a1
+                  ? 'transparent'
+                  : 'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
                 backgroundSize: '200% 200%',
                 animation: `gradient ${isAiThinking ? '1.5s' : '3s'} ease infinite`,
                 transform: 'scale(1)',
@@ -618,14 +618,14 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
               {!CurrentFullQuestion.ai_response?.feedback && !feedback ? (
                 <button
                   onClick={() => handleSubmit(answer)}
-                  disabled={!answer?.trim()}
+                  disabled={isAiThinking || !answer?.trim()}
                   className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                    !answer?.trim()
+                    !(isAiThinking || answer?.trim())
                       ? 'bg-blue-500/50 text-gray-300 cursor-not-allowed'
                       : 'bg-blue-500 hover:bg-blue-600 text-white'
                   }`}
                 >
-                  Send
+                  {!isAiThinking ? 'Send' : 'Processing...'}
                 </button>
               ) : questionList && questionList.length === currentQuestion ? (
                 <button
