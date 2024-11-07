@@ -478,7 +478,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
                 isAiThinking ? 'animate-pulse' : ''
               }`}
               style={{
-                background: 'rgb(18, 24, 38)',
+                background: '#ffffff',
                 boxShadow: 'inset 0 0 15px rgba(0,0,0,0.5)',
                 opacity: isAiThinking ? '0.8' : '1',
                 transition: 'opacity 0.5s ease-in-out',
@@ -488,9 +488,12 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
             {/* Glowing Circle with Dynamic Gradient Animation */}
             <div
               className={`absolute top-0 left-0 w-full h-full rounded-full transition-all duration-300
-          ${isAvatarActive ? 'avatar-glow opacity-100' : 'opacity-70'}`}
+          ${isAvatarActive ? 'avatar-glow opacity-100' : 'opacity-7'}`}
               style={{
-                background: 'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
+                background:
+                  displayWords.length > 1
+                    ? ''
+                    : 'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
                 backgroundSize: '200% 200%',
                 animation: `gradient ${isAiThinking ? '1.5s' : '3s'} ease infinite`,
                 transform: 'scale(1)',

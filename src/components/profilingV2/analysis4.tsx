@@ -138,7 +138,7 @@ const LearningProfile: React.FC<{
                 >
                   <div className="flex items-center space-x-3 md:space-x-4">
                     <div
-                      className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${getScaleColor(data.scale)}`}
+                      className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${getScaleColor(index)}`}
                     />
                     <h3 className="text-base md:text-lg lg:text-xl font-semibold text-white capitalize">
                       {key.replace(/_/g, ' ')}
