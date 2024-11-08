@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ProfileScreenNameV2 } from '../../utils/enums';
+import { Sparkles } from 'lucide-react';
 
 interface InfoCardProps {
   redirectTo: string;
@@ -306,7 +307,8 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
   useEffect(() => {
     setTimeout(() => {
       writeMessage();
-    }, 1000);
+    }, 10000);
+    // TODO : ABOVE ADD HERE 10,000
   }, []);
 
   return (
@@ -363,7 +365,8 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
                     className="absolute top-0 left-0 w-full h-full rounded-full"
                     style={{
                       background:
-                        'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
+                        // 'linear-gradient(45deg, #60a5fa, #1d4ed8, #0ea5e9)',
+                        'linear-gradient(135deg, #73fbd3, #44e5e7, #59d2fe, #4a8fe7, #5c7aff)',
                       backgroundSize: '200% 200%',
                       animation: 'gradient 3s ease infinite',
                       opacity: 1 - drainProgress / 100,
@@ -375,11 +378,32 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
                 </div>
 
                 {/* Added Title Section */}
-                <div className="text-center relative">
-                  <h1 className="text-xl md:text-3xl font-bold text-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] animate-gradient-x mb-2">
+                {/* <div className="text-center relative">
+                  <h1 className="text-xl md:text-3xl font-bold text-[#4A90E2] animate-gradient-x mb-2">
                     Let&rsquo;s create your perfect learning journey
                   </h1>
                   <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] rounded-full" />
+                </div>
+              </div> */}
+                {/* <div className="text-center relative">
+  <h1 className="text-xl md:text-3xl font-bold text-[#4A90E2] animate-gradient-x mb-2">
+    <span className="inline-flex items-center justify-center">
+      <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-[#4A90E2] animate-pulse mr-2" />
+      <span>Let&rsquo;s create your perfect learning journey</span>
+    </span>
+  </h1>
+  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] rounded-full" />
+</div> */}
+                <div className="text-center relative">
+                  <h1 className="text-xl md:text-3xl font-bold text-[#4A90E2] animate-gradient-x mb-2">
+                    <div className="flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-[#4A90E2] animate-pulse mr-1.5 md:mr-2 shrink-0" />
+                      <span className="inline-block">
+                        Let&rsquo;s create your perfect learning journey
+                      </span>
+                    </div>
+                  </h1>
+                  {/* <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] rounded-full" /> */}
                 </div>
               </div>
 
@@ -387,20 +411,20 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
                 <>
                   <div
                     ref={textContainerRef}
-                    className="bg-[#12182a] rounded-lg p-4 md:p-8 shadow-lg border border-[#1d2235] mb-6 initDiv"
+                    className="bg-[#12182a] text-justify rounded-lg p-4 md:p-8 shadow-lg border border-[#1d2235] mb-6 initDiv"
                   >
                     <p className="text-md md:text-lg text-white leading-relaxed relative">
                       {displayWords.map((word, index) => (
-                        <span
-                          key={index}
-                          className={`word inline-block mx-1 transition-all duration-200 ease-out ${
-                            index === currentWordIndex
-                              ? 'text-[#3b82f6]'
-                              : 'text-white'
-                          }`}
-                        >
-                          {word}
-                        </span>
+                        // <span
+                        //   key={index}
+                        //   className={`word inline-block mx-1 transition-all duration-200 ease-out ${
+                        //     index === currentWordIndex
+                        //       ? 'text-[#3b82f6]'
+                        //       : 'text-white'
+                        //   }`}
+                        // >
+                        <> {word}</>
+                        // </span>
                       ))}
                       {currentWord && (
                         <span className="current-word word inline-block mx-1 text-[#3b82f6]">
