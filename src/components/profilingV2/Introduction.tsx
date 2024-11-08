@@ -65,18 +65,18 @@ const InfoCard: React.FC<InfoCardProps> = ({
                 />
               </svg>
             </div>
-            <h3 className="text-lg md:text-2xl font-semibold text-[#3b82f6] md:mt-4">
+            <h3 className="text-2xl md:text-3xl font-semibold text-[#3b82f6] md:mt-4">
               {title}
             </h3>
           </div>
 
-          <p className="text-gray-300 mb-4 md:mb-6">{description}</p>
+          <p className="text-gray-200 text-lg md:text-2xl mb-4 md:mb-6">{description}</p>
         </div>
         <div>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className={`w-full py-2 md:py-4 bg-${buttonGradientTo} rounded-lg text-white font-semibold transform transition-all duration-300 hover:shadow-lg hover:shadow-[#3b82f6]/25`}
+            className={`w-full py-2 text-lg md:text-xl md:py-4 bg-${buttonGradientTo} rounded-lg text-white font-semibold transform transition-all duration-300 hover:shadow-lg hover:shadow-[#3b82f6]/25`}
             onClick={() => onClickONCard(redirectTo)}
           >
             {buttonText}
@@ -102,11 +102,11 @@ const AssessmentChoice = ({
     <div className="w-full min-h-screen max-w-4xl p-6 md:p-12 flex flex-col justify-center-4">
       {/* Header Section */}
       <div className="text-center mb-6 md:mb-12">
-        <h1 className="text-xl md:text-4xl font-bold text-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] animate-gradient-x mb-4">
+        <h1 className="text-3xl md:text-5xl font-bold text-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] animate-gradient-x mb-4">
           Choose Your Learning Path
         </h1>
         <div className="relative">
-          <p className="text-gray-300 md:text-xl max-w-2xl mx-auto">
+          <p className="text-gray-300 text-lg md:text-2xl max-w-2xl mx-auto">
             Select the assessment style that feels most natural to you
           </p>
           {/* <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] rounded-full animate-shimmer" /> */}
@@ -133,7 +133,7 @@ const AssessmentChoice = ({
         <InfoCard
           redirectTo={ProfileScreenNameV2.DESCRIPTION}
           title="Free Description"
-          description="Express yourself freely and tell us about your learning preferences in your own words."
+          description="Express yourself freely and tell us about your learning preferences in your own words.      "
           buttonText="Start Free Expression"
           iconPath="M12 5v14M5 12h14"
           bgFromColor="from-[#1d4ed8]/10"
@@ -157,7 +157,7 @@ const AssessmentChoice = ({
           onClick={() => scrollToComponent('intro')}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="px-8 py-3 bg-[#12182a] text-white rounded-lg border border-[#1d2235] hover:border-[#242d44] transition-all duration-300 flex items-center gap-3 group"
+          className="px-8 py-3 bg-[#12182a] text-lg md:text-xl text-white rounded-lg border border-[#1d2235] hover:border-[#242d44] transition-all duration-300 flex items-center gap-3 group"
         >
           <svg
             width="20"
@@ -307,7 +307,7 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
   useEffect(() => {
     setTimeout(() => {
       writeMessage();
-    }, 10000);
+    }, 100);
     // TODO : ABOVE ADD HERE 10,000
   }, []);
 
@@ -394,16 +394,16 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
   </h1>
   <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] rounded-full" />
 </div> */}
-                <div className="text-center relative">
-                  <h1 className="text-xl md:text-3xl font-bold text-[#4A90E2] animate-gradient-x mb-2">
-                    <div className="flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-[#4A90E2] animate-pulse mr-1.5 md:mr-2 shrink-0" />
-                      <span className="inline-block">
-                        Let&rsquo;s create your perfect learning journey
-                      </span>
-                    </div>
+                <div className="relative">
+                  <h1 className="text-2xl md:text-4xl font-bold text-[#4A90E2] animate-gradient-x mb-2 flex gap-2 justify-center Darker-Grotesque">
+                    {/* <div className="flex items-center justify-center"> */}
+                    <Sparkles className="w-7 h-7 md:w-9 md:h-9 text-[#4A90E2] animate-pulse shrink-0 pt-2" />
+                    {/* <span className="text-center max-w-max"> */}
+                      Let&rsquo;s create your perfect learning journey
+                    {/* </span> */}
+                    {/* </div> */}
                   </h1>
-                  {/* <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] rounded-full" /> */}
+                  <div className="absolute -bottom-2 left-[20%] md:left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] rounded-full" />
                 </div>
               </div>
 
@@ -441,11 +441,9 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
                 <div className="flex justify-center initDiv">
                   <button
                     onClick={() => scrollToComponent('assessment')}
-                    className="px-4 py-2 md:px-8 md:py-4 bg-[#3b82f6] rounded-lg text-white font-semibold text-md md:text-lg transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden group"
+                    className="px-4 py-2 md:px-8 md:py-4 bg-[#3b82f6] Darker-Grotesque rounded-lg text-white font-semibold text-xl md:text-2xl transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden group"
                   >
-                    <span className="relative z-10">Continue Your Journey</span>
-                    {/* <div className="absolute inset-0 bg-gradient-to-r from-[#60a5fa] via-[#1d4ed8] to-[#0ea5e9] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20 animate-shimmer" /> */}
+                      Continue Your Journey
                   </button>
                 </div>
               )}
@@ -457,7 +455,7 @@ const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
               {' '}
               <div
                 ref={assessmentRef}
-                className="h-screen snap-start p-4 flex flex-col items-center justify-center"
+                className="h-screen snap-start p-4 flex flex-col items-center justify-center Darker-Grotesque"
               >
                 <AssessmentChoice
                   setCurrentScreen={setCurrentScreen}
