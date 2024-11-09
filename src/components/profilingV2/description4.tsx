@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ProfileScreenNameV2 } from '../../utils/enums';
+import { PsychologicalProfileRoutesName } from '../../utils/enums';
 import {
   CreateProfileApiCall,
   GiveDescriptionApiCall,
 } from 'services/api/profiling';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 interface DrainParticle {
   id: number;
@@ -17,15 +18,7 @@ interface DrainParticle {
   progress: number;
 }
 
-interface IntroductionProps {
-  setCurrentScreen: (screen: string) => void;
-  onBack: () => void;
-}
-
-const Introduction: React.FC<IntroductionProps> = ({
-  setCurrentScreen,
-  onBack,
-}) => {
+const Introduction: React.FC = () => {
   const [displayWords, setDisplayWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(-1);
   const [currentWord, setCurrentWord] = useState<string>('');
@@ -40,6 +33,7 @@ const Introduction: React.FC<IntroductionProps> = ({
   const [feedback, setFeedback] = useState<string>('');
   const [showFeedback, setShowFeedback] = useState<boolean>(false);
   const [isCalledCreateProfile, setIsCalledCreateProfile] = useState(false);
+  const navigate = useNavigate();
 
   const textContainerRef = useRef<HTMLDivElement>(null);
   const user = useSelector((state: any) => state.auth.user);
@@ -152,7 +146,7 @@ const Introduction: React.FC<IntroductionProps> = ({
           description: userInput,
         });
         if (res.data.is_profile_completed) {
-          setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+          navigate(PsychologicalProfileRoutesName.ANALYSIS);
           return;
         }
 
@@ -183,7 +177,7 @@ const Introduction: React.FC<IntroductionProps> = ({
       try {
         const res = await CreateProfileApiCall(user.id);
         if (res.data.is_profile_completed) {
-          setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+          navigate(PsychologicalProfileRoutesName.ANALYSIS);
           return;
         }
         setIsCalledCreateProfile(true);
@@ -342,7 +336,9 @@ const Introduction: React.FC<IntroductionProps> = ({
               />
               <div className="flex justify-between">
                 <motion.button
-                  onClick={onBack}
+                  onClick={() =>
+                    navigate(PsychologicalProfileRoutesName.INTRODUCTION)
+                  }
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="px-6 py-2 bg-[#12182a] text-white rounded-lg border border-[#1d2235] hover:border-[#3b82f6] transition-all duration-300"
@@ -378,7 +374,7 @@ const Introduction: React.FC<IntroductionProps> = ({
               className="flex justify-center"
             >
               <motion.button
-                onClick={() => setCurrentScreen(ProfileScreenNameV2.ANALYSIS)}
+                onClick={() => navigate(PsychologicalProfileRoutesName.ANALYSIS)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-3 bg-[#3b82f6] text-white rounded-lg font-semibold shadow-lg hover:bg-[#2563eb] transition-all duration-300"

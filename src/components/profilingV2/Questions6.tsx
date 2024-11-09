@@ -7,7 +7,8 @@ import {
   GetAllQuestionListApiCall,
 } from '../../services/api/profiling';
 import { useSelector } from 'react-redux';
-import { ProfileScreenNameV2 } from '../../utils/enums';
+import { PsychologicalProfileRoutesName } from '../../utils/enums';
+import { useNavigate } from 'react-router-dom';
 
 interface DrainParticle {
   id: number;
@@ -79,13 +80,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
     </div>
   );
 };
-
-interface QuizProps {
-  setCurrentScreen: (a: string) => void;
-  setAnalysisData: (a: any) => void;
-}
-
-const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
+// setAnalysisData
+const Quiz: React.FC = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'in' | 'out'>(
     'out'
@@ -112,6 +108,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
   const [questionCompleted, setQuestionCompleted] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>('');
   const [isAiThinking, setIsAiThinking] = useState(false);
+  const navigate = useNavigate();
 
   const createDrainParticle = (): DrainParticle => {
     const angle = Math.random() * Math.PI * 2;
@@ -358,7 +355,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
           try {
             const res = await CreateProfileApiCall(user.id);
             if (res.data.is_profile_completed) {
-              setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+              navigate(PsychologicalProfileRoutesName.ANALYSIS);
               return;
             }
             setIsCalledCreateProfile(true);
@@ -371,7 +368,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
         if (res.data.profileData) res.data.profile_data = res.data.profileData;
         // if my question answer is completed
         if (res.data.is_profile_completed) {
-          setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+          navigate(PsychologicalProfileRoutesName.ANALYSIS);
           setAnalysisData(res.data.psychological_profile);
           return;
         }
@@ -391,14 +388,14 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
 
           // if my question answer is completed
           if (res.data.is_profile_completed) {
-            setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+            navigate(PsychologicalProfileRoutesName.ANALYSIS);
             return;
           } else if (
             questionList &&
             res.data.profile_data.length === questionList.length &&
             res.data.profile_data[questionList.length - 1].answers
           ) {
-            setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+            navigate(PsychologicalProfileRoutesName.ANALYSIS);
             return;
           }
 
@@ -595,7 +592,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
                   {' '}
                   <button
                     onClick={() =>
-                      setCurrentScreen(ProfileScreenNameV2.INTRODUCTION)
+                      navigate(PsychologicalProfileRoutesName.INTRODUCTION)
                     }
                     className={`px-4 py-2 rounded-lg font-semibold transition-colors bg-gray-700 hover:bg-gray-600 text-white`}
                   >
@@ -630,7 +627,7 @@ const Quiz: React.FC<QuizProps> = ({ setCurrentScreen, setAnalysisData }) => {
               ) : questionList && questionList.length === currentQuestion ? (
                 <button
                   onClick={() => {
-                    setCurrentScreen(ProfileScreenNameV2.ANALYSIS);
+                    navigate(PsychologicalProfileRoutesName.ANALYSIS);
                   }}
                   disabled={!isTypingComplete}
                   className={`px-4 py-2 rounded-lg font-semibold transition-colors ${

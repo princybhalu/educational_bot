@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ProfileScreenNameV2 } from '../utils/enums';
+import { PsychologicalProfileRoutesName } from '../utils/enums';
 import Introduction from '../components/profilingV2/Introduction';
 import QuestionsComp from '../components/profilingV2/Questions6';
 import T1 from '../components/profilingV2/macos-diagonal-fold';
@@ -30,47 +30,42 @@ const tempData = {
 
 export default function Profliling_V2() {
   const [CurrentScreen, setCurrentScreen] = useState(
-    ProfileScreenNameV2.INTRODUCTION
+    PsychologicalProfileRoutesName.INTRODUCTION
   );
   const [analysisData, setAnalysisData] = useState(tempData);
 
   return (
     <>
       {/* <div className="min-h-screen bg-black p-4 flex flex-col items-center justify-center"> */}
-      {CurrentScreen === ProfileScreenNameV2.INTRODUCTION && (
+      {CurrentScreen === PsychologicalProfileRoutesName.INTRODUCTION && (
         <>
           <Introduction setCurrentScreen={setCurrentScreen} />
         </>
       )}
 
-      {CurrentScreen === ProfileScreenNameV2.QUESTIONS && (
+      {CurrentScreen === PsychologicalProfileRoutesName.QUESTIONS && (
         <>
-          <QuestionsComp
-            setCurrentScreen={setCurrentScreen}
-            setAnalysisData={setAnalysisData}
-          />
+          <QuestionsComp setAnalysisData={setAnalysisData} />
         </>
       )}
 
-      {CurrentScreen === ProfileScreenNameV2.DESCRIPTION && (
+      {CurrentScreen === PsychologicalProfileRoutesName.DESCRIPTION && (
         <>
           <Description
-            setCurrentScreen={setCurrentScreen}
-            onBack={() => setCurrentScreen(ProfileScreenNameV2.INTRODUCTION)}
+            onBack={() =>
+              setCurrentScreen(PsychologicalProfileRoutesName.INTRODUCTION)
+            }
           />
         </>
       )}
 
-      {CurrentScreen === ProfileScreenNameV2.ANALYSIS && (
+      {CurrentScreen === PsychologicalProfileRoutesName.ANALYSIS && (
         <>
-          <Analysis
-            analysisData={analysisData}
-            setCurrentScreen={setCurrentScreen}
-          />
+          <Analysis analysisData={analysisData} />
         </>
       )}
 
-      {CurrentScreen === ProfileScreenNameV2.AI_CRAFTING && (
+      {CurrentScreen === PsychologicalProfileRoutesName.AI_CRAFTING && (
         <>
           {' '}
           <CraftingAITeacher />{' '}

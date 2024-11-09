@@ -1,15 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
-import authReducer from './userSlice'; // Import your auth slice
+import storageSession from 'redux-persist/lib/storage/session'; // Use session storage
+import authReducer from './userSlice';
+import PsychologicalProfileReducer from './psychologicalProfileSlice';
 
 const persistConfig = {
   key: 'root',
-  storage,
+  storage: storageSession, // Set storage to session storage
 };
 
 const rootReducer = {
-  auth: persistReducer(persistConfig, authReducer), // Add auth to persisted reducers
+  auth: persistReducer(persistConfig, authReducer),
+  psychologicalProfile: persistReducer(
+    persistConfig,
+    PsychologicalProfileReducer
+  ),
 };
 
 export const store = configureStore({

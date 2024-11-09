@@ -1,14 +1,11 @@
 import { lazy } from 'react';
 import { RouteConfig } from '../../types/route';
-import Layouts from '../../layouts/layouts';
-import QuestionCards from '../../components/profiling/QuestionSection';
+import { PsychologicalProfileRoutes } from './psychological-profile-routes';
 
-// Lazy load components
 const Landing = lazy(() => import('../../pages/Landing'));
 const Login = lazy(() => import('../../pages/login1'));
 const Register = lazy(() => import('../../pages/register1'));
 const Dashboard = lazy(() => import('../../pages/Dashboard'));
-const Profiling = lazy(() => import('../../pages/Profliling_V2'));
 const BasicInfo = lazy(() => import('../../pages/BasicInfo'));
 const StudyPlannerDashboard = lazy(() => import('../../pages/study-planner'));
 const LearningPathDashboard = lazy(() => import('../../pages/learning-path'));
@@ -52,14 +49,8 @@ export const routes: RouteConfig[] = [
     element: Dashboard,
     islayout: true,
   },
-  // teacher tailer route
-  {
-    path: '/profiling',
-    key: 'profiling',
-    isProtected: true,
-    element: Profiling,
-    // islayout: true,
-  },
+  ...PsychologicalProfileRoutes,
+  // study-planner
   {
     path: '/study-planner',
     key: 'studyPlanner',

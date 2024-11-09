@@ -16,7 +16,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     (state) => state.auth
   );
   const hasCompletedProfiling = useAppSelector(
-    (state) => state.auth.user?.hasCompletedProfiling
+    (state) => state.auth.user?.psychological_profile?.is_profile_completed
   ); // Assuming `hasCompletedProfiling` is part of user data
   console.log(hasCompletedProfiling, ' nk kjjnk');
   // Check if the user is logged in

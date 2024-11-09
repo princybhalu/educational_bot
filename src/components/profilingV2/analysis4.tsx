@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Edit2, Save, ArrowRight, Lightbulb } from 'lucide-react';
-import { ProfileScreenNameV2 } from '../../utils/enums';
+import { PsychologicalProfileRoutesName } from '../../utils/enums';
 import { AskQuetionApiCall } from 'services/api/profiling';
+import { useNavigate } from 'react-router-dom';
 
 interface LearningData {
   text: string;
@@ -10,20 +11,13 @@ interface LearningData {
   recommended_approach: string;
 }
 
-interface AnalysisData {
-  [key: string]: LearningData;
-}
-
-const LearningProfile: React.FC<{
-  analysisData: AnalysisData;
-  setCurrentScreen: (a: string) => void;
-}> = ({ analysisData, setCurrentScreen }) => {
+const LearningProfile: React.FC = ({ analysisData }) => {
   const [expandedCards, setExpandedCards] = useState<{
     [key: string]: boolean;
   }>({});
   const [isEditing, setIsEditing] = useState(false);
   const [recommendedApproach, setRecommendedApproach] = useState('');
-
+  const navigate = useNavigate();
   useEffect(() => {
     // Combine all recommended approaches
     const combinedApproach = Object.values(analysisData)
@@ -180,7 +174,7 @@ const LearningProfile: React.FC<{
           className="flex justify-center pt-6 md:pt-8"
         >
           <button
-            onClick={() => setCurrentScreen(ProfileScreenNameV2.AI_CRAFTING)}
+            onClick={() => navigate(PsychologicalProfileRoutesName.AI_CRAFTING)}
             className="group relative inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-300 text-sm md:text-base"
           >
             <span className="mr-2">Create Your AI Teacher</span>

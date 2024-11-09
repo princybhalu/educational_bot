@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PsychologicalProfileRoutesName } from '../../utils/enums';
 import { Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface InfoCardProps {
   redirectTo: string;
@@ -91,13 +92,13 @@ const InfoCard: React.FC<InfoCardProps> = ({
 
 const AssessmentChoice = ({
   scrollToComponent,
-  setCurrentScreen,
 }: {
   scrollToComponent: (componentId: 'intro' | 'assessment') => void;
-  setCurrentScreen: (a: string) => void;
 }) => {
+  const navigate = useNavigate();
   const onClickONCard = (type: string) => {
-    setCurrentScreen(type);
+    // setCurrentScreen(type);
+    navigate(type);
     console.log('set fun called : ', type);
   };
   return (
@@ -118,7 +119,7 @@ const AssessmentChoice = ({
       {/* Cards Container */}
       <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-12">
         <InfoCard
-          redirectTo={PsychologicalProfileRoutesName.QUESTIONS}
+          redirectTo={'/psychological-profile/question-list'}
           title="Guided Questions"
           description="Take a structured approach with our carefully crafted questions designed to understand your unique learning style."
           buttonText="Start Guided Journey"
@@ -133,7 +134,7 @@ const AssessmentChoice = ({
         />
 
         <InfoCard
-          redirectTo={PsychologicalProfileRoutesName.DESCRIPTION}
+          redirectTo={'/psychological-profile/free-description'}
           title="Free Description"
           description="Express yourself freely and tell us about your learning preferences in your own words.      "
           buttonText="Start Free Expression"
@@ -193,9 +194,7 @@ interface DrainParticle {
   progress: number;
 }
 
-const Introduction: React.FC<{ setCurrentScreen: (a: string) => void }> = ({
-  setCurrentScreen,
-}) => {
+const Introduction: React.FC = () => {
   const [displayWords, setDisplayWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(-1);
   const [currentWord, setCurrentWord] = useState<string>('');

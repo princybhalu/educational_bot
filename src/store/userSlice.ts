@@ -13,6 +13,7 @@ interface User {
   age: null | number;
   created_at: null | string;
   // Add more fields if needed
+  psychological_profile: any;
 }
 
 // Define the types for your auth state
