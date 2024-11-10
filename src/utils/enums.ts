@@ -21,3 +21,7 @@ export const QuestionStatus = {
   DISABLE: 'disable',
   COMPLETED: 'completed',
 };
+
+export const OrbitOpration = {
+  LOADING: 'loading',
+};

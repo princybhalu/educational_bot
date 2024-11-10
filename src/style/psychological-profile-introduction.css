@@ -1,0 +1,412 @@
+/* .psychological-profile-introduction-div {
+  position: relative;
+  min-height: 100vh;
+} */
+
+.neural-network {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0.4;
+}
+
+.container {
+  text-align: center;
+  padding: 2rem;
+  max-width: 600px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0 auto;
+}
+
+.orbit-container {
+  position: relative;
+  margin: 0 auto 2rem;
+}
+
+.orbit {
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(
+    from 0deg,
+    #4361ee,
+    #3498db,
+    #2ecc71,
+    #e74c3c,
+    #4361ee
+  );
+  border-radius: 50%;
+  position: relative;
+  animation: rotate 8s linear infinite;
+}
+
+.orbit::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  background: #000;
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(67, 97, 238, 0.5);
+}
+
+.orbit-inner {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  right: 15%;
+  bottom: 15%;
+  background: #fff;
+  border-radius: 50%;
+  filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.orbit-inner.typing {
+  animation: pulse 2s infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+.title {
+  color: #fff;
+  font-size: 24px;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  text-shadow: 0 0 20px rgba(67, 97, 238, 0.5);
+  animation: glow 2s infinite;
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    text-shadow: 0 0 20px rgba(67, 97, 238, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 30px rgba(67, 97, 238, 0.8);
+  }
+}
+
+.info-card {
+  position: relative;
+  background: rgba(20, 20, 40, 0.8);
+  padding: 2rem;
+  border-radius: 25px;
+  color: #fff;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(67, 97, 238, 0.3);
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.info-card.fade-in {
+  animation: fadeIn 0.5s forwards;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(67, 97, 238, 0.1),
+    rgba(67, 97, 238, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: shimmerEffect 3s infinite;
+}
+
+@keyframes shimmerEffect {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 10px 30px rgba(67, 97, 238, 0.3),
+    0 0 30px rgba(67, 97, 238, 0.2) inset;
+}
+
+.continue-btn {
+  background: linear-gradient(45deg, #4361ee, #3498db);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.continue-btn.fade-in {
+  animation: fadeIn 0.5s forwards;
+}
+
+.continue-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(67, 97, 238, 0.4);
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.highlight-text {
+  color: #4cc9f0;
+  font-weight: 500;
+}
+
+/* Assessment Choice css */
+.ChoicePath-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem;
+  color: white;
+}
+
+.ChoicePath-title {
+  color: #fff;
+  font-size: 32px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 600;
+  text-shadow: 0 0 30px rgba(67, 97, 238, 0.8);
+  animation: titlePulse 3s infinite;
+  letter-spacing: 1px;
+}
+
+@keyframes titlePulse {
+  0%,
+  100% {
+    text-shadow: 0 0 30px rgba(67, 97, 238, 0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 50px rgba(67, 97, 238, 1),
+      0 0 80px rgba(67, 97, 238, 0.5);
+  }
+}
+
+.ChoicePath-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin-bottom: 3rem;
+  font-size: 16px;
+  text-shadow: 0 0 20px rgba(67, 97, 238, 0.5);
+}
+
+.ChoicePath-choice-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.ChoicePath-choice-card {
+  position: relative;
+  background: rgba(13, 15, 30, 0.5);
+  border-radius: 24px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(67, 97, 238, 0.3);
+  transition: all 0.4s ease;
+  animation: cardFloat 3s ease-in-out infinite;
+}
+
+.ChoicePath-choice-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    transparent,
+    rgba(67, 97, 238, 0.1),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.ChoicePath-choice-card:hover::before {
+  opacity: 1;
+}
+
+.ChoicePath-card-content {
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.ChoicePath-card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #4361ee, #3498db);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: white;
+  margin-bottom: 1.5rem;
+  position: relative;
+  box-shadow: 0 0 30px rgba(67, 97, 238, 0.5);
+}
+
+.ChoicePath-return-btn {
+  margin-top: 2rem;
+  background: rgba(13, 15, 30, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(67, 97, 238, 0.3);
+  padding: 1rem;
+  border-radius: 15px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(5px);
+}
+
+.ChoicePath-card-title {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 20px rgba(67, 97, 238, 0.5);
+}
+
+.ChoicePath-card-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.ChoicePath-start-btn {
+  background: linear-gradient(45deg, #4361ee, #3498db);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(67, 97, 238, 0.3);
+}
+
+.ChoicePath-start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(67, 97, 238, 0.5);
+}
+
+.ChoicePath-return-btn {
+  margin-top: 2rem;
+  background: rgba(13, 15, 30, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(67, 97, 238, 0.3);
+  padding: 1rem;
+  border-radius: 15px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(5px);
+}
+
+.ChoicePath-return-btn:hover {
+  background: rgba(67, 97, 238, 0.2);
+  border-color: rgba(67, 97, 238, 0.5);
+  transform: translateY(-2px);
+}
+
+.ChoicePath-choice-card {
+  animation: cardFloat 3s ease-in-out infinite;
+  animation-delay: calc(var(--index) * 0.2s);
+}
+
+@keyframes cardFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.ChoicePath-highlight {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(67, 97, 238, 0.1),
+    transparent 50%
+  );
+}

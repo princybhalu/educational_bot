@@ -3,6 +3,9 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
+      rotate: {
+        'y-180': 'rotateY(180deg)',
+      },
       ringColor: {
         'theme-color-navy-blue': '#001f3f', // Custom navy blue ring color
       },
@@ -26,14 +29,14 @@ module.exports = {
         blink: {
           '0%, 20%': { opacity: '0.7' },
           '50%': { opacity: '1' },
-          '100%': { opacity: '0.9'}
+          '100%': { opacity: '0.9' },
         },
         drawLine: {
           '0%': { stroke: 'transparent', opacity: '0' },
           '50%': { stroke: '#003366', opacity: '1' },
           '100%': { stroke: 'transparent', opacity: '0' },
-        }
-      }
+        },
+      },
     },
   },
   plugins: [],

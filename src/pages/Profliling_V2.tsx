@@ -44,25 +44,17 @@ export default function Profliling_V2() {
       )}
 
       {CurrentScreen === PsychologicalProfileRoutesName.QUESTIONS && (
-        <>
-          <QuestionsComp setAnalysisData={setAnalysisData} />
-        </>
+        <>{/* <QuestionsComp setAnalysisData={setAnalysisData} /> */}</>
       )}
 
       {CurrentScreen === PsychologicalProfileRoutesName.DESCRIPTION && (
         <>
-          <Description
-            onBack={() =>
-              setCurrentScreen(PsychologicalProfileRoutesName.INTRODUCTION)
-            }
-          />
+          <Description />
         </>
       )}
 
       {CurrentScreen === PsychologicalProfileRoutesName.ANALYSIS && (
-        <>
-          <Analysis analysisData={analysisData} />
-        </>
+        <>{/* <Analysis analysisData={analysisData} /> */}</>
       )}
 
       {CurrentScreen === PsychologicalProfileRoutesName.AI_CRAFTING && (

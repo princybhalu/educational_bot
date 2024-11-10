@@ -10,3 +10,24 @@ export interface QuestionsTypes {
   };
   status?: string;
 }
+
+export interface OrbitProps {
+  opration: 'loading' | null;
+  size?: number;
+  colors?: string[];
+}
+
+export interface ButtonProps {
+  onClick: () => void;
+  children: React.ReactNode;
+  className?: string;
+  isVisible: boolean;
+}
+
+export interface TypingAnimtionCardProps {
+  text: string;
+  isVisible: boolean;
+  onTypingComplete: () => void;
+  className?: string;
+  message: string;
+}

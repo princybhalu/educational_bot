@@ -282,7 +282,7 @@ const Quiz: React.FC = () => {
             .feedback
         );
         if (questionList) setQuestionCompleted(questionList?.length);
-        setAnalysisData(res.data.psychological_profile);
+        // setAnalysisData(res.data.psychological_profile);
         await writeFeedback(
           res.data.profile_meta[res.data.last_attempted_question].ai_response
             .feedback + ' '
@@ -339,37 +339,37 @@ const Quiz: React.FC = () => {
   useEffect(() => {
     const ApisCall = async () => {
       try {
-        let QuestionListByApi = questionList ? questionList : [];
-        //get question list api call
-        if (!questionList) {
-          try {
-            const res = await GetAllQuestionListApiCall();
-            setQuestionList(res.data);
-            QuestionListByApi = res.data;
-          } catch (err) {
-            console.log('err in get question list', err);
-          }
-        }
+        const QuestionListByApi = questionList ? questionList : [];
+        // //get question list api call
+        // if (!questionList) {
+        //   try {
+        //     const res = await GetAllQuestionListApiCall();
+        //     setQuestionList(res.data);
+        //     QuestionListByApi = res.data;
+        //   } catch (err) {
+        //     console.log('err in get question list', err);
+        //   }
+        // }
 
-        if (!isCalledCreateProfile) {
-          try {
-            const res = await CreateProfileApiCall(user.id);
-            if (res.data.is_profile_completed) {
-              navigate(PsychologicalProfileRoutesName.ANALYSIS);
-              return;
-            }
-            setIsCalledCreateProfile(true);
-          } catch (err) {
-            console.log('err in get profile : ', err);
-          }
-        }
+        // if (!isCalledCreateProfile) {
+        //   try {
+        //     const res = await CreateProfileApiCall(user.id);
+        //     if (res.data.is_profile_completed) {
+        //       navigate(PsychologicalProfileRoutesName.ANALYSIS);
+        //       return;
+        //     }
+        //     setIsCalledCreateProfile(true);
+        //   } catch (err) {
+        //     console.log('err in get profile : ', err);
+        //   }
+        // }
 
         const res = await AskQuetionApiCall(null);
         if (res.data.profileData) res.data.profile_data = res.data.profileData;
         // if my question answer is completed
         if (res.data.is_profile_completed) {
           navigate(PsychologicalProfileRoutesName.ANALYSIS);
-          setAnalysisData(res.data.psychological_profile);
+          // setAnalysisData(res.data.psychological_profile);
           return;
         }
         if (res.data.profile_data) {
@@ -441,11 +441,6 @@ const Quiz: React.FC = () => {
   return (
     <div className="min-h-screen bg-black w-full flex flex-col items-center justify-center">
       <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
-        {/* {isAiThinking && (
-          <>
-            <h1 className="text-white">setIsAiThinking</h1>
-          </>
-        )} */}
         <div className="avatar-container relative w-24 h-24 mb-4 transition-all duration-300">
           <div
             className={`relative w-24 h-24 mb-4 ease-in duration-300 ${isAvatarActive ? 'avatar-active' : ''}`}
