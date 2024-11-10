@@ -6,12 +6,14 @@ import {
   CreateProfileApiCall,
   GiveDescriptionApiCall,
 } from 'services/api/profiling';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Orbit from '../../components/avatar/Orbit';
 import TypingAnimtionCard from '../../components/shared/TypingAnimtionCard';
+import { storeAnalysisData } from 'store/psychologicalProfileSlice';
 
 const FreeDescription: React.FC = () => {
+  const dispatch = useDispatch();
   const [isTypingComplete, setIsTypingComplete] = useState<boolean>(false);
   const [userInput, setUserInput] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -41,6 +43,7 @@ const FreeDescription: React.FC = () => {
           description: userInput,
         });
         if (res.data.is_profile_completed) {
+          dispatch(storeAnalysisData(res.data.psychological_profile));
           navigate(PsychologicalProfileRoutesName.ANALYSIS);
           return;
         }
@@ -81,6 +84,7 @@ const FreeDescription: React.FC = () => {
         const res = await CreateProfileApiCall(user.id);
         console.log({ res });
         if (res.data.is_profile_completed) {
+          dispatch(storeAnalysisData(res.data.psychological_profile));
           navigate(PsychologicalProfileRoutesName.ANALYSIS);
           return;
         }

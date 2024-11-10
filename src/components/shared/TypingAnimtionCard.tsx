@@ -15,6 +15,7 @@ const TypingAnimationCard: React.FC<TypingAnimationCardProps> = ({
   className = '',
   message = '',
 }) => {
+
   const [isTyping, setIsTyping] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout>();
   const [displayWords, setDisplayWords] = useState<string[]>([]);
@@ -26,6 +27,11 @@ const TypingAnimationCard: React.FC<TypingAnimationCardProps> = ({
       setIsTyping(true);
       // Split message into words and add extra space at end
       const words = message.split(' ').filter((word) => word.length > 0);
+
+      console.log({
+        message,
+        words
+      })
 
       const typeWord = async (word: string) => {
         let tempWord = '';
@@ -59,6 +65,7 @@ const TypingAnimationCard: React.FC<TypingAnimationCardProps> = ({
       // Cleanup function
       return () => {
         if (timeoutRef.current) {
+          setDisplayWords([]);
           clearTimeout(timeoutRef.current);
         }
       };

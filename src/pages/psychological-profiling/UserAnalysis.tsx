@@ -42,6 +42,7 @@ const MetricCard: React.FC<{
     setIsFlipped(!isFlipped);
   };
 
+
   return (
     <div className="group perspective cursor-pointer">
       <div
@@ -93,7 +94,11 @@ const MetricCard: React.FC<{
 
 const LearningDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const data: LearningData = useSelector((state: any) => state.learning) || {
+  const data: LearningData = useSelector((state: any) => {
+    console.log(state);
+    return state.psychologicalProfile.analysisData;
+    
+  }) || {
     hobby: {
       text: 'User appears to engage in hobbies that are unclear but may indicate a lack of clarity or confidence in choosing activities they enjoy.',
       scale: 4,
@@ -205,20 +210,39 @@ const LearningDashboard: React.FC = () => {
                 title={TITLES[key as keyof typeof TITLES]}
                 icon={ICONS[key as keyof typeof ICONS]}
                 scale={value.scale}
-                total={5}
+                total={10}
                 text={value.text}
               />
             ))}
           </div>
 
           <div className="flex justify-center mt-12 mb-4">
-            <button
-              onClick={handleAiTeacherClick}
-              className="px-6 py-3 bg-[#4361ee] to-[#4cc9f0] rounded-lg font-medium text-white transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 btn-glow flex items-center gap-2"
-            >
-              <span className="text-xl">🤖</span>
-              Let&rsquo;s Create AI Teacher
-            </button>
+          <button
+            className={`
+              relative inline-flex h-12 overflow-hidden rounded-full p-[2px]
+              focus:outline-none focus:ring-2 focus:ring-blue-400
+              focus:ring-offset-2 focus:ring-offset-slate-900
+              transition-all duration-300 transform hover:scale-105
+            `}
+            onClick={handleAiTeacherClick}
+          >
+            {/* Animated gradient border */}
+            <span className="absolute inset-[-1000%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#4361ee_0%,#4cc9f0_50%,#4361ee_100%)]" />
+            
+            {/* Button content with glass effect */}
+            <span className="
+              inline-flex h-full w-full cursor-pointer items-center justify-center
+              rounded-full bg-slate-950/90 px-8 py-1 text-sm font-medium
+              text-blue-200 backdrop-blur-3xl
+              transition-all duration-300
+              hover:bg-slate-950/70 hover:text-blue-100
+              group relative overflow-hidden
+            ">
+              {/* Subtle gradient overlay */}
+              <span className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-cyan-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="relative z-10"> Let&rsquo;s Create AI Teacher</span>
+            </span>
+          </button>
           </div>
         </div>
       </div>

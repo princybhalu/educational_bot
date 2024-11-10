@@ -24,6 +24,8 @@ const Introduction: React.FC = () => {
     targetRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  console.log('lmaooooooooooo');
+
   return (
     <>
       <div className="min-h-screen w-full overflow-hidden bg-black">

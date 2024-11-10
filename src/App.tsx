@@ -30,9 +30,7 @@ const App: React.FC = () => {
                   path={route.path}
                   element={
                     route.isProtected ? (
-                      <ProtectedRoute
-                        profilingIncomplete={route.isProfilingRequired ?? false}
-                      >
+                      <ProtectedRoute profilingIncomplete={true}>
                         {/* Exclude Layout for specific routes like /login */}
                         {route.islayout === true ? (
                           <Layout>
@@ -43,6 +41,9 @@ const App: React.FC = () => {
                         ) : (
                           <Suspense fallback={<DropletAnimation />}>
                             <route.element />
+
+                            {/* {console.log('dwadawdwadwdwa')}
+                            {console.log(route.element)} */}
                           </Suspense>
                         )}
                       </ProtectedRoute>

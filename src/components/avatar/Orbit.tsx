@@ -13,7 +13,7 @@ const Orbit: React.FC<OrbitProps> = ({
         <div
           className={`orbit-inner`}
           style={{
-            backgroundColor: opration === 'loading' ? 'transparent' : '#4361ee',
+            backgroundColor: opration === 'loading' ? '#212121' : '#4361ee',
           }}
         />
       </div>

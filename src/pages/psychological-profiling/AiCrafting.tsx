@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Oribt from '../../components/avatar/Orbit';
+import '../../style/psychological-profile-introduction.css';
 
 const AiTeacherSetup = () => {
   const [configProgress, setConfigProgress] = useState(0);
@@ -55,15 +56,15 @@ const AiTeacherSetup = () => {
   // Card components
   const ConfigurationCard = () => (
     <div
-      className="relative bg-slate-950/95 rounded-2xl p-8 border border-sky-500/20 overflow-hidden hover:border-sky-500 transition-colors duration-300"
+      className="relative bg-slate-950/95 rounded-2xl p-4 md:p-8 border border-sky-500/20 overflow-hidden hover:border-sky-500 transition-colors duration-300"
       onMouseMove={handleMouseMove}
     >
       <div className="flex justify-between items-center mb-8 relative z-10">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-sky-500/10 rounded-xl flex items-center justify-center text-xl">
+        <div className="flex items-center gap-2 md:gap-4">
+          <div className="h-8 w-8 md:w-10 md:h-10 bg-sky-500/10 rounded-xl flex items-center justify-center text-lg md:text-xl">
             ⚙️
           </div>
-          <span className="text-xl font-semibold text-sky-400">
+          <span className=" text-md md:text-xl font-semibold text-sky-400">
             Configuring Preferences
           </span>
         </div>
@@ -116,15 +117,15 @@ const AiTeacherSetup = () => {
 
   const NeuralNetworkCard = () => (
     <div
-      className="relative bg-slate-950/95 rounded-2xl p-8 border border-sky-500/20 overflow-hidden hover:border-sky-500 transition-colors duration-300"
+      className="relative bg-slate-950/95 rounded-2xl p-4 md:p-8 border border-sky-500/20 overflow-hidden hover:border-sky-500 transition-colors duration-300"
       onMouseMove={handleMouseMove}
     >
       <div className="flex justify-between items-center mb-8 relative z-10">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-sky-500/10 rounded-xl flex items-center justify-center text-xl">
+        <div className="flex items-center gap-2 md:gap-4">
+          <div className="h-8 w-8 md:w-10 md:h-10 bg-sky-500/10 rounded-xl flex items-center justify-center text-lg md:text-xl">
             🧠
           </div>
-          <span className="text-xl font-semibold text-sky-400">
+          <span className="text-md md:text-xl font-semibold text-sky-400">
             Training Neural Networks
           </span>
         </div>
@@ -187,15 +188,15 @@ const AiTeacherSetup = () => {
 
   const OptimizationCard = () => (
     <div
-      className="relative bg-slate-950/95 rounded-2xl p-8 border border-sky-500/20 overflow-hidden hover:border-sky-500 transition-colors duration-300"
+      className="relative bg-slate-950/95 rounded-2xl p-4 md:p-8 border border-sky-500/20 overflow-hidden hover:border-sky-500 transition-colors duration-300"
       onMouseMove={handleMouseMove}
     >
       <div className="flex justify-between items-center mb-8 relative z-10">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-sky-500/10 rounded-xl flex items-center justify-center text-xl">
+        <div className="flex items-center gap-2 md:gap-4">
+          <div className="w-10 h-10 bg-sky-500/10 rounded-xl flex items-center justify-center text-lg md:text-xl">
             ⚡
           </div>
-          <span className="text-xl font-semibold text-sky-400">
+          <span className="text-md md:text-xl font-semibold text-sky-400">
             Optimizing Responses
           </span>
         </div>
@@ -308,7 +309,7 @@ const AiTeacherSetup = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <Oribt opration={null} />
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-sky-400 bg-clip-text text-transparent">
+            <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-white to-sky-400 bg-clip-text text-transparent">
               Crafting Your AI Teacher
             </h1>
 

@@ -29,6 +29,7 @@ const psychologicalProfileSlice = createSlice({
     },
     storeAnalysisData: (state, action: PayloadAction<AnalysisData>) => {
       state.analysisData = action.payload;
+      console.log(state, action);
     },
   },
 });

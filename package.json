@@ -51,7 +51,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && npm run postbuild",
-    "postbuild": "purgecss --css build/static/css/*.css --content build/**/*.html --output build/static/css/",
+    "postbuild": "",
     "prepare": "husky install"
   },
   "eslintConfig": {

@@ -86,7 +86,7 @@ const Register: React.FC = () => {
   const handleBasicInfo: SubmitHandler<BasicInfoInputs> = async (data) => {
     try {
       await BasicInfoApiCall(data);
-      navigate('/profiling');
+      navigate('/psychological-profile');
     } catch (err) {
       console.error(err);
     }

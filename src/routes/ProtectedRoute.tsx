@@ -34,9 +34,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // }
 
   // If profiling is incomplete, redirect to profiling page
-  if (profilingIncomplete && !hasCompletedProfiling) {
+  console.log(profilingIncomplete, hasCompletedProfiling);
+  const routesList = ['/psychological-profile', '/psychological-profile/question-list', '/psychological-profile/user-analysis', '/psychological-profile/free-description', '/psychological-profile/ai-crafting'];
+  if (!routesList.includes(window.location.pathname)  && profilingIncomplete && !hasCompletedProfiling) {
     //TODO: check user is filled all basic info
-    return <Navigate to="/profiling" replace />;
+    return <Navigate to="/psychological-profile" replace />;
   }
 
   // If authenticated and profiling is complete, render children

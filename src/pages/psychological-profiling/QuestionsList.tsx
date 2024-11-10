@@ -48,7 +48,12 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   });
   const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setAnswer(e.target.value);
+    console.log(e?.target.value);
   };
+
+  useEffect(() => {
+    console.log(answer);
+  }, [answer]);
 
   return (
     <>
@@ -70,6 +75,13 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             rows={3}
             disabled={isSubmitted}
           ></textarea>
+
+{/* <textarea
+        value={answer}
+        onChange={handleTextAreaChange}
+        placeholder="Write your answer here..."
+        className="w-full p-3 rounded-lg bg-gray-700 text-white resize-none mb-4"
+        rows={3}></textarea> */}
           <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500 to-light-blue-400 transform scale-x-0 origin-left transition-transform duration-300 focus-within:scale-x-100"></div>
         </div>
       </div>
@@ -118,6 +130,7 @@ const Quiz: React.FC = () => {
     // Calculate the position of the avatar for animation
     const avatar = document.querySelector('.avatar-container');
     const card = document.querySelector('.question-card');
+    console.log(avatar, card, '=====');
     if (avatar && card) {
       const avatarRect = avatar.getBoundingClientRect();
       const cardRect = card.getBoundingClientRect();
@@ -261,30 +274,30 @@ const Quiz: React.FC = () => {
   useEffect(() => {
     const ApisCall = async () => {
       try {
-        const QuestionListByApi = questionList ? questionList : [];
-        // //get question list api call
-        // if (!questionList) {
-        //   try {
-        //     const res = await GetAllQuestionListApiCall();
-        //     setQuestionList(res.data);
-        //     QuestionListByApi = res.data;
-        //   } catch (err) {
-        //     console.log('err in get question list', err);
-        //   }
-        // }
+        let QuestionListByApi = questionList ? questionList : [];
+        //get question list api call
+        if (!questionList) {
+          try {
+            const res = await GetAllQuestionListApiCall();
+            setQuestionList(res.data);
+            QuestionListByApi = res.data;
+          } catch (err) {
+            console.log('err in get question list', err);
+          }
+        }
 
-        // if (!isCalledCreateProfile) {
-        //   try {
-        //     const res = await CreateProfileApiCall(user.id);
-        //     if (res.data.is_profile_completed) {
-        //       navigate(PsychologicalProfileRoutesName.ANALYSIS);
-        //       return;
-        //     }
-        //     setIsCalledCreateProfile(true);
-        //   } catch (err) {
-        //     console.log('err in get profile : ', err);
-        //   }
-        // }
+        if (!isCalledCreateProfile) {
+          try {
+            const res = await CreateProfileApiCall(user.id);
+            if (res.data.is_profile_completed) {
+              navigate(PsychologicalProfileRoutesName.ANALYSIS);
+              return;
+            }
+            setIsCalledCreateProfile(true);
+          } catch (err) {
+            console.log('err in get profile : ', err);
+          }
+        }
 
         const res = await AskQuetionApiCall(null);
         if (res.data.profileData) res.data.profile_data = res.data.profileData;
@@ -368,8 +381,9 @@ const Quiz: React.FC = () => {
       <NeuralNetwork />
       <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
         {/* ava */}
-        <Orbit opration={orbitOpartion} />
-
+        <div className="avatar-container">
+          <Orbit opration={orbitOpartion} />
+        </div>
         {/* Feedback Display */}
         <TypingAnimtionCard
           isVisible={isVisibleOfFeedback}
@@ -408,7 +422,8 @@ const Quiz: React.FC = () => {
                 ></div>
               </div>
 
-              <div className="question-card-container w-full perspective-1000">
+              <div className={`question-card question-card-container w-full perspective-1000 z-[0]
+              ${isTransitioning ? (transitionDirection === 'in' ? 'avatar-transition-in' : 'avatar-transition-out') : ''}`}>
                 <QuestionCard
                   questionNumber={currentQuestion}
                   totalQuestions={(questionList && questionList.length) ?? 10}
