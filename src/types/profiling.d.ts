@@ -12,7 +12,7 @@ export interface QuestionsTypes {
 }
 
 export interface OrbitProps {
-  opration: 'loading' | null;
+  opration: 'loading' | 'loading1' | null;
   size?: number;
   colors?: string[];
 }

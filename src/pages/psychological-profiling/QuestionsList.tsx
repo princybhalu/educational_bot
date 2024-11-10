@@ -114,7 +114,9 @@ const Quiz: React.FC = () => {
   const [feedback, setFeedback] = useState<string>('');
   const [isAiThinking, setIsAiThinking] = useState(false);
   const navigate = useNavigate();
-  const [orbitOpartion, setOrbitOpartion] = useState<'loading' | null>(null);
+  const [orbitOpartion, setOrbitOpartion] = useState<
+    'loading' | 'loading1' | null
+  >(null);
   const dispatch = useDispatch();
 
   const handleTypingComplete = () => {
@@ -190,6 +192,7 @@ const Quiz: React.FC = () => {
 
   const handleSubmit = async (answer: string) => {
     setIsAiThinking(true);
+    setOrbitOpartion('loading1');
     try {
       // Call your API here
       const res = await AskQuetionApiCall({
