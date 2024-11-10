@@ -8,7 +8,7 @@ const QuestionsListSection = lazy(
   () => import('../../pages/psychological-profiling/QuestionsList')
 );
 const UserAnalysisSection = lazy(
-  () => import('../../pages/psychological-profiling/UserAnalysis')
+  () => import('../../pages/psychological-profiling/UserAnalysis3')
 );
 const FreeDescriptionSection = lazy(
   () => import('../../pages/psychological-profiling/FreeDescription')
@@ -21,7 +21,7 @@ export const PsychologicalProfileRoutes: RouteConfig[] = [
   {
     path: '/psychological-profile',
     key: 'psychological-profile',
-    isProtected: true,
+    // isProtected: true,
     element: IntroductionSection,
     // islayout: true,
     // isProfilingRequired: true,
@@ -37,7 +37,7 @@ export const PsychologicalProfileRoutes: RouteConfig[] = [
   {
     path: '/psychological-profile/user-analysis',
     key: 'psychological-profile-user-analysis',
-    isProtected: true,
+    // isProtected: true,
     element: UserAnalysisSection,
     // islayout: true,
     // isProfilingRequired: true,

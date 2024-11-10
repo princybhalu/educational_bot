@@ -15,35 +15,27 @@ const TypingAnimationCard: React.FC<TypingAnimationCardProps> = ({
   className = '',
   message = '',
 }) => {
-
   const [isTyping, setIsTyping] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout>();
   const [displayWords, setDisplayWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(-1);
   const [currentWord, setCurrentWord] = useState<string>('');
+  const [fadeStates, setFadeStates] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
     if (isVisible && !isTyping) {
       setIsTyping(true);
-      // Split message into words and add extra space at end
+      setFadeStates({});
       const words = message.split(' ').filter((word) => word.length > 0);
-
-      console.log({
-        message,
-        words
-      })
 
       const typeWord = async (word: string) => {
         let tempWord = '';
-        // Type each character with a smoother animation
         for (let i = 0; i <= word.length; i++) {
           tempWord = word.slice(0, i);
           setCurrentWord(tempWord);
-          // Randomize typing speed slightly for more natural feel
-          await new Promise((r) => setTimeout(r, Math.random() * 15 + 25));
+          await new Promise((r) => setTimeout(r, 10));
         }
-        // Pause briefly after completing each word
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 10));
       };
 
       const writeMessage = async () => {
@@ -51,21 +43,28 @@ const TypingAnimationCard: React.FC<TypingAnimationCardProps> = ({
           setCurrentWordIndex(i);
           await typeWord(words[i]);
           setDisplayWords((prev) => [...prev, words[i]]);
+
+          // Start fade out after a delay
+          setTimeout(() => {
+            setFadeStates((prev) => ({
+              ...prev,
+              [i]: true,
+            }));
+          }, 800); // Delay before starting fade
+
           setCurrentWord('');
-          // Add slight pause between words
-          await new Promise((r) => setTimeout(r, 80));
+          await new Promise((r) => setTimeout(r, 30));
         }
         setIsTyping(false);
         onTypingComplete();
       };
 
-      // Start typing after a short initial delay
       timeoutRef.current = setTimeout(writeMessage, 500);
 
-      // Cleanup function
       return () => {
         if (timeoutRef.current) {
           setDisplayWords([]);
+          setFadeStates({});
           clearTimeout(timeoutRef.current);
         }
       };
@@ -80,11 +79,21 @@ const TypingAnimationCard: React.FC<TypingAnimationCardProps> = ({
         {displayWords.map((word, index) => (
           <React.Fragment key={index}>
             {index > 0 && ' '}
-            {word}
+            <span
+              style={{
+                transition: 'color 1s ease-out',
+                color: fadeStates[index] ? '#ffffff' : '#3b82f6',
+              }}
+            >
+              {word}
+            </span>
           </React.Fragment>
         ))}
         {currentWord && (
-          <span className="current-word word inline-block mx-1 text-[#3b82f6]">
+          <span
+            className="current-word word inline-block mx-1"
+            style={{ color: '#3b82f6' }}
+          >
             {currentWord}
             <span className="animate-pulse">|</span>
           </span>

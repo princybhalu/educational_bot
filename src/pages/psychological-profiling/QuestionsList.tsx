@@ -76,7 +76,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             disabled={isSubmitted}
           ></textarea>
 
-{/* <textarea
+          {/* <textarea
         value={answer}
         onChange={handleTextAreaChange}
         placeholder="Write your answer here..."
@@ -202,6 +202,7 @@ const Quiz: React.FC = () => {
           res.data.profile_meta[res.data.last_attempted_question].ai_response
             .feedback
         );
+        dispatch(storeAnalysisData(res.data.psychological_profile));
         if (questionList) setQuestionCompleted(questionList?.length);
         // setAnalysisData(res.data.psychological_profile);
         // await writeFeedback(
@@ -290,7 +291,10 @@ const Quiz: React.FC = () => {
           try {
             const res = await CreateProfileApiCall(user.id);
             if (res.data.is_profile_completed) {
-              navigate(PsychologicalProfileRoutesName.ANALYSIS);
+              dispatch(storeAnalysisData(res.data.psychological_profile));
+              setTimeout(() => {
+                navigate(PsychologicalProfileRoutesName.ANALYSIS);
+              }, 3000);
               return;
             }
             setIsCalledCreateProfile(true);
@@ -304,7 +308,9 @@ const Quiz: React.FC = () => {
         // if my question answer is completed
         if (res.data.is_profile_completed) {
           dispatch(storeAnalysisData(res.data.psychological_profile));
-          navigate(PsychologicalProfileRoutesName.ANALYSIS);
+          setTimeout(() => {
+            navigate(PsychologicalProfileRoutesName.ANALYSIS);
+          }, 3000);
           // setAnalysisData(res.data.psychological_profile);
           return;
         }
@@ -325,7 +331,9 @@ const Quiz: React.FC = () => {
           // if my question answer is completed
           if (res.data.is_profile_completed) {
             dispatch(storeAnalysisData(res.data.psychological_profile));
-            navigate(PsychologicalProfileRoutesName.ANALYSIS);
+            setTimeout(() => {
+              navigate(PsychologicalProfileRoutesName.ANALYSIS);
+            }, 3000);
             return;
           } else if (
             questionList &&
@@ -333,7 +341,9 @@ const Quiz: React.FC = () => {
             res.data.profile_data[questionList.length - 1].answers
           ) {
             dispatch(storeAnalysisData(res.data.psychological_profile));
-            navigate(PsychologicalProfileRoutesName.ANALYSIS);
+            setTimeout(() => {
+              navigate(PsychologicalProfileRoutesName.ANALYSIS);
+            }, 3000);
             return;
           }
 
@@ -422,8 +432,10 @@ const Quiz: React.FC = () => {
                 ></div>
               </div>
 
-              <div className={`question-card question-card-container w-full perspective-1000 z-[0]
-              ${isTransitioning ? (transitionDirection === 'in' ? 'avatar-transition-in' : 'avatar-transition-out') : ''}`}>
+              <div
+                className={`question-card question-card-container w-full perspective-1000 z-[0]
+              ${isTransitioning ? (transitionDirection === 'in' ? 'avatar-transition-in' : 'avatar-transition-out') : ''}`}
+              >
                 <QuestionCard
                   questionNumber={currentQuestion}
                   totalQuestions={(questionList && questionList.length) ?? 10}

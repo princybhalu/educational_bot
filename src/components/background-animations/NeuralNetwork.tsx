@@ -119,7 +119,7 @@ const NeuralNetwork: React.FC = () => {
       }
     }
 
-    const particles = Array.from({ length: 50 }, () => new Particle());
+    const particles = Array.from({ length: 80 }, () => new Particle());
 
     function animate() {
       if (canvas && ctx) {

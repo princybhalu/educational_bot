@@ -44,7 +44,9 @@ const FreeDescription: React.FC = () => {
         });
         if (res.data.is_profile_completed) {
           dispatch(storeAnalysisData(res.data.psychological_profile));
-          navigate(PsychologicalProfileRoutesName.ANALYSIS);
+          setTimeout(() => {
+            navigate(PsychologicalProfileRoutesName.ANALYSIS);
+          }, 3000);
           return;
         }
 
@@ -85,7 +87,9 @@ const FreeDescription: React.FC = () => {
         console.log({ res });
         if (res.data.is_profile_completed) {
           dispatch(storeAnalysisData(res.data.psychological_profile));
-          navigate(PsychologicalProfileRoutesName.ANALYSIS);
+          setTimeout(() => {
+            navigate(PsychologicalProfileRoutesName.ANALYSIS);
+          }, 3000);
           return;
         }
         setIsCalledCreateProfile(true);
