@@ -169,7 +169,7 @@ const LearningDashboard: React.FC = () => {
           50% { box-shadow: 0 0 20px rgba(67, 97, 238, 0.8); }
         }
       `}</style>
-      <div className="min-h-screen bg-[#0a0d1e] font-sans text-white">
+      <div className="min-h-screen bg-[#0a0d1e] text-white">
         <NeuralNetwork />
         <div className="relative z-10 max-w-7xl mx-auto p-8">
           <div className="text-center mb-12">

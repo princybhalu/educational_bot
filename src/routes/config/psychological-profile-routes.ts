@@ -29,7 +29,7 @@ export const PsychologicalProfileRoutes: RouteConfig[] = [
   {
     path: '/psychological-profile/question-list',
     key: 'psychological-profile-question-list',
-    isProtected: true,
+    // isProtected: true,
     element: QuestionsListSection,
     // islayout: true,
     // isProfilingRequired: true,
@@ -45,7 +45,7 @@ export const PsychologicalProfileRoutes: RouteConfig[] = [
   {
     path: '/psychological-profile/free-description',
     key: 'psychological-profile-free-description',
-    isProtected: true,
+    // isProtected: true,
     element: FreeDescriptionSection,
     // islayout: true,
     // isProfilingRequired: true,
@@ -53,7 +53,7 @@ export const PsychologicalProfileRoutes: RouteConfig[] = [
   {
     path: '/psychological-profile/ai-crafting',
     key: 'psychological-profile-ai-crafting',
-    isProtected: true,
+    // isProtected: true,
     element: AiCraftingSection,
     // islayout: true,
     // isProfilingRequired: true,

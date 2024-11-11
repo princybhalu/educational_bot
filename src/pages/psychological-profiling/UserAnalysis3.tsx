@@ -229,7 +229,7 @@ const LearningDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0d1e] font-sans text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#0a0d1e] text-white overflow-x-hidden">
       <style>
         {`
 @keyframes fadeIn {
