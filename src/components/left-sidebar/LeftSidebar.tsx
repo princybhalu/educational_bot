@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import CloseIcon from '../../assets/icons/CloseIcon';
-import { useSelector } from 'react-redux';
-import  logo from '../../assets/image/logo.jpeg';
+import logo from '../../assets/image/logo.png';
 
 const LeftsideBar: React.FC<{
   currentScreen: string;
@@ -146,7 +145,7 @@ const LeftsideBar: React.FC<{
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold bg-white">
                 {' '}
-                <img src={logo} className='w-20 h-10'/>{' '}
+                <img src={logo} className="w-20 h-10" />{' '}
               </h2>
               <button onClick={() => IsIsMobileMenuOpenFun(false)}>
                 <CloseIcon />

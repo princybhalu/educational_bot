@@ -17,3 +17,20 @@ export interface EventOFCalender {
   start?: string | Date;
   end?: string | Date;
 }
+
+export interface DayPlanItem {
+  completed?: any;
+  id: string;
+  schedule_id: string;
+  title: string;
+  created_by: string;
+  date: string;
+  start_time_utc: string;
+  end_time_utc: string;
+  type: string;
+  meta_data: {
+    chapter?: string;
+    subject?: string;
+    topic?: string;
+  };
+}

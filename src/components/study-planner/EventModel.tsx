@@ -234,7 +234,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { EventOFCalender } from 'types/study-planner';
+import { EventOFCalender } from '../../types/study-planner';
 import { AddTaskApiCall, UpdateTaskApiCall } from 'services/api/study-planner';
 import {
   Notification,
@@ -319,12 +319,16 @@ const convertEventTimes = (eventsArray: EventOFCalender[]) => {
     const eventDate = new Date(event.date);
 
     // Combine date and time
-    const startDateTimeUtc = moment.tz(new Date(event.start_time_utc), 'Asia/Kolkata').toISOString(true);
-    const endDateTimeUtc = moment.tz(new Date(event.end_time_utc), 'Asia/Kolkata').toISOString(true);
+    const startDateTimeUtc = moment
+      .tz(new Date(event.start_time_utc), 'Asia/Kolkata')
+      .toISOString(true);
+    const endDateTimeUtc = moment
+      .tz(new Date(event.end_time_utc), 'Asia/Kolkata')
+      .toISOString(true);
 
     console.log(
       event.title,
-      event,
+      event
       // endDateTimeUtc,
       // startDateTimeUtc,
       // new Date(startDateTimeUtc).toISOString().slice(0, 19) + 'Z',
@@ -390,8 +394,12 @@ const EventModal: React.FC<EventModalProps> = ({
         schedule_id: scheduleId,
         title: data.title,
         date: formattedDate,
-        start_time: moment.tz(new Date(data.startTime), 'Asia/Kolkata').toISOString(true),
-        end_time: moment.tz(new Date(data.endTime), 'Asia/Kolkata').toISOString(true),
+        start_time: moment
+          .tz(new Date(data.startTime), 'Asia/Kolkata')
+          .toISOString(true),
+        end_time: moment
+          .tz(new Date(data.endTime), 'Asia/Kolkata')
+          .toISOString(true),
         type: data.type,
         meta_data: {
           chapter: data.chapter,

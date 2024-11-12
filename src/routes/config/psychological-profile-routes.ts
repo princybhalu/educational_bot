@@ -8,7 +8,7 @@ const QuestionsListSection = lazy(
   () => import('../../pages/psychological-profiling/QuestionsList')
 );
 const UserAnalysisSection = lazy(
-  () => import('../../pages/psychological-profiling/UserAnalysis3')
+  () => import('../../pages/psychological-profiling/UserAnalysis')
 );
 const FreeDescriptionSection = lazy(
   () => import('../../pages/psychological-profiling/FreeDescription')

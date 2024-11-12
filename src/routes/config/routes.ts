@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { RouteConfig } from '../../types/route';
 import { PsychologicalProfileRoutes } from './psychological-profile-routes';
+import { StudyPlannerRoutes } from './study-planner';
 
 const Landing = lazy(() => import('../../pages/Landing'));
 const Login = lazy(() => import('../../pages/login1'));
@@ -17,7 +18,6 @@ const CalendarView = lazy(
   () => import('../../pages/study-planner/CalendarView')
 );
 const NotFound = lazy(() => import('../../components/shared/NotFoundPage'));
-const NewTheming = lazy(() => import('../../pages/newTheming'));
 
 export const routes: RouteConfig[] = [
   {
@@ -50,23 +50,8 @@ export const routes: RouteConfig[] = [
     islayout: true,
   },
   ...PsychologicalProfileRoutes,
-  // study-planner
-  {
-    path: '/study-planner',
-    key: 'studyPlanner',
-    // isProtected: true,
-    // isProfilingRequired: true,
-    element: StudyPlannerDashboard,
-    islayout: true,
-  },
-  {
-    path: '/study-planner/calendar/:scheduleId',
-    key: 'studyPlanner',
-    // isProtected: true,
-    // isProfilingRequired: true,
-    element: CalendarView,
-    islayout: true,
-  },
+  ...StudyPlannerRoutes,
+
   {
     path: '/learning-path',
     key: 'learningPath',
@@ -90,13 +75,6 @@ export const routes: RouteConfig[] = [
     // isProfilingRequired: true,
     element: LearningChatView,
     islayout: true,
-  },
-  {
-    path: '/new',
-    key: 'new',
-    isProtected: false,
-    islayout: false,
-    element: NewTheming,
   },
   {
     path: '*',

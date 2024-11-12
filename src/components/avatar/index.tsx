@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../style/DropletAnimation.css'; // Assuming CSS is still external
+// import '../../style/DropletAnimation.css'; // Assuming CSS is still external
 
 const DropletAnimation: React.FC = () => {
   return (

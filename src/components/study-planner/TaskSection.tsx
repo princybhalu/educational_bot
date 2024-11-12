@@ -8,7 +8,7 @@ import {
   CreateSchedulerApiCall,
   GetSchedulerListForUserApiCall,
   UpdateStatusOfSchedulerApiCall,
-} from 'services/api/study-planner';
+} from '../../services/api/study-planner';
 
 interface TaskData {
   id: string;

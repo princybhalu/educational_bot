@@ -33,24 +33,24 @@ const App: React.FC = () => {
                         {/* Exclude Layout for specific routes like /login */}
                         {route.islayout === true ? (
                           <Layout>
-                            <Suspense fallback={<DropletAnimation />}>
+                            <Suspense fallback={<LoadingSpinner />}>
                               <route.element />
                             </Suspense>
                           </Layout>
                         ) : (
-                          <Suspense fallback={<DropletAnimation />}>
+                          <Suspense fallback={<LoadingSpinner />}>
                             <route.element />
                           </Suspense>
                         )}
                       </ProtectedRoute>
                     ) : route.islayout === true ? (
                       <Layout>
-                        <Suspense fallback={<DropletAnimation />}>
+                        <Suspense fallback={<LoadingSpinner />}>
                           <route.element />
                         </Suspense>
                       </Layout>
                     ) : (
-                      <Suspense fallback={<DropletAnimation />}>
+                      <Suspense fallback={<LoadingSpinner />}>
                         <route.element />
                       </Suspense>
                     )
