@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 import { RouteConfig } from '../../types/route';
-import StudyPlannerDashboard from 'pages/study-planner/index';
+import StudyPlannerDashboard from 'pages/study-planner/index3';
 import CalendarView from 'pages/study-planner/CalendarView';
 
 export const StudyPlannerRoutes: RouteConfig[] = [
@@ -9,7 +9,7 @@ export const StudyPlannerRoutes: RouteConfig[] = [
     key: 'study-planner',
     // isProtected: true,
     element: StudyPlannerDashboard,
-    // islayout: true,
+    islayout: true,
     // isProfilingRequired: true,
   },
   {

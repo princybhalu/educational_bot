@@ -74,7 +74,7 @@ const LeftsideBar: React.FC<{
     <>
       {/* Sidebar for laptop view */}
       <aside
-        className={`bg-[#CEE6FF] text-black ${isCompact ? 'w-16' : 'w-64'} hidden lg:flex flex-col justify-between transition-all duration-300`}
+        className={`bg-[#CEE6FF] bg-gradient-to-br from-gray-900 to-slate-800 text-white ${isCompact ? 'w-16' : 'w-64'} hidden lg:flex flex-col justify-between transition-all duration-300`}
       >
         <div className="p-4">
           {filteredMenuItems.map((item, index) => (

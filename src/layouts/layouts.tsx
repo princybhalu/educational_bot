@@ -29,7 +29,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   );
 
   return (
-    <div className="flex flex-col h-screen ">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-900 to-slate-800">
       <Navbar
         isMobileMenuOpen={isMobileMenuOpen}
         IsIsMobileMenuOpenFun={setIsMobileMenuOpen}

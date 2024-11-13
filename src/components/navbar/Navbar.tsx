@@ -17,7 +17,7 @@ const Navbar: React.FC<NavbarProps> = ({
   const user = { ...user1 };
 
   return (
-    <nav className="bg-[#CEE6FF] text-black p-2">
+    <nav className="bg-[#CEE6FF] bg-gradient-to-br from-gray-900 to-slate-800 text-white p-2">
       <div className="flex justify-between items-center">
         {/* Mobile menu icon */}
         <div className="lg:hidden">
@@ -33,8 +33,8 @@ const Navbar: React.FC<NavbarProps> = ({
           {/* <h2 className="text-xl font-semibold text-white my-auto">
             Education AI
           </h2> */}
-          <img src={logo} alt="Brand logo" loading="lazy" className="w-16" />
-
+          {/* <img src={logo} alt="Brand logo" loading="lazy" className="w-16" /> */}
+          AI
         </div>
       </div>
     </nav>
