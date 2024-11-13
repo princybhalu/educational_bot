@@ -53,38 +53,28 @@ export const CreateSchedulerApiCall = (body: any) => {
 };
 
 export const GetTaskBetweenRangeApiCall = (
-  schedulerId: string,
+  schedulerId: string | null,
   startDate: string,
   endDate: string
 ) => {
-  return {
-    Status: 'Success',
-    data: [
-      {
-        id: 'accc80a1-decf-4a20-868a-ad12d4908d8f',
-        schedule_id: '23f0f3cb-a893-4261-9f57-100bd4cb6253',
-        title: 'Study Maths Chapter 1',
-        created_by: '5808f946-ca84-427e-b325-c5f9532614fa',
-        date: '2024-10-30T00:00:00.000Z',
-        start_time_utc: '09:00:00',
-        end_time_utc: '11:45:00',
-        type: 'study',
-        meta_data: {
-          chapter: '1',
-          subject: 'Mathematics',
-          topic: '',
-        },
-      },
-    ],
-  };
+  if (!schedulerId)
+    return http.get({
+      url:
+        '/scheduler-service/get-tasks-by-range?start_date=' +
+        startDate +
+        '&end_date=' +
+        endDate,
+      messageSettings: { hideSuccessMessage: true },
+    });
+
   return http.get({
     url:
-      '/scheduler-service/get-tasks-by-range/' +
-      schedulerId +
-      '?start_date=' +
+      '/scheduler-service/get-tasks-by-range/?start_date=' +
       startDate +
       '&end_date=' +
-      endDate,
+      endDate +
+      '&scheduler_id=' +
+      schedulerId,
     messageSettings: { hideSuccessMessage: true },
   });
 };
@@ -129,10 +119,16 @@ export const RemoveTaskApiCall = (taskId: string) => {
 // TODO : their is not any update api so we can not set rrsize and drop and edit events
 export const UpdateTaskApiCall = (
   body: any,
-  scheduleId: string,
+  scheduleId: string | null,
   taskId: any
 ) => {
-  console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', body);
+  const data = {
+    update_with: {
+      ...body,
+    },
+  };
+  //@ts-ignore
+  scheduleId ? (data.schedule_id = scheduleId) : null;
   return http.post({
     url: '/scheduler-service/task/' + taskId,
     data: {

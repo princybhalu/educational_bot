@@ -42,53 +42,57 @@ export default function Component() {
   };
 
   const fetchWeeklyData = async () => {
-    // Dummy data for demonstration
-    const dummyTasks: WeeklyTask[] = [
-      {
-        id: '1',
-        title: 'Mathematics Advanced Topics',
-        type: 'study',
-        date: '2024-01-15',
-        start_time_utc: '09:00:00',
-        end_time_utc: '11:00:00',
-        meta_data: {
-          subject: 'Mathematics',
-          chapter: 'Calculus',
-          topic: 'Derivatives',
+    try {
+      // Dummy data for demonstration
+      const dummyTasks: WeeklyTask[] = [
+        {
+          id: '1',
+          title: 'Mathematics Advanced Topics',
+          type: 'study',
+          date: '2024-01-15',
+          start_time_utc: '09:00:00',
+          end_time_utc: '11:00:00',
+          meta_data: {
+            subject: 'Mathematics',
+            chapter: 'Calculus',
+            topic: 'Derivatives',
+          },
         },
-      },
-      {
-        id: '2',
-        title: 'Physics Test Prep',
-        type: 'test',
-        date: '2024-01-16',
-        start_time_utc: '14:00:00',
-        end_time_utc: '15:30:00',
-        meta_data: {
-          subject: 'Physics',
-          chapter: 'Mechanics',
+        {
+          id: '2',
+          title: 'Physics Test Prep',
+          type: 'test',
+          date: '2024-01-16',
+          start_time_utc: '14:00:00',
+          end_time_utc: '15:30:00',
+          meta_data: {
+            subject: 'Physics',
+            chapter: 'Mechanics',
+          },
         },
-      },
-      {
-        id: '3',
-        title: 'Counseling Session',
-        type: 'therapy',
-        date: '2024-01-17',
-        start_time_utc: '13:00:00',
-        end_time_utc: '14:00:00',
-        meta_data: {},
-      },
-    ];
+        {
+          id: '3',
+          title: 'Counseling Session',
+          type: 'therapy',
+          date: '2024-01-17',
+          start_time_utc: '13:00:00',
+          end_time_utc: '14:00:00',
+          meta_data: {},
+        },
+      ];
 
-    const week = getWeekDates();
-    dummyTasks.forEach((task) => {
-      const dayIndex = new Date(task.date).getDay();
-      if (dayIndex >= 0) {
-        week[dayIndex].tasks.push(task);
-      }
-    });
+      const week = getWeekDates();
+      dummyTasks.forEach((task) => {
+        const dayIndex = new Date(task.date).getDay();
+        if (dayIndex >= 0) {
+          week[dayIndex].tasks.push(task);
+        }
+      });
 
-    setWeekData(week);
+      setWeekData(week);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getTaskColor = (type: string) => {

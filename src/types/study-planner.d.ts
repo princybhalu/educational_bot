@@ -28,6 +28,7 @@ export interface DayPlanItem {
   start_time_utc: string;
   end_time_utc: string;
   type: string;
+  completed?: boolean;
   meta_data: {
     chapter?: string;
     subject?: string;

@@ -16,11 +16,21 @@ import {
   Edit,
   Check,
   Plus,
+  BookOpen,
 } from 'lucide-react';
 import { DayPlanItem } from '../../types/study-planner';
 import EditTaskModal from '../../components/study-planner/EditTaskModal';
 import TaskModal from '../../components/study-planner/TaskModal';
 import WeeklySchedule from '../../components/study-planner/WeeklySchedule';
+import ExamPreparationView from '../../components/study-planner/ExamPreparation';
+import DayView from '../../components/study-planner/dayPlaner';
+import TabNavigation from '../../components/study-planner/TabNavigation';
+import {
+  AddTaskApiCall,
+  AddTaskByQueryApiCall,
+  GetTaskBetweenRangeApiCall,
+  UpdateTaskApiCall,
+} from 'services/api/study-planner';
 
 interface ProgressBarProps {
   value: number;
@@ -102,6 +112,12 @@ const initialTasks: Task[] = [
   },
 ];
 
+type Tab = {
+  id: 'plan-day' | 'plan-week' | 'plan-exam';
+  label: string;
+  icon: React.ComponentType<React.ComponentProps<typeof Home>>;
+};
+
 const AIEnhancedStudyPlanner: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [progress, setProgress] = useState<number>(0);
@@ -111,8 +127,26 @@ const AIEnhancedStudyPlanner: React.FC = () => {
     'plan-day' | 'plan-week' | 'plan-exam'
   >('plan-day');
   const [dayPlan, setDayPlan] = useState<DayPlanItem[]>([]);
+  const [loadingDay, setLoadingDay] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<DayPlanItem | null>(null);
+  const tabs: Tab[] = [
+    {
+      id: 'plan-day',
+      label: 'Plan Your Day',
+      icon: Home,
+    },
+    {
+      id: 'plan-week',
+      label: 'Plan Your Week',
+      icon: Calendar,
+    },
+    {
+      id: 'plan-exam',
+      label: 'Plan for Exam',
+      icon: BookOpen,
+    },
+  ];
 
   useEffect(() => {
     // Fetch day plan data when component mounts or when activeTab changes to 'plan-day'
@@ -123,32 +157,97 @@ const AIEnhancedStudyPlanner: React.FC = () => {
 
   const fetchDayPlan = async () => {
     try {
-      // In a real application, replace this with an actual API call
-      const data = {
-        Status: 'Success',
-        data: [
-          {
-            id: 'accc80a1-decf-4a20-868a-ad12d4908d8f',
-            schedule_id: '23f0f3cb-a893-4261-9f57-100bd4cb6253',
-            title: 'Study Maths Chapter 1',
-            created_by: '5808f946-ca84-427e-b325-c5f9532614fa',
-            date: '2024-10-19T00:00:00.000Z',
-            start_time_utc: '09:00:00',
-            end_time_utc: '11:45:00',
-            type: 'study',
-            meta_data: {
-              chapter: '1',
-              subject: 'Mathematics',
-              topic: '',
-            },
+      // const today = new Date();
+      // const endDate = today.toISOString().split('T')[0];
+      // today.setDate(today.getDate() - 1); // Subtract one day
+      // const startDate = today.toISOString().split('T')[0];
+      // const res = await GetTaskBetweenRangeApiCall(null , startDate + " 23:00:00.000" , endDate + " 23:00:00.000");
+      // console.log({res})
+      // if (res.data.Status === 'Success') {
+      //   setDayPlan(res.data.data);
+      // }
+      const data = [
+        {
+          id: 'accc80a1-decf-4a20-868a-ad12d4908d8f',
+          schedule_id: '23f0f3cb-a893-4261-9f57-100bd4cb6253',
+          title: 'Study Maths Chapter 1',
+          created_by: '5808f946-ca84-427e-b325-c5f9532614fa',
+          date: '2024-10-19T00:00:00.000Z',
+          start_time_utc: '09:00:00',
+          end_time_utc: '11:45:00',
+          type: 'study',
+          meta_data: {
+            chapter: '1',
+            subject: 'Mathematics',
+            topic: 'Algebra',
           },
-        ],
-      };
-      if (data.Status === 'Success') {
-        setDayPlan(data.data);
-      }
+        },
+        {
+          id: 'cf56e9b0-5c75-4ea2-95fc-1797c6c5e32e',
+          schedule_id: '75f2a9c9-1e77-4211-82ab-59bc52f2116f',
+          title: 'Test on Chemistry Chapter 2',
+          created_by: 'db123d46-8e87-4d06-bf5f-f0727fd3120a',
+          date: '2024-10-20T00:00:00.000Z',
+          start_time_utc: '10:30:00',
+          end_time_utc: '11:30:00',
+          type: 'test',
+          meta_data: {
+            chapter: '2',
+            subject: 'Chemistry',
+            topic: 'Organic Chemistry',
+          },
+        },
+        {
+          id: 'f8b927a3-d6fa-4ca6-940f-b5126e45a2a2',
+          schedule_id: '35a3e340-1b87-4d52-829b-f8121e67db55',
+          title: 'Study English Essay Writing',
+          created_by: '731f62b4-3df9-4a93-94b1-bbdff4628f3f',
+          date: '2024-10-21T00:00:00.000Z',
+          start_time_utc: '14:00:00',
+          end_time_utc: '16:00:00',
+          type: 'study',
+          meta_data: {
+            chapter: '',
+            subject: 'English',
+            topic: 'Essay Writing',
+          },
+        },
+        {
+          id: 'a9f56b01-bd5e-46d9-b07b-3f48a0a70d67',
+          schedule_id: '5c648ef1-50b0-4f4b-977d-542ec540fa32',
+          title: 'Test on Physics Mechanics',
+          created_by: 'cc793283-6f96-41d4-bb1b-bf09bc62f742',
+          date: '2024-10-22T00:00:00.000Z',
+          start_time_utc: '08:30:00',
+          end_time_utc: '09:30:00',
+          type: 'test',
+          meta_data: {
+            chapter: '',
+            subject: 'Physics',
+            topic: 'Mechanics',
+          },
+        },
+        {
+          id: '43bf9303-c56e-477f-b2ad-81d622a54e72',
+          schedule_id: '92c8c9d4-d2cf-4c8c-bcf7-ffb2b9b96c11',
+          title: 'Study History: The Renaissance',
+          created_by: '44d6279b-d3d6-4f66-9ab4-cbf9dbca9e1e',
+          date: '2024-10-23T00:00:00.000Z',
+          start_time_utc: '15:00:00',
+          end_time_utc: '17:00:00',
+          type: 'study',
+          meta_data: {
+            chapter: '',
+            subject: 'History',
+            topic: 'The Renaissance',
+          },
+        },
+      ];
+      setDayPlan(data);
     } catch (error) {
       console.error('Error fetching day plan:', error);
+    } finally {
+      setLoadingDay(false);
     }
   };
 
@@ -221,18 +320,11 @@ const AIEnhancedStudyPlanner: React.FC = () => {
       let response;
       if (updatedTask.id) {
         // Edit existing task
-        response = await fetch(`/api/tasks/${updatedTask.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedTask),
-        });
+        console.log({ updatedTask });
+        response = await UpdateTaskApiCall(updatedTask, null, updatedTask.id);
       } else {
         // Add new task
-        response = await fetch('/api/tasks', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedTask),
-        });
+        response = await AddTaskApiCall(updatedTask);
       }
 
       if (response.ok) {
@@ -255,14 +347,12 @@ const AIEnhancedStudyPlanner: React.FC = () => {
 
   const handleAddByMessage = async (message: string) => {
     try {
-      const response = await fetch('/api/tasks/by-message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message }),
+      const response = await AddTaskByQueryApiCall({
+        query: message,
       });
-      if (response.ok) {
-        const newTask = await response.json();
-        setDayPlan((prevPlan) => [...prevPlan, newTask]);
+      console.log({ response });
+      if (response.data) {
+        setDayPlan((prevPlan) => [...prevPlan, response.data]);
         setIsModalOpen(false);
       } else {
         console.error('Failed to add task by message');
@@ -357,107 +447,99 @@ const AIEnhancedStudyPlanner: React.FC = () => {
         </Badge>
       </div>
 
-      {/* tabs sections  */}
-      <div className="w-full mt-6">
-        <div className="flex justify-center bg-gray-800 border-b border-gray-700 py-3">
-          <button
-            className={`flex items-center px-4 py-2 mx-2 rounded-md transition-colors ${
-              activeTab === 'plan-day'
-                ? 'bg-gray-700 text-blue-400 hover:bg-gray-600'
-                : 'text-gray-300 hover:bg-gray-700'
-            }`}
-            onClick={() => setActiveTab('plan-day')}
-          >
-            <Home size={20} />
-            <span className="ml-2">Plan Your Day</span>
-          </button>
-          <button
-            className={`flex items-center px-4 py-2 mx-2 rounded-md transition-colors ${
-              activeTab === 'plan-week'
-                ? 'bg-gray-700 text-blue-400 hover:bg-gray-600'
-                : 'text-gray-300 hover:bg-gray-700'
-            }`}
-            onClick={() => setActiveTab('plan-week')}
-          >
-            <Grid size={20} />
-            <span className="ml-2">Plan Your Week</span>
-          </button>
-          <button
-            className={`flex items-center px-4 py-2 mx-2 rounded-md transition-colors ${
-              activeTab === 'plan-exam'
-                ? 'bg-gray-700 text-blue-400 hover:bg-gray-600'
-                : 'text-gray-300 hover:bg-gray-700'
-            }`}
-            onClick={() => setActiveTab('plan-exam')}
-          >
-            <Search size={20} />
-            <span className="ml-2">Plan for Exam</span>
-          </button>
-        </div>
-        {/* display active tabs content */}
-        {activeTab === 'plan-day' && (
-          <div className="p-4 bg-gray-800 rounded-lg shadow-lg">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-blue-400">Day View</h2>
+      {/* <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} dayPlan={dayPlan} /> */}
+
+      <div className="w-full">
+        <div className="relative bg-gray-950 border-b border-gray-800">
+          {/* Background Glow Effect for Active Tab */}
+          <div
+            className="absolute h-1 bottom-0 bg-blue-500/20 blur-sm transition-all duration-300"
+            style={{
+              left: `${(tabs.findIndex((tab) => tab.id === activeTab) * 100) / tabs.length}%`,
+              width: `${100 / tabs.length}%`,
+            }}
+          />
+
+          {/* Tabs Container */}
+          <div className="flex items-center justify-start overflow-x-auto scrollbar-hide max-w-screen-xl mx-auto">
+            {tabs.map((tab) => (
               <button
-                onClick={handleAddTask}
-                className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`
+                relative group flex-shrink-0 flex items-center justify-center
+                transition-all duration-200
+                
+                /* Mobile Styles */
+                px-3 py-3 min-w-[100px]
+                
+                /* Tablet Styles */
+                sm:px-4 sm:py-3 sm:min-w-[130px]
+                
+                /* Desktop Styles */
+                md:px-6 md:py-4 md:min-w-[160px]
+                
+                ${activeTab === tab.id ? 'text-blue-400' : 'text-gray-400 hover:text-gray-200'}
+              `}
               >
-                <Plus size={24} />
-              </button>
-            </div>
-            {dayPlan.length > 0 ? (
-              <ul className="space-y-4">
-                {dayPlan.map((item) => (
-                  <li
-                    key={item.id}
-                    className={`bg-gray-700 p-4 rounded-lg ${item.completed ? 'opacity-50' : ''}`}
+                {/* Active Tab Indicator */}
+                {activeTab === tab.id && (
+                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500" />
+                )}
+
+                {/* Icon and Label Container */}
+                <div className="flex items-center space-x-2">
+                  <tab.icon
+                    size={18}
+                    className={`transition-transform duration-200 
+                    ${activeTab === tab.id ? 'text-blue-400' : 'text-gray-500'}
+                    group-hover:scale-110`}
+                  />
+                  <span
+                    className={`
+                    font-medium tracking-wide whitespace-nowrap
+                    text-xs sm:text-sm
+                    ${activeTab === tab.id ? 'text-blue-400' : ''}
+                  `}
                   >
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-xl font-semibold text-blue-300">
-                        {item.meta_data.subject} - {item.meta_data.chapter} -{' '}
-                        {item.meta_data.topic}
-                      </h3>
-                      <div className="space-x-2">
-                        <button
-                          onClick={() => handleEditTask(item)}
-                          className="p-2 bg-yellow-500 text-gray-900 rounded-md hover:bg-yellow-600"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleCompleteTask(item.id)}
-                          className={`p-2 ${item.completed ? 'bg-green-500' : 'bg-gray-500'} text-gray-900 rounded-md hover:bg-green-600`}
-                        >
-                          <Check size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    <p className="text-gray-300 mt-2">{item.title}</p>
-                    <p className="text-gray-400">
-                      Time: {item.start_time_utc} - {item.end_time_utc}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-400">
-                No plans for today. Time to create some!
-              </p>
+                    {/* Show shortened labels on mobile */}
+                    <span className="block sm:hidden">
+                      {tab.label
+                        .replace('Plan Your ', '')
+                        .replace('Plan for ', '')}
+                    </span>
+                    {/* Show full labels on larger screens */}
+                    <span className="hidden sm:block">{tab.label}</span>
+                  </span>
+                </div>
+
+                {/* Hover Indicator */}
+                <div
+                  className={`
+                  absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100
+                  transition-opacity duration-200 pointer-events-none
+                  ${activeTab === tab.id ? 'bg-blue-500/5' : 'bg-gray-700/10'}
+                `}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content Container */}
+        <div className="bg-gray-950 min-h-screen">
+          <div className="p-0 sm:p-2 md:p-4">
+            {activeTab === 'plan-day' && !loadingDay && (
+              <DayView
+                dayPlan={dayPlan}
+                setIsModalOpen={setIsModalOpen}
+                setEditingTask={setEditingTask}
+              />
             )}
+            {activeTab === 'plan-week' && <WeeklySchedule />}
+            {activeTab === 'plan-exam' && <ExamPreparationView />}
           </div>
-        )}
-        {activeTab === 'plan-week' && (
-          <div className="p-4">
-            <WeeklySchedule />
-          </div>
-        )}
-        {activeTab === 'plan-exam' && (
-          <div className="p-4">
-            <h2 className="text-2xl font-bold text-blue-400">Exam Prep View</h2>
-            {/* exam prep view content */}
-          </div>
-        )}
+        </div>
       </div>
 
       {isModalOpen && (
