@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
@@ -8,12 +8,13 @@ import { DayPlanItem } from '../../types/study-planner';
 interface TaskModalProps {
   task: DayPlanItem | null;
   onClose: () => void;
-  onSave: (updatedTask: DayPlanItem) => Promise<void>;
+  onSave: (updatedTask: any) => Promise<void>;
   onAddByMessage: (message: string) => void;
   onAddByForm: (newTask: DayPlanItem) => Promise<void>;
 }
 
 const schema = yup.object().shape({
+  date: yup.string().required('Date is required'),
   title: yup.string().required('Title is required'),
   type: yup
     .string()
@@ -32,24 +33,14 @@ const schema = yup.object().shape({
       }
     ),
   meta_data: yup.object().when('type', {
-    //@ts-ignore
-    is: (type: string) => ['test', 'study'].includes(type),
-    then: yup
-      .object()
-      .shape({
+    is: (val: string) => ['test', 'study'].includes(val),
+    then: () =>
+      yup.object({
         subject: yup.string().required('Subject is required'),
         topic: yup.string(),
         chapter: yup.string(),
-      })
-      .test(
-        'topic-or-chapter',
-        'Either topic or chapter must be filled',
-        //@ts-ignore
-        function (meta_data) {
-          return meta_data.topic || meta_data.chapter;
-        }
-      ),
-    otherwise: yup.object().strip(),
+      }),
+    otherwise: () => yup.object({}),
   }),
 });
 
@@ -68,12 +59,14 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const {
     control,
     handleSubmit,
+    setValue,
     watch,
     formState: { errors },
   } = useForm({
     //@ts-ignore
     resolver: yupResolver(schema),
-    defaultValues: task || {
+    defaultValues: {
+      date: '',
       title: '',
       type: 'study',
       start_time_utc: '',
@@ -84,9 +77,27 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   const taskType = watch('type');
 
-  const onSubmit = (data: DayPlanItem) => {
-    const startDate = new Date(`2000-01-01T${data.start_time_utc}`);
-    data.date = startDate.toISOString().split('T')[0];
+  // Set form values for edit mode if task exists
+  useEffect(() => {
+    if (task) {
+      const date = task.start_time_utc.split('T')[0];
+      const startTime = task.start_time_utc.split('T')[1].slice(0, 5);
+      const endTime = task.end_time_utc.split('T')[1].slice(0, 5);
+      setValue('date', date);
+      setValue('start_time_utc', startTime);
+      setValue('end_time_utc', endTime);
+      setValue('title', task.title);
+      setValue('type', task.type);
+      if (task.meta_data) {
+        setValue('meta_data', task.meta_data);
+      }
+    }
+  }, [task, setValue]);
+
+  const onSubmit = (data: any) => {
+    data.start_time = `${data.date} ${data.start_time_utc}:00.000`;
+    data.end_time = `${data.date} ${data.end_time_utc}:00.000`;
+    console.log({ data });
     task ? onSave(data) : onAddByForm(data);
   };
 
@@ -96,7 +107,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 overflow-y-auto z-60">
       <div className="bg-gray-800 rounded-lg w-full max-w-md mx-auto">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h2 className="text-xl font-bold text-blue-400">
@@ -145,6 +156,31 @@ const TaskModal: React.FC<TaskModalProps> = ({
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4">
+            <div>
+              <label
+                htmlFor="date"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Date
+              </label>
+              <Controller
+                name="date"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="date"
+                    className="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                )}
+              />
+              {errors.date && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.date.message}
+                </p>
+              )}
+            </div>
+
             <div>
               <label
                 htmlFor="title"
@@ -198,7 +234,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <label
                   htmlFor="start_time_utc"
@@ -250,34 +286,45 @@ const TaskModal: React.FC<TaskModalProps> = ({
               </div>
             </div>
 
-            {['test', 'study'].includes(taskType) && (
-              <>
-                <div>
-                  <label
-                    htmlFor="meta_data.subject"
-                    className="block text-sm font-medium text-gray-300 mb-1"
-                  >
-                    Subject
-                  </label>
-                  <Controller
-                    name="meta_data.subject"
-                    control={control}
-                    render={({ field }) => (
-                      <input
-                        {...field}
-                        type="text"
-                        className="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    )}
-                  />
-                  {errors.meta_data?.subject && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.meta_data.subject.message}
-                    </p>
-                  )}
-                </div>
+            {(taskType === 'test' || taskType === 'study') && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-300">
+                  Meta Data
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="meta_data.subject"
+                      className="block text-sm font-medium text-gray-300 mb-1"
+                    >
+                      Subject
+                    </label>
+                    <Controller
+                      //@ts-ignore
+                      name="meta_data.subject"
+                      control={control}
+                      render={({ field }) => (
+                        //@ts-ignore
+                        <input
+                          {...field}
+                          type="text"
+                          className="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      )}
+                    />
+                    {
+                      //@ts-ignore
+                      errors.meta_data?.subject && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {
+                            //@ts-ignore
+                            errors.meta_data.subject.message
+                          }
+                        </p>
+                      )
+                    }
+                  </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label
                       htmlFor="meta_data.topic"
@@ -286,9 +333,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                       Topic
                     </label>
                     <Controller
+                      //@ts-ignore
                       name="meta_data.topic"
                       control={control}
                       render={({ field }) => (
+                        //@ts-ignore
                         <input
                           {...field}
                           type="text"
@@ -306,9 +355,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                       Chapter
                     </label>
                     <Controller
+                      //@ts-ignore
                       name="meta_data.chapter"
                       control={control}
                       render={({ field }) => (
+                        //@ts-ignore
                         <input
                           {...field}
                           type="text"
@@ -318,18 +369,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     />
                   </div>
                 </div>
-                {errors.meta_data && (
-                  <p className="mt-1 text-sm text-red-500">
-                    Either topic or chapter must be filled
-                  </p>
-                )}
-              </>
+              </div>
             )}
 
-            <div className="flex justify-end mt-6">
+            <div className="mt-4 flex justify-end">
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {task ? 'Save Changes' : 'Add Task'}
               </button>

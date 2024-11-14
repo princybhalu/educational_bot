@@ -1,6 +1,12 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import {
+  useState,
+  useEffect,
+  JSXElementConstructor,
+  Key,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
+} from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
@@ -17,31 +23,96 @@ import {
   Sun,
   Moon,
   Trophy,
+  Edit,
+  Check,
 } from 'lucide-react';
+import {
+  AddTaskApiCall,
+  AddTaskByQueryApiCall,
+  GetTaskBetweenRangeApiCall,
+  UpdateTaskApiCall,
+} from '../../services/api/study-planner';
+import TaskModal from '../../components/study-planner/TaskModal';
+import { DayPlanItem } from '../../types/study-planner';
+import { useForm } from 'react-hook-form';
 // import { cn } from '@/lib/utils';
 
 // Mock data
 const initialTasks = [
   {
-    id: 'task1',
-    content: 'Math: Algebra',
-    priority: 'high',
-    completed: false,
-    timestamp: new Date().toISOString(),
+    id: 'accc80a1-decf-4a20-868a-ad12d4908d8f',
+    schedule_id: '23f0f3cb-a893-4261-9f57-100bd4cb6253',
+    title: 'Study Maths Chapter 1',
+    created_by: '5808f946-ca84-427e-b325-c5f9532614fa',
+    date: '2024-10-19T00:00:00.000Z',
+    start_time_utc: '09:00:00',
+    end_time_utc: '11:45:00',
+    type: 'study',
+    status: 'completed',
+    meta_data: {
+      chapter: '1',
+      subject: 'Mathematics',
+      topic: 'Algebra',
+    },
   },
   {
-    id: 'task2',
-    content: 'Science: Chemistry',
-    priority: 'medium',
-    completed: false,
-    timestamp: new Date().toISOString(),
+    id: 'cf56e9b0-5c75-4ea2-95fc-1797c6c5e32e',
+    schedule_id: '75f2a9c9-1e77-4211-82ab-59bc52f2116f',
+    title: 'Test on Chemistry Chapter 2',
+    created_by: 'db123d46-8e87-4d06-bf5f-f0727fd3120a',
+    date: '2024-10-20T00:00:00.000Z',
+    start_time_utc: '10:30:00',
+    end_time_utc: '11:30:00',
+    type: 'test',
+    status: 'pending',
+    meta_data: {
+      chapter: '2',
+      subject: 'Chemistry',
+      topic: 'Organic Chemistry',
+    },
   },
   {
-    id: 'task3',
-    content: 'English: Essay Writing',
-    priority: 'low',
-    completed: false,
-    timestamp: new Date().toISOString(),
+    id: 'f8b927a3-d6fa-4ca6-940f-b5126e45a2a2',
+    schedule_id: '35a3e340-1b87-4d52-829b-f8121e67db55',
+    title: 'Study English Essay Writing',
+    created_by: '731f62b4-3df9-4a93-94b1-bbdff4628f3f',
+    date: '2024-10-21T00:00:00.000Z',
+    start_time_utc: '14:00:00',
+    end_time_utc: '16:00:00',
+    type: 'study',
+    status: 'pending',
+    meta_data: {
+      chapter: '',
+      subject: 'English',
+      topic: 'Essay Writing',
+    },
+  },
+  {
+    id: 'a9f56b01-bd5e-46d9-b07b-3f48a0a70d67',
+    schedule_id: '5c648ef1-50b0-4f4b-977d-542ec540fa32',
+    title: 'cbt session',
+    created_by: 'cc793283-6f96-41d4-bb1b-bf09bc62f742',
+    date: '2024-10-22T00:00:00.000Z',
+    start_time_utc: '08:30:00',
+    end_time_utc: '09:30:00',
+    type: 'theropy',
+    status: 'pending',
+  },
+  {
+    id: '43bf9303-c56e-477f-b2ad-81d622a54e72',
+    schedule_id: '92c8c9d4-d2cf-4c8c-bcf7-ffb2b9b96c11',
+    title: 'Study History: The Renaissance',
+    created_by: '44d6279b-d3d6-4f66-9ab4-cbf9dbca9e1e',
+    date: '2024-10-23T00:00:00.000Z',
+    start_time_utc: '15:00:00',
+    end_time_utc: '17:00:00',
+    type: 'study',
+    status: 'pending',
+    meta_data: {
+      chapter: '',
+      subject: 'History',
+      topic: 'The Renaissance',
+    },
   },
 ];
 
@@ -90,22 +161,286 @@ const BackgroundAnimation = () => (
   </div>
 );
 
+const subjectOptions = [
+  'Mathematics',
+  'Physics',
+  'Chemistry',
+  'Biology',
+  'Computer Science',
+  'Literature',
+  'History',
+  'Geography',
+];
+
+interface ExamFormData {
+  title: string;
+  examDate: string;
+  subjects: string[];
+}
+
+// Function to generate schedule for the current week
+function getWeekSchedule(tasks: any) {
+  const schedule = {};
+  weekDays.forEach((day) => {
+    //@ts-ignore
+    schedule[day.fullDay] = [];
+  });
+
+  const today = new Date();
+  const endDate = today.toISOString().split('T')[0];
+  today.setDate(today.getDate() - 1); // Subtract one day
+  const startDate = today.toISOString().split('T')[0];
+
+  // Assuming res is the response from API call
+  const res = tasks; // Replace this with your API response as needed
+
+  res.forEach((task: { date: string | number | Date }) => {
+    const taskDate = new Date(task.date);
+    const dayName = taskDate.toLocaleDateString('en-US', { weekday: 'long' });
+
+    // Check if the task day is within the current week's range
+    //@ts-ignore
+    if (schedule[dayName]) {
+      //@ts-ignore
+      schedule[dayName].push(task);
+    }
+  });
+
+  console.log({ schedule });
+  return schedule;
+}
+
+function extractTime(isoString: string) {
+  const date = new Date(isoString);
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
+function getMondayAndSundayOfCurrentWeek() {
+  const today = new Date();
+
+  // Get the current day of the week (0 = Sunday, 1 = Monday, etc.)
+  const dayOfWeek = today.getDay();
+
+  // Calculate the difference from today to the previous Monday
+  const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - diffToMonday);
+
+  // Calculate the difference from today to the upcoming Sunday
+  const diffToSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+  const sunday = new Date(today);
+  sunday.setDate(today.getDate() + diffToSunday);
+
+  // Helper function to format the date as "YYYY-MM-DD HH:mm:ss.sss"
+  function formatDate(date: any) {
+    return (
+      date.getFullYear() +
+      '-' +
+      String(date.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(date.getDate()).padStart(2, '0') +
+      ' ' +
+      String(date.getHours()).padStart(2, '0') +
+      ':' +
+      String(date.getMinutes()).padStart(2, '0') +
+      ':' +
+      String(date.getSeconds()).padStart(2, '0') +
+      '.' +
+      String(date.getMilliseconds()).padStart(3, '0')
+    );
+  }
+
+  return {
+    monday: formatDate(monday),
+    sunday: formatDate(sunday),
+  };
+}
+
+function divideTasksByDay(tasks: any) {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+  // Get Monday and Sunday of the current week
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - diffToMonday);
+  monday.setHours(0, 0, 0, 0);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+
+  // Initialize an object with keys for each day of the week
+  const weekDays = {
+    Monday: [],
+    Tuesday: [],
+    Wednesday: [],
+    Thursday: [],
+    Friday: [],
+    Saturday: [],
+    Sunday: [],
+  };
+
+  // Helper function to get the day of the week from a date
+  function getDayOfWeek(date: any) {
+    const days = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+    ];
+    return days[date.getDay()];
+  }
+
+  // Iterate over tasks and add them to the correct day
+  tasks.forEach((task: { date: string | number | Date }) => {
+    const taskDate = new Date(task.date);
+    taskDate.setHours(0, 0, 0, 0); // Set to start of the day for comparison
+
+    if (taskDate >= monday && taskDate <= sunday) {
+      const dayName = getDayOfWeek(taskDate);
+      //@ts-ignore
+      if (weekDays[dayName]) {
+        //@ts-ignore
+        weekDays[dayName].push(task);
+      }
+    }
+  });
+
+  return weekDays;
+}
+
+const formatTime = (time: string) => {
+  return new Date(`2024-01-01T${time}`).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  });
+};
+
 export default function Component() {
   const [tasks, setTasks] = useState(initialTasks);
+  const [loadingTasks, setloadingTasks] = useState(true);
   const [progress, setProgress] = useState(0);
   const [points, setPoints] = useState(0);
   const [currentPoints, setCurrentPoints] = useState(0);
   const [schedule, setSchedule] = useState({});
+  const [loadingSchedule, setLoadingSchedule] = useState(true);
   const [theme, setTheme] = useState('dark');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('day');
   const [selectedDay, setSelectedDay] = useState(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<DayPlanItem | null>(null);
+
+  const [isModalOpenOfExam, setIsModalOpenOfExam] = useState(false);
+
+  const { register, handleSubmit, control, reset } = useForm<ExamFormData>();
+
+  const handleEditTask = (task: any) => {
+    setEditingTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleAddTaskInDay = () => {
+    setEditingTask(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveTask = async (updatedTask: DayPlanItem) => {
+    try {
+      let response;
+      console.log({ updatedTask });
+      if (updatedTask.id) {
+        // Edit existing task
+        response = await UpdateTaskApiCall(updatedTask, null, updatedTask.id);
+      } else {
+        // Add new task
+        response = await AddTaskApiCall(updatedTask);
+      }
+
+      if (response.ok) {
+        const savedTask = await response.json();
+        setTasks((prevPlan) =>
+          updatedTask.id
+            ? prevPlan.map((task) =>
+                task.id === savedTask.id ? savedTask : task
+              )
+            : [...prevPlan, savedTask]
+        );
+        setIsModalOpen(false);
+      } else {
+        console.error('Failed to save task');
+      }
+    } catch (error) {
+      console.error('Error saving task:', error);
+    }
+  };
+
+  const handleAddByMessage = async (message: string) => {
+    try {
+      const response = await AddTaskByQueryApiCall({
+        query: message,
+      });
+      console.log({ response });
+      if (response.data && !response.data.conflict) {
+        setTasks((prevPlan) => [...prevPlan, response.data.task]);
+        setIsModalOpen(false);
+      } else {
+        console.error('Failed to add task by message');
+      }
+    } catch (error) {
+      console.error('Error adding task by message:', error);
+    }
+  };
+
+  const fetchApiDataOfPlanDay = async () => {
+    try {
+      const today = new Date();
+      const endDate = today.toISOString().split('T')[0];
+      today.setDate(today.getDate() - 1); // Subtract one day
+      const startDate = today.toISOString().split('T')[0];
+      const res = await GetTaskBetweenRangeApiCall(null, startDate, endDate);
+      setTasks(res.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setloadingTasks(false);
+    }
+  };
+
+  const fetchApiDataOfPlanWeek = async () => {
+    try {
+      const dates = getMondayAndSundayOfCurrentWeek();
+      const res = await GetTaskBetweenRangeApiCall(
+        null,
+        dates.monday,
+        dates.sunday
+      );
+      console.log({ res });
+      const currentWeekSchedule = divideTasksByDay(res.data);
+      setSchedule(currentWeekSchedule);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoadingSchedule(false);
+    }
+  };
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme) {
       setTheme(storedTheme);
     }
+
+    fetchApiDataOfPlanDay().then();
+    fetchApiDataOfPlanWeek().then();
   }, []);
 
   useEffect(() => {
@@ -143,7 +478,7 @@ export default function Component() {
     setLoading(true);
     setTimeout(() => {
       const newTasks = tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
+        task.id === id ? { ...task, status: 'completed' } : task
       );
       setTasks(newTasks);
       setProgress(Math.min(100, progress + 20));
@@ -226,7 +561,7 @@ export default function Component() {
           </div>
         </div>
       </div>
-
+      {/* 1st div */}
       <motion.div
         className="flex items-center space-x-4 bg-black/60 p-4 rounded-lg shadow-[0_0_20px_#3498db] border border-[#3498db] transition-all duration-300"
         initial={{ opacity: 0, y: 20 }}
@@ -247,6 +582,7 @@ export default function Component() {
         </div>
       </motion.div>
 
+      {/* 2nd div */}
       <motion.div
         className="flex justify-between items-center bg-black/60 p-4 rounded-lg shadow-[0_0_20px_#3498db] border border-[#3498db] transition-all duration-300"
         initial={{ opacity: 0, y: 20 }}
@@ -286,7 +622,9 @@ export default function Component() {
         </div>
       </motion.div>
 
+      {/* tabs*/}
       <div className="w-full">
+        {/* tabs btn */}
         <div className="grid w-full grid-cols-3 bg-black/50 rounded-lg overflow-hidden">
           <button
             onClick={() => setActiveTab('day')}
@@ -322,6 +660,15 @@ export default function Component() {
                 </p>
               </div>
               <div className="bg-gray-800/50 p-4 rounded-b-lg">
+                <button
+                  onClick={handleAddTaskInDay}
+                  className="mb-4 py-2 w-full bg-[#4361ee] hover:bg-[#3651d1] text-white"
+                >
+                  <div className="flex items-center justify-center">
+                    <Plus className="w-5 h-5 mr-2" />
+                    Add New Task
+                  </div>
+                </button>
                 <DragDropContext onDragEnd={onDragEnd}>
                   <Droppable droppableId="tasks">
                     {(provided) => (
@@ -331,115 +678,150 @@ export default function Component() {
                         className="space-y-4"
                       >
                         <AnimatePresence>
-                          {tasks.map((task, index) => (
-                            <Draggable
-                              key={task.id}
-                              draggableId={task.id}
-                              index={index}
-                            >
-                              {(provided) => (
-                                //@ts-ignore
-                                <motion.li
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className={`p-4 rounded-lg shadow-md flex justify-between items-center transition-all duration-300 ${
-                                    task.priority === 'high'
-                                      ? 'bg-[#e74c3c]/40'
-                                      : task.priority === 'medium'
-                                        ? 'bg-[#3498db]/30'
-                                        : 'bg-[#2ecc71]/20'
-                                  } ${task.completed ? 'opacity-50' : ''}`}
-                                  whileHover={{
-                                    scale: 1.02,
-                                    boxShadow:
-                                      '0 0 15px rgba(52, 152, 219, 0.5)',
-                                  }}
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  exit={{ opacity: 0, y: -20 }}
-                                  transition={{ duration: 0.2 }}
-                                >
-                                  <div className="flex items-center space-x-2">
-                                    {task.completed ? (
-                                      <Trophy className="w-5 h-5 text-green-500 mr-2" />
-                                    ) : (
-                                      <Clock className="w-5 h-5 text-yellow-500 mr-2" />
-                                    )}
-                                    {task.priority === 'high' && (
-                                      <Flame className="text-[#e74c3c] w-4 h-4" />
-                                    )}
-                                    <span
-                                      className={
-                                        task.completed
-                                          ? 'line-through text-[#AAB2BF]'
-                                          : 'text-white'
-                                      }
-                                    >
-                                      {task.content}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <span
-                                      className={`text-xs px-2 py-1 rounded ${
-                                        task.priority === 'high'
-                                          ? 'bg-[#e74c3c] text-white'
-                                          : 'bg-[#3498db] text-white'
-                                      }`}
-                                    >
-                                      {new Date(
-                                        task.timestamp
-                                      ).toLocaleTimeString([], {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                      })}
-                                    </span>
-                                    <button
-                                      onClick={() => completeTask(task.id)}
-                                      className="border border-[#4361ee] text-[#4361ee] hover:bg-[#4361ee] hover:text-white transition-all duration-300 px-2 py-1 rounded text-sm"
-                                      disabled={loading}
-                                    >
-                                      {loading ? (
-                                        <motion.div
-                                          animate={{ rotate: 360 }}
-                                          transition={{
-                                            duration: 1,
-                                            repeat: Infinity,
-                                            ease: 'linear',
-                                          }}
-                                        >
-                                          <svg
-                                            className="animate-spin h-5 w-5 text-white"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                          >
-                                            <circle
-                                              className="opacity-25"
-                                              cx="12"
-                                              cy="12"
-                                              r="10"
-                                              stroke="currentColor"
-                                              strokeWidth="4"
-                                            ></circle>
-                                            <path
-                                              className="opacity-75"
-                                              fill="currentColor"
-                                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                            ></path>
-                                          </svg>
-                                        </motion.div>
-                                      ) : task.completed ? (
-                                        'Undo'
+                          {!loadingTasks &&
+                            tasks.map((task, index) => (
+                              <Draggable
+                                key={task.id}
+                                draggableId={task.id}
+                                index={index}
+                              >
+                                {(provided) => (
+                                  //@ts-ignore
+                                  <motion.li
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className={`p-4 rounded-lg shadow-md flex justify-between items-center transition-all duration-300 ${
+                                      task.type === 'test'
+                                        ? 'bg-[#ff6347]/40'
+                                        : task.type === 'study'
+                                          ? 'bg-[#3498db]/30'
+                                          : 'bg-[#32cd32]/20'
+                                    } ${task.status === 'completed' ? 'opacity-50' : ''}`}
+                                    whileHover={{
+                                      scale: 1.02,
+                                      boxShadow:
+                                        '0 0 15px rgba(52, 152, 219, 0.5)',
+                                    }}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    transition={{ duration: 0.2 }}
+                                  >
+                                    <div className="flex items-center space-x-2">
+                                      {task.status === 'completed' ? (
+                                        <Trophy className="w-5 h-5 text-green-500 mr-2" />
                                       ) : (
-                                        'Complete'
+                                        <Clock className="w-5 h-5 text-yellow-500 mr-2" />
                                       )}
-                                    </button>
-                                  </div>
-                                </motion.li>
-                              )}
-                            </Draggable>
-                          ))}
+                                      <span
+                                        className={
+                                          task.status === 'completed'
+                                            ? 'line-through text-[#AAB2BF]'
+                                            : 'text-white'
+                                        }
+                                      >
+                                        {task.title}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <span
+                                        className={`text-xs px-2 py-1 rounded`}
+                                      >
+                                        {extractTime(task.start_time_utc)}
+                                      </span>
+                                      <button
+                                        onClick={() => handleEditTask(task)}
+                                        className="text-[#4361ee] hover:text-[#3651d1] transition-colors duration-300"
+                                      >
+                                        <Edit className="w-5 h-5" />
+                                      </button>
+                                      <button
+                                        onClick={() => completeTask(task.id)}
+                                        className={`border border-[#2a9d8f] text-[#2a9d8f] hover:bg-[#2a9d8f] hover:text-white 
+                                         transition-all duration-300 px-4 py-2 rounded-lg shadow-md transform 
+                                         hover:scale-105 active:scale-95 flex items-center gap-2 ${
+                                           loading
+                                             ? 'cursor-wait'
+                                             : 'cursor-pointer'
+                                         }`}
+                                        disabled={loading}
+                                      >
+                                        {loading ? (
+                                          <motion.div
+                                            animate={{ rotate: 360 }}
+                                            transition={{
+                                              duration: 1,
+                                              repeat: Infinity,
+                                              ease: 'linear',
+                                            }}
+                                          >
+                                            <svg
+                                              className="h-5 w-5 text-[#2a9d8f]"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                            >
+                                              <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                              ></circle>
+                                              <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                              ></path>
+                                            </svg>
+                                          </motion.div>
+                                        ) : task.status === 'completed' ? (
+                                          <>
+                                            <span className="text-lg">
+                                              <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth={1.5}
+                                                stroke="currentColor"
+                                                className="size-6"
+                                              >
+                                                <path
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                                                />
+                                              </svg>
+                                            </span>{' '}
+                                          </>
+                                        ) : (
+                                          <>
+                                            <span className="text-lg">
+                                              <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth="2"
+                                                stroke="currentColor"
+                                                className="w-5 h-5"
+                                              >
+                                                <path
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  d="M5 13l4 4L19 7"
+                                                />
+                                              </svg>
+                                            </span>{' '}
+                                          </>
+                                        )}
+                                      </button>
+                                    </div>
+                                  </motion.li>
+                                )}
+                              </Draggable>
+                            ))}
                         </AnimatePresence>
                         {provided.placeholder}
                       </ul>
@@ -482,7 +864,8 @@ export default function Component() {
                           <div className="text-white text-xs sm:text-sm opacity-80">
                             {
                               //@ts-ignore
-                              schedule[fullDay]?.length || 0
+                              (!loadingSchedule && schedule[fullDay]?.length) ||
+                                0
                             }{' '}
                             tasks
                           </div>
@@ -547,7 +930,10 @@ export default function Component() {
                       View Detailed Plan
                     </button>
                   </motion.div>
-                  <button className="w-full bg-gradient-to-r from-[#3498db] to-[#4361ee] hover:from-[#3498db]/80 hover:to-[#4361ee]/80 text-white transition-all duration-300 shadow-[0_0_15px_#3498db] p-2 rounded">
+                  <button
+                    className="w-full bg-gradient-to-r from-[#3498db] to-[#4361ee] hover:from-[#3498db]/80 hover:to-[#4361ee]/80 text-white transition-all duration-300 shadow-[0_0_15px_#3498db] p-2 rounded"
+                    onClick={() => setIsModalOpenOfExam(true)}
+                  >
                     <Plus className="inline-block h-4 w-4 mr-2" /> Add New Exam
                     Plan
                   </button>
@@ -592,67 +978,107 @@ export default function Component() {
               </h3>
               <button
                 onClick={() => setSelectedDay(null)}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-white transition-colors"
               >
                 <X className="h-6 w-6" />
               </button>
             </div>
             <div className="mt-4 max-h-[60vh] overflow-y-auto">
               <AnimatePresence>
-                {
-                //@ts-ignore
-                schedule[selectedDay]?.map((task : any, index : number) => (
+                {//@ts-ignore
+                schedule[selectedDay]?.map((task, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.2 }}
-                    className="flex justify-between items-center mb-2 p-3 bg-gray-800/50 rounded-lg"
+                    className="mb-4 p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800/70 transition-colors"
                   >
-                    <span className="text-[#AAB2BF]">{task}</span>
-                    <button
-                      onClick={() => {
-                        const newSchedule = { ...schedule };
-                        // @ts-ignore
-                        newSchedule[selectedDay] = newSchedule[
-                          selectedDay
-                        // @ts-ignore
-                        ].filter((_, i) => i !== index);
-                        setSchedule(newSchedule);
-                      }}
-                      className="text-[#e74c3c] hover:text-[#e74c3c]/80 hover:bg-[#e74c3c]/20 p-1 rounded"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-[#E1F5FE] mb-1">
+                          {task.meta_data.subject}
+                          {task.meta_data.chapter && (
+                            <span className="text-[#3498db]">
+                              {' '}
+                              - Chapter {task.meta_data.chapter}
+                            </span>
+                          )}
+                        </h3>
+                        <p className="text-sm text-gray-300">
+                          {task.meta_data.topic}
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleEditTask(task)}
+                          className="p-2 bg-blue-500/20 rounded-lg hover:bg-blue-500/30 transition-colors"
+                        >
+                          <Edit size={16} className="text-[#3498db]" />
+                        </button>
+                        <button
+                          //@ts-ignore
+                          onClick={() => handleCompleteTask(task.id)}
+                          className="p-2 bg-green-500/20 rounded-lg hover:bg-green-500/30 transition-colors"
+                        >
+                          <Check size={16} className="text-green-500" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            const newSchedule = { ...schedule };
+                            //@ts-ignore
+                            newSchedule[selectedDay] = newSchedule[
+                              selectedDay
+                              //@ts-ignore
+                            ].filter((_, i) => i !== index);
+                            setSchedule(newSchedule);
+                          }}
+                          className="p-2 bg-red-500/20 rounded-lg hover:bg-red-500/30 transition-colors"
+                        >
+                          <X className="h-4 w-4 text-red-500" />
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-lg font-medium text-white mb-2">
+                      {task.title}
+                    </p>
+                    <div className="text-sm text-gray-400 flex items-center">
+                      <svg
+                        className="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      {formatTime(task.start_time_utc)} -{' '}
+                      {formatTime(task.end_time_utc)}
+                    </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
             </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                        // @ts-ignore
-                const task = e.target.task.value;
-                if (task) {
-                  handleAddTask(selectedDay, task);
-                        // @ts-ignore
-                  e.target.reset();
-                }
-              }}
-              className="mt-4 flex gap-2"
-            >
-              <input
+            <form className="mt-4 flex gap-2">
+              {/* <input
                 name="task"
                 placeholder="Add new task"
-                className="flex-grow p-2 rounded bg-gray-800/50 text-white focus:outline-none focus:ring-2 focus:ring-[#3498db]"
-              />
+                className="flex-grow p-2 rounded bg-gray-800/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3498db] transition-all"
+              /> */}
               <button
-                type="submit"
-                className="bg-[#3498db] hover:bg-[#3498db]/80 text-white px-4 py-2 rounded flex items-center justify-center"
-                disabled={loading}
+                className="bg-[#3498db] hover:bg-[#3498db]/80 text-white px-4 py-2 rounded flex items-center justify-center transition-colors"
+                // disabled={loading}
+                onClick={() => {
+                  setSelectedDay(null);
+                  handleAddTaskInDay();
+                }}
               >
-                {loading ? (
+                {/* {loading ? (
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{
@@ -684,12 +1110,25 @@ export default function Component() {
                   </motion.div>
                 ) : (
                   <Plus className="h-5 w-5" />
-                )}
+                )} */}
+                Add New Task
               </button>
             </form>
           </motion.div>
         </div>
       )}
+
+      {isModalOpen && (
+        <TaskModal
+          task={editingTask}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSaveTask}
+          onAddByMessage={handleAddByMessage}
+          onAddByForm={handleSaveTask}
+        />
+      )}
+
+      {/* Add Exam Modal */}
     </motion.div>
   );
 }
