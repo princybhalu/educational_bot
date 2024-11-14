@@ -132,10 +132,22 @@ export const UpdateTaskApiCall = (
   return http.post({
     url: '/scheduler-service/task/' + taskId,
     data: {
-      schedule_id: scheduleId,
       update_with: {
         ...body,
       },
     },
+  });
+};
+
+export const AddExamScheduleApiCall = (body: any) => {
+  return http.post({
+    url: '/scheduler-service/schedule',
+    data: body,
+  });
+};
+
+export const GetSchedulerListForExam = () => {
+  return http.get({
+    url: '/scheduler-service/schedules',
   });
 };

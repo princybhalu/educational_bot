@@ -15,7 +15,10 @@ interface TaskModalProps {
 
 const schema = yup.object().shape({
   date: yup.string().required('Date is required'),
-  title: yup.string().required('Title is required'),
+  title: yup
+    .string()
+    .required('Title is required')
+    .min(3, 'Title must be at least 3 characters'),
   type: yup
     .string()
     .oneOf(['test', 'study', 'therapy'], 'Invalid task type')
@@ -97,6 +100,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const onSubmit = (data: any) => {
     data.start_time = `${data.date} ${data.start_time_utc}:00.000`;
     data.end_time = `${data.date} ${data.end_time_utc}:00.000`;
+    task ? (data.id = task.id) : null;
     console.log({ data });
     task ? onSave(data) : onAddByForm(data);
   };
@@ -107,7 +111,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 overflow-y-auto z-60">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 overflow-y-auto z-50">
       <div className="bg-gray-800 rounded-lg w-full max-w-md mx-auto">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h2 className="text-xl font-bold text-blue-400">

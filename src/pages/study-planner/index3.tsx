@@ -6,6 +6,7 @@ import {
   ReactElement,
   ReactNode,
   ReactPortal,
+  useRef,
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -27,15 +28,20 @@ import {
   Check,
 } from 'lucide-react';
 import {
+  AddExamScheduleApiCall,
   AddTaskApiCall,
   AddTaskByQueryApiCall,
   GetTaskBetweenRangeApiCall,
+  RemoveTaskApiCall,
   UpdateTaskApiCall,
+  GetSchedulerListForExam,
 } from '../../services/api/study-planner';
 import TaskModal from '../../components/study-planner/TaskModal';
 import { DayPlanItem } from '../../types/study-planner';
-import { useForm } from 'react-hook-form';
-// import { cn } from '@/lib/utils';
+import { Controller, useForm } from 'react-hook-form';
+import Orbit from '../../components/avatar/Orbit';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 // Mock data
 const initialTasks = [
@@ -176,6 +182,11 @@ interface ExamFormData {
   title: string;
   examDate: string;
   subjects: string[];
+  start_date?: string;
+  end_date?: string;
+  meta_data?: {
+    subjects?: string[];
+  };
 }
 
 // Function to generate schedule for the current week
@@ -323,6 +334,55 @@ const formatTime = (time: string) => {
   });
 };
 
+const calculateProgress = (startDate: string, endDate: string): number => {
+  const start = new Date(startDate).getTime();
+  const end = new Date(endDate).getTime();
+  const now = new Date().getTime();
+
+  if (now <= start) return 0;
+  if (now >= end) return 100;
+
+  const total = end - start;
+  const elapsed = now - start;
+  return Math.round((elapsed / total) * 100);
+};
+
+const schema = yup.object().shape({
+  title: yup
+    .string()
+    .required('Title is required')
+    .min(3, 'Title must be at least 3 characters'),
+  examDate: yup
+    .date()
+    .required('Exam date is required')
+    .min(new Date(), 'Exam date must be in the future'),
+  subjects: yup.array().of(yup.string()).min(1, 'Select at least one subject'),
+});
+
+function getTimeLeft(futureDateStr: string) {
+  const futureDate = new Date(futureDateStr);
+  const currentDate = new Date();
+
+  // Calculate the difference in milliseconds
+  // @ts-ignore
+  const diffInMs = futureDate - currentDate;
+
+  // Convert milliseconds to weeks, days, and hours
+  const weeksLeft = Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7));
+  const daysLeft = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const hoursLeft = Math.floor(diffInMs / (1000 * 60 * 60));
+
+  if (weeksLeft > 1) {
+    return `in ${weeksLeft} weeks`;
+  } else if (daysLeft > 1) {
+    return `in ${daysLeft} days`;
+  } else if (hoursLeft > 1) {
+    return `in ${hoursLeft} hours`;
+  } else {
+    return 'less than an hour left';
+  }
+}
+
 export default function Component() {
   const [tasks, setTasks] = useState(initialTasks);
   const [loadingTasks, setloadingTasks] = useState(true);
@@ -335,13 +395,50 @@ export default function Component() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('day');
   const [selectedDay, setSelectedDay] = useState(null);
+  const [tiggerUpdate, setTiggerUpdate] = useState(0);
+
+  const [showExplanation, setShowExplanation] = useState(false);
+  const AiHelpTextAreaRef = useRef(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [examData, setExamData] = useState(null);
+  const [examLoading, setExamLoading] = useState(false);
+
+  const handleSubmitOfAiInputPromat = async () => {
+    try {
+      setAiLoading(true);
+      if (AiHelpTextAreaRef.current) {
+        const res = await AddTaskByQueryApiCall({
+          // @ts-ignore
+          query: AiHelpTextAreaRef.current.value,
+        });
+        if (!res.data.conflict) {
+          setTiggerUpdate((e) => e + 1);
+        }
+        // @ts-ignore
+        AiHelpTextAreaRef.current.value = '';
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<DayPlanItem | null>(null);
 
   const [isModalOpenOfExam, setIsModalOpenOfExam] = useState(false);
 
-  const { register, handleSubmit, control, reset } = useForm<ExamFormData>();
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<ExamFormData>({
+    // @ts-ignore
+    resolver: yupResolver(schema),
+  });
 
   const handleEditTask = (task: any) => {
     setEditingTask(task);
@@ -351,6 +448,33 @@ export default function Component() {
   const handleAddTaskInDay = () => {
     setEditingTask(null);
     setIsModalOpen(true);
+  };
+
+  const handleRemoveSchedule = async (taskId: string) => {
+    try {
+      const res = await RemoveTaskApiCall(taskId);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleFormSubmitOfExam = async (data: ExamFormData) => {
+    try {
+      console.log({ data });
+      const today = new Date();
+      const startDate = today.toISOString().split('T')[0];
+      data.start_date = startDate;
+      data.end_date = data.examDate;
+      data.meta_data = {
+        subjects: data.subjects,
+      };
+      const res = await AddExamScheduleApiCall(data);
+      setTiggerUpdate((e) => e + 1);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsModalOpenOfExam(false);
+    }
   };
 
   const handleSaveTask = async (updatedTask: DayPlanItem) => {
@@ -365,15 +489,16 @@ export default function Component() {
         response = await AddTaskApiCall(updatedTask);
       }
 
-      if (response.ok) {
-        const savedTask = await response.json();
-        setTasks((prevPlan) =>
-          updatedTask.id
-            ? prevPlan.map((task) =>
-                task.id === savedTask.id ? savedTask : task
-              )
-            : [...prevPlan, savedTask]
-        );
+      if (!response.data.conflict) {
+        const savedTask = response.data.task;
+        setTiggerUpdate((e) => e + 1);
+        // setTasks((prevPlan) =>
+        //   updatedTask.id
+        //     ? prevPlan.map((task) =>
+        //         task.id === savedTask.id ? savedTask : task
+        //       )
+        //     : [...prevPlan, savedTask]
+        // );
         setIsModalOpen(false);
       } else {
         console.error('Failed to save task');
@@ -390,7 +515,8 @@ export default function Component() {
       });
       console.log({ response });
       if (response.data && !response.data.conflict) {
-        setTasks((prevPlan) => [...prevPlan, response.data.task]);
+        setTiggerUpdate((e) => e + 1);
+        // setTasks((prevPlan) => [...prevPlan, response.data.task]);
         setIsModalOpen(false);
       } else {
         console.error('Failed to add task by message');
@@ -406,7 +532,7 @@ export default function Component() {
       const endDate = today.toISOString().split('T')[0];
       today.setDate(today.getDate() - 1); // Subtract one day
       const startDate = today.toISOString().split('T')[0];
-      const res = await GetTaskBetweenRangeApiCall(null, startDate, endDate);
+      const res = await GetTaskBetweenRangeApiCall(null, endDate, endDate);
       setTasks(res.data);
     } catch (err) {
       console.log(err);
@@ -433,6 +559,17 @@ export default function Component() {
     }
   };
 
+  const fetchApiDataOfPlanExam = async () => {
+    try {
+      const res = await GetSchedulerListForExam();
+      setExamData(res.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setExamLoading(false);
+    }
+  };
+
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme) {
@@ -441,7 +578,8 @@ export default function Component() {
 
     fetchApiDataOfPlanDay().then();
     fetchApiDataOfPlanWeek().then();
-  }, []);
+    fetchApiDataOfPlanExam().then();
+  }, [tiggerUpdate]);
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
@@ -475,6 +613,7 @@ export default function Component() {
   };
 
   const completeTask = (id: string) => {
+    // TODO: API CAll
     setLoading(true);
     setTimeout(() => {
       const newTasks = tasks.map((task) =>
@@ -562,39 +701,110 @@ export default function Component() {
         </div>
       </div>
       {/* 1st div */}
+      {/* <motion.div
+       className="flex flex-col space-y-4 items-start bg-black/60 p-4 rounded-lg shadow-[0_0_20px_#3498db] border border-[#3498db] transition-all duration-300"
+       initial={{ opacity: 0, y: 20 }}
+       animate={{ opacity: 1, y: 0 }}
+       transition={{ duration: 0.5, delay: 0.2 }}
+       whileHover={{ scale: 1.02, rotate: 1 }}
+     >
+       <div className="flex items-center space-x-4">
+         <div className="h-16 w-16 ring-2 ring-[#2ecc71] ring-offset-2 ring-offset-black/50 rounded-full flex items-center justify-center">
+           <Brain className="h-8 w-8 text-[#2ecc71]" />
+         </div>
+         <div className="flex-1">
+           <p className="text-lg font-medium text-[#AAB2BF] tracking-wide">
+             Need help optimizing your study plan?
+           </p>
+           <button
+             onClick={handleButtonClick}
+             className="mt-2 border border-[#2ecc71] text-[#2ecc71] hover:bg-[#2ecc71] hover:text-black transition-all duration-300 shadow-[0_0_10px_#2ecc71] hover:shadow-[0_0_20px_#2ecc71] px-4 py-2 rounded"
+           >
+             Ask AI for personalized advice
+           </button>
+         </div>
+       </div>
+
+
+       {showExplanation && (
+         <motion.div
+           initial={{ opacity: 0, y: 10 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ duration: 0.4 }}
+           className="w-full space-y-2"
+         >
+           <p className="text-sm text-[#AAB2BF]">
+             Tell the AI what you want to accomplish, and itll plan tasks to
+             help you reach your goals—whether its exam prep, assignments, or
+             daily study.
+           </p>
+           <textarea
+             rows={3}
+             placeholder="Describe your task or challenge..."
+             className="w-full p-2 border border-[#3498db] bg-black/40 rounded-md text-[#AAB2BF] outline-none resize-none"
+             value={userInput}
+             onChange={(e) => setUserInput(e.target.value)}
+           />
+           <button
+             onClick={handleSubmitOfAiInputPromat}
+             className="mt-2 border border-[#3498db] text-[#3498db] hover:bg-[#3498db] hover:text-white transition-all duration-300 shadow-[0_0_10px_#3498db] hover:shadow-[0_0_20px_#3498db] px-4 py-1.5 rounded"
+           >
+             Submit
+           </button>
+         </motion.div>
+       )}
+     </motion.div> */}
       <motion.div
         className="flex items-center space-x-4 bg-black/60 p-4 rounded-lg shadow-[0_0_20px_#3498db] border border-[#3498db] transition-all duration-300"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        whileHover={{ scale: 1.02, rotate: 1 }}
+        //  whileHover={{ scale: 1.02, rotate: 1 }}
       >
-        <div className="h-16 w-16 ring-2 ring-[#2ecc71] ring-offset-2 ring-offset-black/50 rounded-full flex items-center justify-center">
-          <Brain className="h-8 w-8 text-[#2ecc71]" />
+        <div className="h-16 w-16 flex items-center justify-center">
+          <Orbit opration={null} size={100} />
         </div>
         <div className="flex-1">
-          <p className="text-lg font-medium text-[#AAB2BF] tracking-wide">
-            Need help optimizing your study plan?
-          </p>
-          <button className="mt-2 border border-[#2ecc71] text-[#2ecc71] hover:bg-[#2ecc71] hover:text-black transition-all duration-300 shadow-[0_0_10px_#2ecc71] hover:shadow-[0_0_20px_#2ecc71] px-4 py-2 rounded">
-            Ask AI for personalized advice
-          </button>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="w-full space-y-2"
+          >
+            <p className="text-sm text-[#AAB2BF]">
+              Tell the AI what you want to accomplish, and it`ll plan tasks to
+              help you reach your goals—whether it`s exam prep, assignments, or
+              daily study.
+            </p>
+            <textarea
+              ref={AiHelpTextAreaRef}
+              rows={3}
+              placeholder="Describe your task or challenge..."
+              className="w-full p-2 border border-[#3498db] bg-black/40 rounded-md text-[#AAB2BF] outline-none resize-none"
+            />
+            <button
+              onClick={handleSubmitOfAiInputPromat}
+              className="mt-2 border border-[#3498db] text-[#3498db] hover:bg-[#3498db] hover:text-white transition-all duration-300 shadow-[0_0_10px_#3498db] hover:shadow-[0_0_20px_#3498db] px-4 py-1.5 rounded"
+            >
+              {aiLoading ? 'Loading..' : 'Submit'}
+            </button>
+          </motion.div>
         </div>
       </motion.div>
 
       {/* 2nd div */}
       <motion.div
-        className="flex justify-between items-center bg-black/60 p-4 rounded-lg shadow-[0_0_20px_#3498db] border border-[#3498db] transition-all duration-300"
+        className="flex flex-col md:flex-row justify-between items-center bg-black/60 p-4 rounded-lg shadow-[0_0_20px_#3498db] border border-[#3498db] transition-all duration-300"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
         whileHover={{ scale: 1.02, rotateY: 5 }}
       >
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold text-[#E1F5FE]">
-            Today&#39;s Progress
+        <div className="space-y-2 mb-4 md:mb-0">
+          <h2 className="text-lg md:text-xl font-semibold text-[#E1F5FE]">
+            Today&rsquo;s Progress
           </h2>
-          <div className="w-64 h-2 bg-gray-700 rounded-full overflow-hidden">
+          <div className="w-full md:w-64 h-2 bg-gray-700 rounded-full overflow-hidden">
             <div
               className={`h-full bg-gradient-to-r from-[#4361ee] to-[#2ecc71] shadow-[0_0_10px_#4361ee] ${progress === 100 ? 'animate-pulse' : ''}`}
               style={{ width: `${progress}%` }}
@@ -605,20 +815,25 @@ export default function Component() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+              className="flex justify-center"
             >
               <Trophy className="w-6 h-6 text-yellow-400" />
             </motion.div>
           )}
         </div>
-        <div className="text-center">
-          <p className="text-2xl font-bold text-[#e74c3c]">
+
+        <div className="text-center mb-4 md:mb-0">
+          <p className="text-xl md:text-2xl font-bold text-[#e74c3c]">
             {currentPoints} pts
           </p>
-          <p className="text-sm text-[#AAB2BF] italic">Total Points</p>
+          <p className="text-xs md:text-sm text-[#AAB2BF] italic">
+            Total Points
+          </p>
         </div>
-        <div className="text-lg py-2 px-4 border border-[#3498db] text-[#3498db] hover:bg-[#3498db] hover:text-black transition-all duration-300 rounded">
+
+        <div className="text-center md:text-lg py-2 px-4 border border-[#3498db] text-[#3498db] hover:bg-[#3498db] hover:text-black transition-all duration-300 rounded">
           <Calendar className="inline-block mr-2 h-4 w-4" />
-          Weekly Goal: 70%
+          <span className="text-sm md:text-base">Weekly Goal: 70%</span>
         </div>
       </motion.div>
 
@@ -845,32 +1060,32 @@ export default function Component() {
                   </h2>
                 </div>
                 <div className="bg-gray-800/50 p-4 rounded-lg">
-                  <div className="grid grid-cols-7 gap-3">
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
                     {weekDays.map(({ day, fullDay, color }) => (
                       <motion.div
                         key={day}
                         whileHover={{ scale: 1.05, rotate: 2 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`cursor-pointer h-32 sm:h-40 overflow-hidden rounded-lg bg-gradient-to-br ${color}`}
+                        className={`cursor-pointer h-28 sm:h-32 md:h-40 overflow-hidden rounded-lg bg-gradient-to-br ${color} flex flex-col justify-between`}
                         //@ts-ignore
                         onClick={() => setSelectedDay(fullDay)}
                       >
-                        <div className="p-3">
-                          <h3 className="text-white text-lg sm:text-xl font-bold">
+                        <div className="p-2 sm:p-3">
+                          <h3 className="text-white text-base sm:text-lg md:text-xl font-bold">
                             {day}
                           </h3>
                         </div>
-                        <div className="p-3 flex flex-col justify-between h-full">
+                        <div className="p-2 sm:p-3 flex flex-col justify-between h-full">
                           <div className="text-white text-xs sm:text-sm opacity-80">
                             {
                               //@ts-ignore
-                              (!loadingSchedule && schedule[fullDay]?.length) ||
-                                0
+                              schedule[fullDay]?.length || 0
                             }{' '}
                             tasks
                           </div>
-                          <button className="w-full bg-white/20 text-white hover:bg-white/30 text-xs sm:text-sm py-1 mt-2 rounded flex items-center justify-center">
-                            View <ChevronRight className="h-4 w-4 ml-1" />
+                          <button className="w-full bg-white/20 text-white hover:bg-white/30 text-xs sm:text-sm py-1 mt-1 sm:mt-2 rounded flex items-center justify-center">
+                            View{' '}
+                            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
                           </button>
                         </div>
                       </motion.div>
@@ -890,46 +1105,44 @@ export default function Component() {
               </div>
               <div className="bg-gray-800/50 p-4 rounded-b-lg">
                 <div className="space-y-4">
-                  <motion.div
-                    whileHover={{ scale: 1.02, rotate: 1 }}
-                    className="bg-gray-800/50 p-4 rounded-lg shadow-lg border border-[#e74c3c]"
-                  >
-                    <h3 className="font-semibold mb-2 text-[#e74c3c]">
-                      Math Exam (in 2 weeks)
-                    </h3>
-                    <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden mb-2">
-                      <div
-                        className="h-full bg-gradient-to-r from-[#e74c3c] to-[#4361ee] shadow-[0_0_10px_#e74c3c]"
-                        style={{ width: '30%' }}
-                      ></div>
+                  {!examLoading &&
+                    examData &&
+                    // @ts-ignore
+                    examData.map((exam: any) => (
+                      <motion.div
+                        key={exam.id}
+                        whileHover={{
+                          scale: 1.02,
+                          rotate: exam.id.charCodeAt(0) % 2 === 0 ? -1 : 1,
+                        }}
+                        className={`bg-gray-800/50 p-4 rounded-lg shadow-lg border border-[#3498db]`}
+                      >
+                        <h3 className={`font-semibold mb-2 text-[#3498db]`}>
+                          {exam.title} ({getTimeLeft(exam.end_date)})
+                        </h3>
+                        <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden mb-2">
+                          <div
+                            className={`h-full bg-gradient-to-r from-[#3498db] to-[#4361ee] shadow-[0_0_10px_#3498db]`}
+                            style={{
+                              width: `${calculateProgress(exam.start_date, exam.end_date)}%`,
+                            }}
+                          ></div>
+                        </div>
+                        <p className="text-sm text-[#AAB2BF] italic">
+                          Focus areas: {exam.meta_data?.subjects?.join(', ')}
+                        </p>
+                        <button
+                          className={`mt-2 border border-[#3498db] text-[#3498db] hover:bg-[#3498db] hover:text-white transition-all duration-300 shadow-[0_0_10px_#3498db] hover:shadow-[0_0_20px_#3498db] px-2 py-1 rounded text-sm`}
+                        >
+                          View Detailed Plan
+                        </button>
+                      </motion.div>
+                    ))}
+                  {examLoading && (
+                    <div className="text-center py-4 text-[#AAB2BF]">
+                      Loading exam data...
                     </div>
-                    <p className="text-sm text-[#AAB2BF] italic">
-                      Focus areas: Algebra, Geometry, Trigonometry
-                    </p>
-                    <button className="mt-2 border border-[#e74c3c] text-[#e74c3c] hover:bg-[#e74c3c] hover:text-white transition-all duration-300 shadow-[0_0_10px_#e74c3c] hover:shadow-[0_0_20px_#e74c3c] px-2 py-1 rounded text-sm">
-                      View Detailed Plan
-                    </button>
-                  </motion.div>
-                  <motion.div
-                    whileHover={{ scale: 1.02, rotate: -1 }}
-                    className="bg-gray-800/50 p-4 rounded-lg shadow-lg border border-[#3498db]"
-                  >
-                    <h3 className="font-semibold mb-2 text-[#3498db]">
-                      Science Exam (in 3 weeks)
-                    </h3>
-                    <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden mb-2">
-                      <div
-                        className="h-full bg-gradient-to-r from-[#3498db] to-[#2ecc71] shadow-[0_0_10px_#3498db]"
-                        style={{ width: '15%' }}
-                      ></div>
-                    </div>
-                    <p className="text-sm text-[#AAB2BF] italic">
-                      Focus areas: Chemistry, Physics, Biology
-                    </p>
-                    <button className="mt-2 border border-[#3498db] text-[#3498db] hover:bg-[#3498db] hover:text-white transition-all duration-300 shadow-[0_0_10px_#3498db] hover:shadow-[0_0_20px_#3498db] px-2 py-1 rounded text-sm">
-                      View Detailed Plan
-                    </button>
-                  </motion.div>
+                  )}
                   <button
                     className="w-full bg-gradient-to-r from-[#3498db] to-[#4361ee] hover:from-[#3498db]/80 hover:to-[#4361ee]/80 text-white transition-all duration-300 shadow-[0_0_15px_#3498db] p-2 rounded"
                     onClick={() => setIsModalOpenOfExam(true)}
@@ -964,7 +1177,7 @@ export default function Component() {
       </div>
 
       {selectedDay && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-30">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -974,7 +1187,7 @@ export default function Component() {
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-[#E1F5FE] text-2xl font-bold">
-                {selectedDay} s Schedule
+                {selectedDay}&rsquo;s Schedule
               </h3>
               <button
                 onClick={() => setSelectedDay(null)}
@@ -1011,19 +1224,22 @@ export default function Component() {
                         </p>
                       </div>
                       <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEditTask(task)}
-                          className="p-2 bg-blue-500/20 rounded-lg hover:bg-blue-500/30 transition-colors"
-                        >
-                          <Edit size={16} className="text-[#3498db]" />
-                        </button>
-                        <button
-                          //@ts-ignore
-                          onClick={() => handleCompleteTask(task.id)}
-                          className="p-2 bg-green-500/20 rounded-lg hover:bg-green-500/30 transition-colors"
-                        >
-                          <Check size={16} className="text-green-500" />
-                        </button>
+                        {task.status === 'complete' && (
+                          <>
+                            <button
+                              onClick={() => handleEditTask(task)}
+                              className="p-2 bg-blue-500/20 rounded-lg hover:bg-blue-500/30 transition-colors"
+                            >
+                              <Edit size={16} className="text-[#3498db]" />
+                            </button>{' '}
+                            <button
+                              onClick={() => completeTask(task.id)}
+                              className="p-2 bg-green-500/20 rounded-lg hover:bg-green-500/30 transition-colors"
+                            >
+                              <Check size={16} className="text-green-500" />
+                            </button>
+                          </>
+                        )}
                         <button
                           onClick={() => {
                             const newSchedule = { ...schedule };
@@ -1033,6 +1249,7 @@ export default function Component() {
                               //@ts-ignore
                             ].filter((_, i) => i !== index);
                             setSchedule(newSchedule);
+                            handleRemoveSchedule(task.id);
                           }}
                           className="p-2 bg-red-500/20 rounded-lg hover:bg-red-500/30 transition-colors"
                         >
@@ -1057,8 +1274,8 @@ export default function Component() {
                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      {formatTime(task.start_time_utc)} -{' '}
-                      {formatTime(task.end_time_utc)}
+                      {extractTime(task.start_time_utc)} -{' '}
+                      {extractTime(task.end_time_utc)}
                     </div>
                   </motion.div>
                 ))}
@@ -1129,6 +1346,130 @@ export default function Component() {
       )}
 
       {/* Add Exam Modal */}
+      <AnimatePresence>
+        {isModalOpenOfExam && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-gray-800 rounded-xl p-6 w-full max-w-md border border-[#3498db] shadow-[0_0_20px_#3498db]"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#3498db] to-[#2ecc71]">
+                  Add New Exam
+                </h2>
+                <button
+                  onClick={() => setIsModalOpenOfExam(false)}
+                  className="text-gray-400 hover:text-gray-200 transition-colors"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <form
+                onSubmit={handleSubmit(handleFormSubmitOfExam)}
+                className="space-y-6"
+              >
+                <div>
+                  <label className="block text-sm font-medium text-[#E1F5FE] mb-1">
+                    Exam Title
+                  </label>
+                  <input
+                    {...register('title')}
+                    type="text"
+                    className="w-full px-3 py-2 bg-gray-700 border border-[#3498db] rounded-lg text-[#E1F5FE] focus:outline-none focus:ring-2 focus:ring-[#2ecc71] transition-all duration-300"
+                    placeholder="Enter exam title"
+                  />
+                  {errors.title && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.title.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#E1F5FE] mb-1">
+                    Exam Date
+                  </label>
+                  <input
+                    {...register('examDate')}
+                    type="date"
+                    className="w-full px-3 py-2 bg-gray-700 border border-[#3498db] rounded-lg text-[#E1F5FE] focus:outline-none focus:ring-2 focus:ring-[#2ecc71] transition-all duration-300"
+                  />
+                  {errors.examDate && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.examDate.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#E1F5FE] mb-2">
+                    Subjects
+                  </label>
+                  <Controller
+                    name="subjects"
+                    control={control}
+                    defaultValue={[]}
+                    render={({ field }) => (
+                      <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                        {subjectOptions.map((subject) => (
+                          <label
+                            key={subject}
+                            className="flex items-center space-x-2 cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={field.value.includes(subject)}
+                              onChange={(e) => {
+                                const updatedSubjects = e.target.checked
+                                  ? [...field.value, subject]
+                                  : field.value.filter(
+                                      (s: string) => s !== subject
+                                    );
+                                field.onChange(updatedSubjects);
+                              }}
+                              className="form-checkbox h-4 w-4 text-[#2ecc71] transition duration-150 ease-in-out"
+                            />
+                            <span className="text-[#E1F5FE]">{subject}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  />
+                  {errors.subjects && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.subjects.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpenOfExam(false)}
+                    className="px-4 py-2 bg-gray-700 text-[#E1F5FE] rounded-lg hover:bg-gray-600 transition-all duration-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-gradient-to-r from-[#3498db] to-[#2ecc71] text-white rounded-lg hover:from-[#3498db]/80 hover:to-[#2ecc71]/80 transition-all duration-300 shadow-[0_0_10px_#3498db]"
+                  >
+                    Add Exam
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
