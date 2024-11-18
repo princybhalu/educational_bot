@@ -3,6 +3,8 @@ import { MoreVertical, Bot } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import Orbit from '../../components/avatar/Orbit';
+import OverviewSection from '../../components/study-planner-V3/OverviewSection';
+import TaskSection from '../../components/study-planner-V3/TaskSection';
 
 const TitleSection: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
@@ -272,7 +274,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs }) => {
   const [activeTab, setActiveTab] = useState(tabs[0].name);
 
   return (
-    <div className="space-y-3 md:space-y-6 w-full max-w-3xl md:max-w-5xl">
+    <div className="space-y-3 md:space-y-6 w-full max-w-3xl md:max-w-7xl">
       {/* Tab Headers */}
       <div
         className={`border-b ${
@@ -314,13 +316,12 @@ const Tabs: React.FC<TabsProps> = ({ tabs }) => {
   );
 };
 
-
 const MainPage: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
 
   const tabs = [
-    { name: 'Overview', content: <div>Overview content here</div> },
-    { name: 'Tasks', content: <div>Tasks content here</div> },
+    { name: 'Overview', content: <OverviewSection /> },
+    { name: 'Tasks', content: <TaskSection /> },
     { name: 'Progress', content: <div>Progress content here</div> },
     { name: 'Exam', content: <div>Exam content here</div> },
   ];

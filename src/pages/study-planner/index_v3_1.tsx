@@ -773,14 +773,6 @@ const Task3Timeline: React.FC<{ tasks: Task3[] }> = ({ tasks }) => {
           />
         ))}
       </div>
-      <div className="absolute top-1/2 -left-8 transform -translate-y-1/2">
-        <ChevronUp className="w-6 h-6 text-gray-400" aria-hidden="true" />
-        <p className="text-xs text-gray-400 mt-1">Earlier</p>
-      </div>
-      <div className="absolute top-1/2 -right-8 transform -translate-y-1/2">
-        <ChevronDown className="w-6 h-6 text-gray-400" aria-hidden="true" />
-        <p className="text-xs text-gray-400 mt-1">Later</p>
-      </div>
     </div>
   );
 };
@@ -963,7 +955,7 @@ const DailyTasksSection = () => {
   return (
     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-md">
       {/* <div className="text-center text-gray-500 dark:text-gray-400"> */}
-        <Task3Timeline tasks={tasks} />
+      <Task3Timeline tasks={tasks} />
       {/* </div> */}
     </div>
   );

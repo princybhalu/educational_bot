@@ -195,7 +195,7 @@ const AIEnhancedStudyPlanner = () => {
           <div className="p-6 space-y-4">
             {activeTab === 'plan-day' && (
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
+                <div className="flex justewwify-between items-center">
                   <h2 className="text-xl font-bold text-white">
                     Today&rsquo;s Schedule
                   </h2>
