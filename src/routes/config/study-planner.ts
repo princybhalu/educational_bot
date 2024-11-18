@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 import { RouteConfig } from '../../types/route';
-import StudyPlannerDashboard from 'pages/study-planner/index_v3';
+import StudyPlannerDashboard from 'pages/study-planner/MainPage';
 import CalendarView from 'pages/study-planner/CalendarView';
 
 export const StudyPlannerRoutes: RouteConfig[] = [

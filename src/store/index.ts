@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storageSession from 'redux-persist/lib/storage/session'; // Use session storage
 import authReducer from './userSlice';
 import PsychologicalProfileReducer from './psychologicalProfileSlice';
+import ThemeColrsReducer from './themeSlice';
 
 const persistConfig = {
   key: 'root',
@@ -15,6 +16,7 @@ const rootReducer = {
     persistConfig,
     PsychologicalProfileReducer
   ),
+  theme: persistReducer(persistConfig, ThemeColrsReducer),
 };
 
 export const store = configureStore({
