@@ -7,8 +7,6 @@ const Orbit: React.FC<OrbitProps> = ({
   size = 150,
   colors = ['#4361ee', '#3498db', '#2ecc71', '#e74c3c', '#4361ee'],
 }) => {
-  console.log({ opration, t: opration === 'loading' });
-
   const [dotIndex, setDotIndex] = useState(0);
 
   // Handle dot animation
