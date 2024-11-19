@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Navbar from '../components/landing-v3/NavbarOfLanding';
 import UpcomingPageSection from '../components/landing-v3/UpcomingPageSection5';
 import SubscriptionForm from '../components/landing-v3/SubscriptionForm';
+import Footer from '../components/Footer';
 
 export default function Landing2() {
   return (
@@ -10,6 +11,7 @@ export default function Landing2() {
       <UpcomingPageSection />
       <div className="h-[100vh]"></div>
       <SubscriptionForm />
+      <Footer />
     </>
   );
 }
