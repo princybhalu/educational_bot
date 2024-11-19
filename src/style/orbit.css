@@ -1,0 +1,85 @@
+.orbit-container {
+    position: relative;
+    margin: 0 auto 2rem;
+  }
+  
+  .orbit {
+    width: 100%;
+    height: 100%;
+    background: conic-gradient(
+      from 0deg,
+      #4361ee,
+      #3498db,
+      #2ecc71,
+      #e74c3c,
+      #4361ee
+    );
+    border-radius: 50%;
+    position: relative;
+    animation: complexRotation 8s ease-in infinite;
+  }
+  
+  .orbit::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    right: 10%;
+    bottom: 10%;
+    background: #000;
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(67, 97, 238, 0.5);
+  }
+  
+  .orb::after {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    right: 15%;
+    bottom: 15%;
+    background: #4361ee;
+    border-radius: 50%;
+    filter: blur(10px);
+    animation: pulse 2s infinite;
+  }
+  
+  .orbit-inner {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    right: 15%;
+    bottom: 15%;
+    background: #fff;
+    border-radius: 50%;
+    filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+  
+  .orbit-inner.typing {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+  }
+
+  

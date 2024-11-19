@@ -3,7 +3,7 @@ import { RouteConfig } from '../../types/route';
 import  Layouts  from '../../layouts/layouts';
 
 // Lazy load components
-const Landing = lazy(() => import('../../pages/Landing'));
+const Landing = lazy(() => import('../../pages/Landing2'));
 const Login = lazy(() => import('../../pages/Login'));
 const Register = lazy(() => import('../../pages/Register'));
 const Dashboard = lazy(() => import('../../pages/Dashboard'));
@@ -15,6 +15,7 @@ export const routes: RouteConfig[] = [
     path: '/',
     key: 'landing',
     element: Landing,
+    islayout: false
   },
   {
     path: '/login',
