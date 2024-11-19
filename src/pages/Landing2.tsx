@@ -1,17 +1,15 @@
-import UpcomingPageSection from '../components/landing-v3/UpcomingPageSection2';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Navbar from '../components/landing-v3/NavbarOfLanding';
+import UpcomingPageSection from '../components/landing-v3/UpcomingPageSection5';
 import SubscriptionForm from '../components/landing-v3/SubscriptionForm';
 
-const Landing2: React.FC = () => {
+export default function Landing2() {
   return (
     <>
       <Navbar />
       <UpcomingPageSection />
-      <div className="h-[100vh] bg-black"></div>
+      <div className="h-[100vh]"></div>
       <SubscriptionForm />
     </>
   );
-};
-
-export default Landing2;
+}

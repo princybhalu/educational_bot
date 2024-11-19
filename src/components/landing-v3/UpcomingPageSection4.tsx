@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import SparklesComp from './sparkles';
 import Orbit from '../../components/avatar/Orbit';
 
@@ -55,9 +55,42 @@ const CountdownTimer = () => {
 };
 
 function Index() {
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isSticky, setIsSticky] = useState(false);
+  const orbitalRef = useRef(null);
+  const introRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (orbitalRef.current && introRef.current) {
+        const introSection = introRef.current;
+        const orbitalSection = orbitalRef.current;
+
+        // Calculate scroll progress
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+        //@ts-ignore
+        const introHeight = introSection.offsetHeight;
+        const progress = Math.min(Math.max(scrollTop / introHeight, 0), 1);
+
+        setScrollProgress(progress);
+
+        // Determine if Orbit should be sticky
+        //@ts-ignore
+        const introBottom = introSection.getBoundingClientRect().bottom;
+        setIsSticky(introBottom <= 0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   return (
     <>
-      <div className="min-h-screen w-screen overflow-hidden bg-[#0a0d1e]">
+      <div
+        ref={introRef}
+        className="min-h-screen w-screen overflow-hidden bg-[#0a0d1e]"
+      >
         {' '}
         {/* Updated background color */}
         <div className="relative h-[60vh] w-screen overflow-hidden [mask-image:radial-gradient(60%_60%,white,transparent)] before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_bottom_center,#4361ee,transparent_90%)] before:opacity-30 after:absolute after:border-2 after:-left-1/2 after:top-1/2 after:aspect-[1/1.8] after:w-[200%] after:rounded-[50%] after:border-b after:border-[#4361ee33] after:bg-[#0a0d1e]">
@@ -72,8 +105,22 @@ function Index() {
             className="absolute inset-x-0 top-0 h-full w-full [mask-image:radial-gradient(60%_60%,white,transparent_85%)]"
           />
         </div>
-        <div className="mx-auto -mt-60 md:-mt-80 w-screen max-w-2xl relative z-10">
+        {/* <div className="mx-auto -mt-60 md:-mt-80 w-screen max-w-2xl relative z-10">
           <div className="p-4 w-28 h-28 mx-auto grid place-content-center rounded-full">
+            <div className="my-auto">
+              <Orbit opration={null} size={100} smSize={75} />
+            </div>
+          </div>
+        </div> */}
+        {/* Previous intro section content remains the same */}
+        <div className="mx-auto -mt-60 md:-mt-80 w-screen max-w-2xl relative z-10">
+          <div
+            className="p-4 w-28 h-28 mx-auto grid place-content-center rounded-full"
+            style={{
+              transform: `scale(${1 - scrollProgress * 0.3})`,
+              opacity: 1 - scrollProgress,
+            }}
+          >
             <div className="my-auto">
               <Orbit opration={null} size={100} smSize={75} />
             </div>
@@ -112,76 +159,30 @@ function Index() {
           </div>
         </article>
       </div>
-      
-      <div className="min-h-screen w-screen overflow-hidden bg-[#0a0d1e]">
-        <div className="flex justify-center items-center">
-          <div>{/* Add Orbit comp here by scroll */} </div>
-          <div>
-            vjhbejfbvejbjvf njvdddnfffffffffffffffffffffffffffffffffffffffffffff
+      <div
+        ref={orbitalRef}
+        className="min-h-screen w-screen overflow-hidden bg-[#0a0d1e] relative"
+      >
+        {isSticky && (
+          <div
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            style={{
+              transform: `scale(${0.7 + (1 - scrollProgress) * 0.3}) translate(-50%, -50%)`,
+              opacity: scrollProgress,
+            }}
+          >
+            <Orbit opration={null} size={100} smSize={75} />
+            <div className="mt-4 text-white text-center">
+              <h2 className="text-xl font-semibold">Intro Function</h2>
+              <p className="text-sm text-gray-300">
+                Exploring innovative learning solutions
+              </p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
 }
 
 export default Index;
-
-// function index() {
-//   return (
-//     <>
-//       <div className="min-h-screen w-screen overflow-hidden bg-black">
-//         <div className="relative  h-80 w-screen overflow-hidden [mask-image:radial-gradient(50%_50%,white,transparent)] before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_bottom_center,#369eff,transparent_90%)] before:opacity-100  after:absolute after:border-2 after:-left-1/2 after:top-1/2 after:aspect-[1/1.8] after:w-[200%] after:rounded-[50%] after:border-b after:border-[#7876c566] after:bg-zinc-900">
-//           <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#ffffff2c_1px,transparent_1px),linear-gradient(to_bottom,#3a3a3a01_1px,transparent_1px)] bg-[size:70px_80px] "></div>
-//           <SparklesComp
-//             density={400}
-//             size={1.4}
-//             direction="top"
-//             className="absolute inset-x-0 top-0 h-full w-full [mask-image:radial-gradient(50%_50%,white,transparent_85%)]"
-//           />
-//         </div>
-//         <div className="mx-auto -mt-52  w-screen max-w-2xl relative z-10">
-//           <div className="p-4  w-28 h-28 mx-auto grid place-content-center rounded-full">
-//             {/* <div className=" w-12 h-12 translate-x-1 translate-y-1 mx-auto bg-black rounded-lg before:absolute relative before:w-full before:h-full before:bg-black/50 before:rounded-lg before:-top-2 before:-left-2"></div> */}
-
-//             <div className='my-auto'>
-//             <Orbit opration={null} size={100} />
-//             </div>
-//           </div>
-//         </div>
-//         <article className="text-white  pt-2 w-2/3 mx-auto block text-center z-10 relative ">
-//           <div className="relative z-10 max-w-4xl mx-auto">
-//             <div className="text-center mb-16">
-//               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(67,97,238,0.1)] border border-[rgba(67,97,238,0.2)] mb-6">
-//                 <Sparkles className="w-4 h-4 text-[#4cc9f0]" />
-//                 <span className="text-white/90">Coming Soon</span>
-//               </div>
-
-//               <h1 className="text-3xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-[#4cc9f0] bg-clip-text text-transparent">
-//                 Unlock the Future of Education
-//               </h1>
-
-//               <p className=" text-md md:text-xl text-white/70 mb-12 max-w-2xl mx-auto">
-//                 Experience revolutionary AI-powered learning that adapts to your
-//                 unique journey. Join us in transforming education forever.
-//               </p>
-
-//               <div className="p-4 rounded-3xl bg-[rgba(16,20,46,0.9)] border border-[rgba(67,97,238,0.2)] backdrop-blur-xl">
-//                 <h2 className="text-md md:text-xl font-semibold mb-4 bg-gradient-to-r from-white to-[#4cc9f0] bg-clip-text text-transparent">
-//                   Launching In
-//                 </h2>
-//                 <CountdownTimer />
-//               </div>
-
-//               <div className="mt-12">
-//                 <button className="px-8 py-4 rounded-full bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] text-white font-semibold hover:shadow-lg hover:shadow-[#4361ee]/50 transition-all duration-300">
-//                   Join the Waitlist
-//                 </button>
-//               </div>
-//             </div>
-//           </div>
-//         </article>
-//       </div>
-//     </>
-//   );
-// }
