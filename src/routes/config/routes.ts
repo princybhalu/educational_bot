@@ -3,7 +3,7 @@ import { RouteConfig } from '../../types/route';
 import  Layouts  from '../../layouts/layouts';
 
 // Lazy load components
-const Landing = lazy(() => import('../../pages/Landing2'));
+const Landing = lazy(() => import('../../pages/Landing3'));
 const Login = lazy(() => import('../../pages/Login'));
 const Register = lazy(() => import('../../pages/Register'));
 const Dashboard = lazy(() => import('../../pages/Dashboard'));
