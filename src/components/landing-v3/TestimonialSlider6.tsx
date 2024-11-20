@@ -1,13 +1,14 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { Quote, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import P1 from '../../assets/images/p1.webp';
 
 const testimonials = [
   {
     quote: 'Vidhyarhi AI is a game-changer for personalized learning!',
     author: 'Dr. Ananya Sharma',
     role: 'Education Specialist',
-    image: '/api/placeholder/96/96',
+    image: P1,
     rating: 5,
     category: 'Personalization',
   },
@@ -15,7 +16,7 @@ const testimonials = [
     quote: "An innovative approach that's set to redefine how students learn.",
     author: 'Michael Lee',
     role: 'High School Teacher',
-    image: '/api/placeholder/96/96',
+    image: P1,
     rating: 5,
     category: 'Innovation',
   },
@@ -23,7 +24,7 @@ const testimonials = [
     quote: 'A platform that truly understands the needs of modern education.',
     author: 'Sara Kim',
     role: 'Curriculum Developer',
-    image: '/api/placeholder/96/96',
+    image: P1,
     rating: 5,
     category: 'Education',
   },
