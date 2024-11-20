@@ -1,8 +1,137 @@
 import React, { useEffect, useState } from 'react';
 import SparklesComp from './sparkles';
-import Orbit from '../../components/avatar/Orbit';
-
+import Orbit from '../avatar/Orbit';
 import { Sparkles } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+
+function Index() {
+  const { scrollY } = useScroll();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Transform values for orbit movement
+  const orbitX = useTransform(
+    scrollY,
+    [0, 400],
+    ['50%', isMobile ? '75%' : '85%']
+  );
+  const orbitY = useTransform(scrollY, [0, 400], ['0%', '85%']);
+  const orbitScale = useTransform(scrollY, [0, 400], [1, 0.8]);
+
+  return (
+    <>
+      {/* 1st section */}
+      <div className="min-h-screen w-screen overflow-hidden bg-[#0a0d1e] relative">
+        <div className="relative h-[60vh] w-screen overflow-hidden [mask-image:radial-gradient(60%_60%,white,transparent)] before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_bottom_center,#4361ee,transparent_90%)] before:opacity-30 after:absolute after:border-2 after:-left-1/2 after:top-1/2 after:aspect-[1/1.8] after:w-[200%] after:rounded-[50%] after:border-b after:border-[#4361ee33] after:bg-[#0a0d1e]">
+          <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4cc9f015_1px,transparent_1px),linear-gradient(to_bottom,#4361ee15_1px,transparent_1px)] bg-[size:70px_80px]"></div>
+          <SparklesComp
+            density={300}
+            size={1.6}
+            speed={1}
+            color="#4cc9f0"
+            opacity={0.8}
+            direction="top"
+            className="absolute inset-x-0 top-0 h-full w-full [mask-image:radial-gradient(60%_60%,white,transparent_85%)]"
+          />
+        </div>
+
+        {/* Animated Orbit Component */}
+        <motion.div
+          className="fixed z-50"
+          style={{
+            x: orbitX,
+            y: orbitY,
+            scale: orbitScale,
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <div className="w-28 h-28 grid place-content-center">
+            <Orbit opration={null} size={100} smSize={75} />
+          </div>
+        </motion.div>
+
+        <article className="text-white pt-2 w-2/3 mx-auto block text-center z-10 relative">
+          <div className="relative z-10 max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="inline-flex items-center gap-2 px-6 py-2 md:py-3 rounded-full bg-[rgba(67,97,238,0.15)] border border-[rgba(76,201,240,0.3)] mb-8 hover:border-[#4cc9f0] transition-all duration-300"
+              >
+                <Sparkles className="w-5 h-5 text-[#4cc9f0] animate-pulse" />
+                <span className="text-[#4cc9f0] font-medium">Coming Soon</span>
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-2xl md:text-4xl font-bold mb-8 bg-gradient-to-br from-[#4361ee] via-[#4cc9f0] to-white bg-clip-text text-transparent drop-shadow-lg"
+              >
+                Unlock the Future of Education
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="text-md md:text-xl text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed"
+              >
+                Experience revolutionary AI-powered learning that adapts to your
+                unique journey. Join us in transforming education forever.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="p-4 rounded-3xl bg-[rgba(16,20,46,0.95)] border border-[rgba(76,201,240,0.2)] backdrop-blur-xl shadow-xl shadow-[#4361ee]/10"
+              >
+                <h2 className="text-lg md:text-2xl font-semibold mb-8 bg-gradient-to-r from-[#4cc9f0] to-white bg-clip-text text-transparent">
+                  Launching In
+                </h2>
+                <CountdownTimer />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                className="mt-8"
+              >
+                <button className="px-8 py-3 md:py-4 rounded-full bg-gradient-to-br from-[#4361ee] to-[#4cc9f0] text-white text-base md:text-lg font-semibold hover:shadow-lg hover:shadow-[#4cc9f0]/30 transition-all duration-300 transform hover:-translate-y-1">
+                  Join the Waitlist
+                </button>
+              </motion.div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      {/* 2nd section */}
+      <div className="h-screen w-screen overflow-hidden bg-[#0a0d1e]">
+        <div className="h-full flex justify-center items-center gap-2 my-auto">
+          <div className="text-white text-lg p-4 border border-[#4cc9f0] rounded-md">
+            Hello! I&apos;m Vidhya, your personal learning assistant. Can&apos;t
+            wait to embark on an exciting educational journey with you soon!
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default Index;
 
 const CountdownTimer = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -48,84 +177,11 @@ const CountdownTimer = () => {
     <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4">
       <TimeUnit value={timeLeft.days} label="Days" />
       <TimeUnit value={timeLeft.hours} label="Hours" />
-      <TimeUnit value={timeLeft.minutes} label="Min" />
-      <TimeUnit value={timeLeft.seconds} label="Sec" />
+      <TimeUnit value={timeLeft.minutes} label="Minutes" />
+      <TimeUnit value={timeLeft.seconds} label="Seconds" />
     </div>
   );
 };
-
-function Index() {
-  return (
-    <>
-      <div className="min-h-screen w-screen overflow-hidden bg-[#0a0d1e]">
-        {' '}
-        {/* Updated background color */}
-        <div className="relative h-[60vh] w-screen overflow-hidden [mask-image:radial-gradient(60%_60%,white,transparent)] before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_bottom_center,#4361ee,transparent_90%)] before:opacity-30 after:absolute after:border-2 after:-left-1/2 after:top-1/2 after:aspect-[1/1.8] after:w-[200%] after:rounded-[50%] after:border-b after:border-[#4361ee33] after:bg-[#0a0d1e]">
-          <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4cc9f015_1px,transparent_1px),linear-gradient(to_bottom,#4361ee15_1px,transparent_1px)] bg-[size:70px_80px]"></div>
-          <SparklesComp
-            density={300}
-            size={1.6}
-            speed={1}
-            color="#4cc9f0"
-            opacity={0.8}
-            direction="top"
-            className="absolute inset-x-0 top-0 h-full w-full [mask-image:radial-gradient(60%_60%,white,transparent_85%)]"
-          />
-        </div>
-        <div className="mx-auto -mt-60 md:-mt-80 w-screen max-w-2xl relative z-10">
-          <div className="p-4 w-28 h-28 mx-auto grid place-content-center rounded-full">
-            <div className="my-auto">
-              <Orbit opration={null} size={100} smSize={75} />
-            </div>
-          </div>
-        </div>
-        <article className="text-white pt-2 w-2/3 mx-auto block text-center z-10 relative">
-          <div className="relative z-10 max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-6 py-2 md:py-3 rounded-full bg-[rgba(67,97,238,0.15)] border border-[rgba(76,201,240,0.3)] mb-8 hover:border-[#4cc9f0] transition-all duration-300">
-                <Sparkles className="w-5 h-5 text-[#4cc9f0] animate-pulse" />
-                <span className="text-[#4cc9f0] font-medium">Coming Soon</span>
-              </div>
-
-              <h1 className="text-2xl md:text-4xl font-bold mb-8 bg-gradient-to-br from-[#4361ee] via-[#4cc9f0] to-white bg-clip-text text-transparent drop-shadow-lg">
-                Unlock the Future of Education
-              </h1>
-
-              <p className="text-md md:text-xl text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed">
-                Experience revolutionary AI-powered learning that adapts to your
-                unique journey. Join us in transforming education forever.
-              </p>
-
-              <div className="p-4 rounded-3xl bg-[rgba(16,20,46,0.95)] border border-[rgba(76,201,240,0.2)] backdrop-blur-xl shadow-xl shadow-[#4361ee]/10">
-                <h2 className="text-lg md:text-2xl font-semibold mb-8 bg-gradient-to-r from-[#4cc9f0] to-white bg-clip-text text-transparent">
-                  Launching In
-                </h2>
-                <CountdownTimer />
-              </div>
-
-              <div className="mt-8">
-                <button className="px-8 py-3 md:py-4 rounded-full bg-gradient-to-br from-[#4361ee] to-[#4cc9f0] text-white text-base md:text-lg font-semibold hover:shadow-lg hover:shadow-[#4cc9f0]/30 transition-all duration-300 transform hover:-translate-y-1">
-                  Join the Waitlist
-                </button>
-              </div>
-            </div>
-          </div>
-        </article>
-      </div>
-
-      <div className="min-h-screen w-screen overflow-hidden bg-[#0a0d1e]">
-        <div className="flex justify-center items-center">
-          <div>{/* Add Orbit comp here by scroll */} </div>
-          <div>
-            vjhbejfbvejbjvf njvdddnfffffffffffffffffffffffffffffffffffffffffffff
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-export default Index;
 
 // function index() {
 //   return (

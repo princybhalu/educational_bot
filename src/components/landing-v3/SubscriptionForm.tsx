@@ -19,7 +19,7 @@ const SubscriptionForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0d1e] p-6">
+    <div className="min-h-screen overflow-hidden flex items-center justify-center bg-[#0a0d1e] p-6">
       {/* Orbital Animation Background */}
       <div className="absolute">
         <div

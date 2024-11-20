@@ -1,62 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import SparklesComp from './sparkles';
-import Orbit from '../../components/avatar/Orbit';
-
+import Orbit from '../avatar/Orbit';
 import { Sparkles } from 'lucide-react';
-
-const CountdownTimer = () => {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-
-  useEffect(() => {
-    const targetDate = new Date('2024-12-01T00:00:00');
-    const interval = setInterval(() => {
-      const now = new Date();
-      const difference = targetDate.getTime() - now.getTime();
-
-      if (difference <= 0) {
-        clearInterval(interval);
-      } else {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / (1000 * 60)) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        });
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const TimeUnit = ({ value, label }: { value: number; label: string }) => (
-    <div className="relative group">
-      <div className="w-12 h-12 md:w-24 md:h-24 bg-[rgba(16,20,46,0.9)] rounded-2xl border border-[rgba(67,97,238,0.2)] backdrop-blur-xl flex flex-col items-center justify-center transform transition-all duration-300 group-hover:border-[#4361ee] group-hover:shadow-lg group-hover:shadow-[#4361ee]/20">
-        <span className=" text-md md:text-2xl font-bold bg-gradient-to-r from-white to-[#4cc9f0] bg-clip-text text-transparent">
-          {value.toString().padStart(2, '0')}
-        </span>
-        <span className="text-white/70 text-sm mt-1">{label}</span>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4">
-      <TimeUnit value={timeLeft.days} label="Days" />
-      <TimeUnit value={timeLeft.hours} label="Hours" />
-      <TimeUnit value={timeLeft.minutes} label="Min" />
-      <TimeUnit value={timeLeft.seconds} label="Sec" />
-    </div>
-  );
-};
-
+// now any code that uses the SparklesComp will have access to the SparklesComp
 function Index() {
   return (
     <>
+      {/* 1st section */}
       <div className="min-h-screen w-screen overflow-hidden bg-[#0a0d1e]">
         {' '}
         {/* Updated background color */}
@@ -113,11 +63,16 @@ function Index() {
         </article>
       </div>
 
-      <div className="min-h-screen w-screen overflow-hidden bg-[#0a0d1e]">
-        <div className="flex justify-center items-center">
-          <div>{/* Add Orbit comp here by scroll */} </div>
+      {/* 2nd section */}
+      <div className="h-screen w-screen overflow-hidden bg-[#0a0d1e]">
+        <div className="h-full flex justify-center items-center gap-2 my-auto">
           <div>
-            vjhbejfbvejbjvf njvdddnfffffffffffffffffffffffffffffffffffffffffffff
+            {/* this orbit comp not visible untill that move placed here : <Orbit opration={null} size={100} smSize={75} /> */}
+          </div>
+          <div className="text-white text-lg p-4 border border-[#4cc9f0] rounded-md">
+            Hello! I&lsquo;m Vidhya, your personal learning assistant.
+            Can&lsquo;t wait to embark on an exciting educational journey with
+            you soon!I
           </div>
         </div>
       </div>
@@ -126,6 +81,56 @@ function Index() {
 }
 
 export default Index;
+
+const CountdownTimer = () => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const targetDate = new Date('2024-12-01T00:00:00');
+    const interval = setInterval(() => {
+      const now = new Date();
+      const difference = targetDate.getTime() - now.getTime();
+
+      if (difference <= 0) {
+        clearInterval(interval);
+      } else {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / (1000 * 60)) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const TimeUnit = ({ value, label }: { value: number; label: string }) => (
+    <div className="relative group">
+      <div className="w-12 h-12 md:w-24 md:h-24 bg-[rgba(16,20,46,0.9)] rounded-2xl border border-[rgba(67,97,238,0.2)] backdrop-blur-xl flex flex-col items-center justify-center transform transition-all duration-300 group-hover:border-[#4361ee] group-hover:shadow-lg group-hover:shadow-[#4361ee]/20">
+        <span className=" text-md md:text-2xl font-bold bg-gradient-to-r from-white to-[#4cc9f0] bg-clip-text text-transparent">
+          {value.toString().padStart(2, '0')}
+        </span>
+        <span className="text-white/70 text-sm mt-1">{label}</span>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4">
+      <TimeUnit value={timeLeft.days} label="Days" />
+      <TimeUnit value={timeLeft.hours} label="Hours" />
+      <TimeUnit value={timeLeft.minutes} label="Minutes" />
+      <TimeUnit value={timeLeft.seconds} label="Seconds" />
+    </div>
+  );
+};
 
 // function index() {
 //   return (

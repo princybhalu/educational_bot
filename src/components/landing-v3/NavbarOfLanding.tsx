@@ -34,7 +34,7 @@ const Navbar = () => {
               <a href="/" className="flex items-center gap-3 group">
                 {/* <Triangle className="w-6 h-6 text-[#4cc9f0] rotate-180 transition-transform duration-300 group-hover:scale-110" /> */}
                 <span className="text-lg font-bold bg-gradient-to-r from-white to-[#4cc9f0] bg-clip-text text-transparent">
-                  Vidhyarhi Ai
+                  Vidhyarthi Ai
                 </span>
               </a>
 
