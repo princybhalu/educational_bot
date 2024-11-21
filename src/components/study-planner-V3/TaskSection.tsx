@@ -17,6 +17,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { Task } from '../../types/study-planner';
+import TaskFormModal from './TaskFormModal';
 interface Task3 {
   id: string;
   title: string;
@@ -516,9 +517,11 @@ const DateNavigator: React.FC<{ theme: any }> = ({ theme }) => {
 
 const AddTaskButton: React.FC<{ theme: any }> = ({ theme }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+  const toggleModal = () => setIsModalOpen((prev) => !prev);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -569,7 +572,7 @@ const AddTaskButton: React.FC<{ theme: any }> = ({ theme }) => {
             </li>
             <li
               onClick={() => {
-                console.log('By Form selected');
+                toggleModal();
                 setIsDropdownOpen(false);
               }}
               className={`px-4 py-2 ${theme.buttonHover} cursor-pointer transition-colors duration-300`}
@@ -579,6 +582,12 @@ const AddTaskButton: React.FC<{ theme: any }> = ({ theme }) => {
           </ul>
         </div>
       )}
+
+      <TaskFormModal
+        theme={theme}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

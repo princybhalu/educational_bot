@@ -21,7 +21,7 @@ const schema = yup.object().shape({
     .min(3, 'Title must be at least 3 characters'),
   type: yup
     .string()
-    .oneOf(['test', 'study', 'therapy'], 'Invalid task type')
+    .oneOf(['test', 'study', 'exam_preration'], 'Invalid task type')
     .required('Task type is required'),
   start_time_utc: yup.string().required('Start time is required'),
   end_time_utc: yup

@@ -5,6 +5,7 @@ import { RootState } from '../../store';
 import Orbit from '../../components/avatar/Orbit';
 import OverviewSection from '../../components/study-planner-V3/OverviewSection';
 import TaskSection from '../../components/study-planner-V3/TaskSection';
+import TaskFormModal from '../../components/study-planner-V3/TaskFormModal';
 
 const TitleSection: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
@@ -326,6 +327,31 @@ const MainPage: React.FC = () => {
     { name: 'Exam', content: <div>Exam content here</div> },
   ];
 
+  const baseStyles = {
+    light: {
+      bg: 'bg-white',
+      surface: 'bg-white/90',
+      text: 'text-gray-900',
+      textSecondary: 'text-gray-700/70',
+      border: 'border-[#4361ee]/20',
+      hover: 'hover:border-[#4361ee]',
+      button: 'bg-white/90',
+      buttonHover: 'hover:bg-[#4361ee]/10',
+    },
+    dark: {
+      bg: 'bg-[#0a0d1e]',
+      surface: 'bg-[rgba(16,20,46,0.9)]',
+      text: 'text-white',
+      textSecondary: 'text-white/70',
+      border: 'border-[#4361ee]/20',
+      hover: 'hover:border-[#4361ee]',
+      button: 'bg-[rgba(16,20,46,1)]',
+      buttonHover: 'hover:bg-[#4361ee]/15',
+    },
+  };
+
+  const theme = isDarkMode ? baseStyles.dark : baseStyles.light;
+
   return (
     <div
       className={`
@@ -338,6 +364,7 @@ const MainPage: React.FC = () => {
         <TitleSection />
         <Tabs tabs={tabs} />
       </div>
+      <TaskFormModal theme={theme} isOpen={false} onClose={() => false} />
     </div>
   );
 };
