@@ -18,21 +18,8 @@ import {
 } from 'lucide-react';
 import { Task } from '../../types/study-planner';
 import TaskFormModal from './TaskFormModal';
-interface Task3 {
-  id: string;
-  title: string;
-  created_by: string;
-  date: string;
-  start_time_utc: string;
-  end_time_utc: string;
-  type: 'study' | 'test' | 'exam_preparation';
-  status: 'upcoming' | 'in_progress' | 'completed' | 'overdue';
-  meta_data: {
-    chapter?: string;
-    subject: string;
-    topic: string;
-  };
-}
+import { motion, AnimatePresence } from 'framer-motion';
+import { StatusOfTasksName } from '../../utils/enums';
 
 const statusConfig = {
   upcoming: {
@@ -137,14 +124,14 @@ const Task3Card: React.FC<{
           {/* Header */}
           <div className="flex items-center gap-2 mb-2">
             <TypeIcon className={`w-5 h-5 ${status.text}`} />
-            <span className={`text-sm font-medium ${status.text}`}>
+            <span className={`text-xs md:text-sm font-medium ${status.text}`}>
               {type.label}
             </span>
             <StatusIcon className={`w-4 h-4 ${status.text}`} />
           </div>
 
           {/* Title */}
-          <h3 className={`text-lg font-semibold mb-2 ${theme.text}`}>
+          <h3 className={`text-md md:text-lg font-semibold mb-2 ${theme.text}`}>
             {task.title}
           </h3>
 
@@ -152,13 +139,13 @@ const Task3Card: React.FC<{
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
             <div className={`flex items-center gap-2 ${theme.textSecondary}`}>
               <Calendar className="w-4 h-4" />
-              <span className="text-sm">
+              <span className="text-xs md:text-sm">
                 {new Date(task.date).toLocaleDateString()}
               </span>
             </div>
             <div className={`flex items-center gap-2 ${theme.textSecondary}`}>
               <Clock className="w-4 h-4" />
-              <span className="text-sm">
+              <span className="text-xs md:text-sm">
                 {formatTime(task.start_time_utc)}{' '}
                 <ArrowRight className="w-4 h-4 inline" />{' '}
                 {formatTime(task.end_time_utc)}
@@ -167,7 +154,7 @@ const Task3Card: React.FC<{
           </div>
 
           {/* Subject Info */}
-          <div className={`text-sm ${theme.textSecondary}`}>
+          <div className={`text-xs md:text-sm ${theme.textSecondary}`}>
             <span className="font-medium">{task.meta_data.subject}</span>
             <span className="mx-2">•</span>
             <span>Chapter {task.meta_data.chapter}</span>
@@ -280,7 +267,7 @@ const Task3Timeline: React.FC<{ tasks: Task[]; theme: any }> = ({
   };
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto py-8">
+    <div className="relative w-full max-w-8xl mx-auto py-8">
       <div
         ref={timelineRef}
         className="h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide px-4"
@@ -410,6 +397,17 @@ const DailyTasksSection = () => {
 
 const TasksSection = () => {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const isToday = currentDate.toDateString() === new Date().toDateString();
+  //@ts-ignore
+  const isPastDate = currentDate < new Date().setHours(0, 0, 0, 0);
+  console.log(
+    isPastDate,
+    isPastDate ? StatusOfTasksName.OVERDUE : StatusOfTasksName.UPCOMING
+  );
+  const [activeTab, setActiveTab] = useState(
+    isPastDate ? StatusOfTasksName.OVERDUE : StatusOfTasksName.UPCOMING
+  );
 
   const baseStyles = {
     light: {
@@ -421,6 +419,10 @@ const TasksSection = () => {
       hover: 'hover:border-[#4361ee]',
       button: 'bg-white/90',
       buttonHover: 'hover:bg-[#4361ee]/10',
+      tabBackground: 'bg-blue-100',
+      tabText: 'text-gray-800',
+      activeTabBackground: 'bg-white',
+      activeTabText: 'text-black',
     },
     dark: {
       bg: 'bg-[#0a0d1e]',
@@ -431,30 +433,291 @@ const TasksSection = () => {
       hover: 'hover:border-[#4361ee]',
       button: 'bg-[rgba(16,20,46,1)]',
       buttonHover: 'hover:bg-[#4361ee]/15',
+      tabBackground: 'bg-[#1a2456]',
+      tabText: 'text-white/80',
+      activeTabBackground: 'bg-white/10',
+      activeTabText: 'text-white',
     },
   };
 
   const theme = isDarkMode ? baseStyles.dark : baseStyles.light;
 
+  const tabVariants = {
+    initial: {
+      opacity: 0,
+      x: activeTab === 'Upcoming' ? 50 : -50,
+    },
+    animate: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        ease: 'easeInOut',
+      },
+    },
+    exit: {
+      opacity: 0,
+      x: activeTab === 'Upcoming' ? -50 : 50,
+      transition: {
+        duration: 0.3,
+        ease: 'easeInOut',
+      },
+    },
+  };
+
   return (
-    <div
-      className={`${theme.surface} p-6 rounded-xl border backdrop-blur-md transition-all duration-300 shadow-lg`}
-      //   style={{
-      //     boxShadow: '0 10px 30px rgba(67,97,238,0.2)',
-      //   }}
-    >
-      <div className="flex items-center justify-between mb-6">
-        <DateNavigator theme={theme} />
-        <AddTaskButton theme={theme} />
+    <div className={`rounded-xl p-2 transition-all duration-300 ${theme.bg}`}>
+      <div className="flex sm:flex-row items-center justify-between mb-6 space-y-4 sm:space-y-0">
+        <DateNavigator
+          theme={theme}
+          currentDate={currentDate}
+          setCurrentDate={setCurrentDate}
+          setActiveTab={setActiveTab}
+        />
+        <div className="flex items-center space-x-4">
+          {isToday && (
+            <div
+              className={`hidden sm:flex justify-center ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1`}
+              style={{
+                width: 'fit-content',
+              }}
+            >
+              <motion.div
+                className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
+                ${
+                  activeTab === StatusOfTasksName.COMPLETED
+                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                    : ''
+                }`}
+                onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
+                whileTap={{ scale: 0.95 }}
+              >
+                <CheckCircle />
+                {activeTab === 'Completed' && (
+                  <motion.span
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-2"
+                  >
+                    Completed
+                  </motion.span>
+                )}
+              </motion.div>
+
+              <motion.div
+                className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
+                ${
+                  activeTab === StatusOfTasksName.UPCOMING
+                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                    : ''
+                }`}
+                onClick={() => setActiveTab(StatusOfTasksName.UPCOMING)}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Clock />
+                {activeTab === StatusOfTasksName.UPCOMING && (
+                  <motion.span
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-2"
+                  >
+                    Upcoming
+                  </motion.span>
+                )}
+              </motion.div>
+            </div>
+          )}
+          {isPastDate && (
+            <div
+              className={`hidden sm:flex justify-center ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1`}
+              style={{
+                width: 'fit-content',
+              }}
+            >
+              <motion.div
+                className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
+                  ${
+                    activeTab === StatusOfTasksName.OVERDUE
+                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                      : ''
+                  }`}
+                onClick={() => setActiveTab(StatusOfTasksName.OVERDUE)}
+                whileTap={{ scale: 0.95 }}
+              >
+                <AlertCircle />
+                {activeTab === StatusOfTasksName.OVERDUE && (
+                  <motion.span
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-2"
+                  >
+                    OverDue
+                  </motion.span>
+                )}
+              </motion.div>
+
+              <motion.div
+                className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
+                  ${
+                    activeTab === StatusOfTasksName.COMPLETED
+                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                      : ''
+                  }`}
+                onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
+                whileTap={{ scale: 0.95 }}
+              >
+                <CheckCircle />
+                {activeTab === StatusOfTasksName.COMPLETED && (
+                  <motion.span
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-2"
+                  >
+                    Completed
+                  </motion.span>
+                )}
+              </motion.div>
+            </div>
+          )}
+          <AddTaskButton theme={theme} />
+        </div>
       </div>
-      <DailyTasksSection />
+
+      {/* Mobile Tabs - Shown only on small screens and for today's date */}
+      {isToday && (
+        <div
+          className={`sm:hidden flex justify-end ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1 mb-4`}
+          style={{
+            width: 'fit-content',
+          }}
+        >
+          <motion.div
+            className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
+                ${
+                  activeTab === StatusOfTasksName.COMPLETED
+                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                    : ''
+                }`}
+            onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
+            whileTap={{ scale: 0.95 }}
+          >
+            <CheckCircle />
+            {activeTab === 'Completed' && (
+              <motion.span
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className="ml-2"
+              >
+                Completed
+              </motion.span>
+            )}
+          </motion.div>
+
+          <motion.div
+            className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
+                ${
+                  activeTab === StatusOfTasksName.UPCOMING
+                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                    : ''
+                }`}
+            onClick={() => setActiveTab(StatusOfTasksName.UPCOMING)}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Clock />
+            {activeTab === 'Upcoming' && (
+              <motion.span
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className="ml-2"
+              >
+                Upcoming
+              </motion.span>
+            )}
+          </motion.div>
+        </div>
+      )}
+      {isPastDate && (
+        <div
+          className={`sm:hidden flex justify-end ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1 mb-4`}
+          style={{
+            width: 'fit-content',
+          }}
+        >
+          <motion.div
+            className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
+                  ${
+                    activeTab === StatusOfTasksName.OVERDUE
+                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                      : ''
+                  }`}
+            onClick={() => setActiveTab(StatusOfTasksName.OVERDUE)}
+            whileTap={{ scale: 0.95 }}
+          >
+            <AlertCircle />
+            {activeTab === StatusOfTasksName.OVERDUE && (
+              <motion.span
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className="ml-2"
+              >
+                OverDue
+              </motion.span>
+            )}
+          </motion.div>
+
+          <motion.div
+            className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
+                  ${
+                    activeTab === StatusOfTasksName.COMPLETED
+                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                      : ''
+                  }`}
+            onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
+            whileTap={{ scale: 0.95 }}
+          >
+            <CheckCircle />
+            {activeTab === StatusOfTasksName.COMPLETED && (
+              <motion.span
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className="ml-2"
+              >
+                Completed
+              </motion.span>
+            )}
+          </motion.div>
+        </div>
+      )}
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={tabVariants}
+        >
+          <DailyTasksSection />
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };
 
-const DateNavigator: React.FC<{ theme: any }> = ({ theme }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-
+const DateNavigator: React.FC<{
+  theme: any;
+  currentDate: Date;
+  setCurrentDate: (a: any) => void;
+  setActiveTab: (a: string) => void;
+}> = ({ theme, currentDate, setCurrentDate, setActiveTab }) => {
   const isToday = (date: Date) => {
     const today = new Date();
     return (
@@ -473,11 +736,16 @@ const DateNavigator: React.FC<{ theme: any }> = ({ theme }) => {
   };
 
   const handlePrevDay = () => {
-    setCurrentDate((prev) => new Date(prev.getTime() - 24 * 60 * 60 * 1000));
+    setCurrentDate(
+      (prev: any) => new Date(prev.getTime() - 24 * 60 * 60 * 1000)
+    );
+    setActiveTab(StatusOfTasksName.OVERDUE);
   };
 
   const handleNextDay = () => {
-    setCurrentDate((prev) => new Date(prev.getTime() + 24 * 60 * 60 * 1000));
+    setCurrentDate(
+      (prev: any) => new Date(prev.getTime() + 24 * 60 * 60 * 1000)
+    );
   };
 
   return (

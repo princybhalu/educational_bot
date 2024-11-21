@@ -6,6 +6,7 @@ import Orbit from '../../components/avatar/Orbit';
 import OverviewSection from '../../components/study-planner-V3/OverviewSection';
 import TaskSection from '../../components/study-planner-V3/TaskSection';
 import TaskFormModal from '../../components/study-planner-V3/TaskFormModal';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const TitleSection: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
@@ -263,6 +264,7 @@ const TitleSection: React.FC = () => {
 
 interface Tab {
   name: string;
+  path: string; // Add path to map each tab to a route
   content: React.ReactNode;
 }
 
@@ -271,29 +273,42 @@ interface TabsProps {
 }
 
 const Tabs: React.FC<TabsProps> = ({ tabs }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
-  const [activeTab, setActiveTab] = useState(tabs[0].name);
+
+  // Extract the last segment of the path to determine the active tab
+  const currentPath = location.pathname.split('/').pop() || tabs[0].path;
+  const [activeTab, setActiveTab] = useState(currentPath);
+
+  useEffect(() => {
+    setActiveTab(currentPath); // Update active tab on route change
+  }, [currentPath]);
+
+  const handleTabClick = (path: string) => {
+    setActiveTab(path);
+    navigate(`/study-planner/${path}`); // Update the route
+  };
 
   return (
-    <div className="space-y-3 md:space-y-6 w-full max-w-3xl md:max-w-7xl">
+    <div className="space-y-3 md:space-y-6 w-full">
       {/* Tab Headers */}
       <div
         className={`border-b ${
           isDarkMode ? 'border-[rgba(67,97,238,0.2)]' : 'border-gray-200'
         }`}
       >
-        {/* Responsive Tab Container */}
         <div className="flex flex-wrap md:flex-nowrap -mb-px overflow-x-auto no-scrollbar">
           {tabs.map((tab) => (
             <button
-              key={tab.name}
-              onClick={() => setActiveTab(tab.name)}
+              key={tab.path}
+              onClick={() => handleTabClick(tab.path)}
               className={`
                 flex-grow md:flex-grow-0
                 px-4 py-2 text-sm md:text-base font-medium
                 transition-colors duration-300 whitespace-nowrap
                 ${
-                  activeTab === tab.name
+                  activeTab === tab.path
                     ? isDarkMode
                       ? 'text-[#4cc9f0] border-b-2 border-[#4cc9f0]'
                       : 'text-[#4361ee] border-b-2 border-[#4361ee]'
@@ -310,8 +325,8 @@ const Tabs: React.FC<TabsProps> = ({ tabs }) => {
       </div>
 
       {/* Tab Content */}
-      <div className="p-4">
-        {tabs.find((tab) => tab.name === activeTab)?.content}
+      <div className="">
+        {tabs.find((tab) => tab.path === activeTab)?.content}
       </div>
     </div>
   );
@@ -321,36 +336,15 @@ const MainPage: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
 
   const tabs = [
-    { name: 'Overview', content: <OverviewSection /> },
-    { name: 'Tasks', content: <TaskSection /> },
-    { name: 'Progress', content: <div>Progress content here</div> },
-    { name: 'Exam', content: <div>Exam content here</div> },
+    { name: 'Overview', path: 'overview', content: <OverviewSection /> },
+    { name: 'Tasks', path: 'tasks', content: <TaskSection /> },
+    {
+      name: 'Progress',
+      path: 'progress',
+      content: <div>Progress content here</div>,
+    },
+    { name: 'Exam', path: 'exam', content: <div>Exam content here</div> },
   ];
-
-  const baseStyles = {
-    light: {
-      bg: 'bg-white',
-      surface: 'bg-white/90',
-      text: 'text-gray-900',
-      textSecondary: 'text-gray-700/70',
-      border: 'border-[#4361ee]/20',
-      hover: 'hover:border-[#4361ee]',
-      button: 'bg-white/90',
-      buttonHover: 'hover:bg-[#4361ee]/10',
-    },
-    dark: {
-      bg: 'bg-[#0a0d1e]',
-      surface: 'bg-[rgba(16,20,46,0.9)]',
-      text: 'text-white',
-      textSecondary: 'text-white/70',
-      border: 'border-[#4361ee]/20',
-      hover: 'hover:border-[#4361ee]',
-      button: 'bg-[rgba(16,20,46,1)]',
-      buttonHover: 'hover:bg-[#4361ee]/15',
-    },
-  };
-
-  const theme = isDarkMode ? baseStyles.dark : baseStyles.light;
 
   return (
     <div
@@ -360,11 +354,10 @@ const MainPage: React.FC = () => {
         ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
       `}
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="">
         <TitleSection />
         <Tabs tabs={tabs} />
       </div>
-      <TaskFormModal theme={theme} isOpen={false} onClose={() => false} />
     </div>
   );
 };

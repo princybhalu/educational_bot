@@ -25,3 +25,10 @@ export const QuestionStatus = {
 export const OrbitOpration = {
   LOADING: 'loading',
 };
+
+export const StatusOfTasksName = {
+  UPCOMING: 'upcoming',
+  IN_PROGRESS: 'in-progress',
+  COMPLETED: 'completed',
+  OVERDUE: 'overdue',
+};

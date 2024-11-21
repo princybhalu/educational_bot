@@ -92,7 +92,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           />
         )}
 
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 w-full overflow-auto">{children}</main>
       </div>
     </div>
   );
