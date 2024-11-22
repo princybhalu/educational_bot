@@ -288,113 +288,88 @@ const Task3Timeline: React.FC<{ tasks: Task[]; theme: any }> = ({
   );
 };
 
-const DailyTasksSection = () => {
-  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
-
-  const theme = {
-    light: {
-      surface: 'bg-white/90',
-      text: 'text-gray-900',
-      textSecondary: 'text-gray-700/70',
-      border: 'border-[#4361ee]/20',
-      hover: 'hover:border-[#4361ee]',
-      button: 'bg-white/90',
-      buttonHover: 'hover:bg-[#4361ee]/10',
+const tasks: Task[] = [
+  {
+    id: '1',
+    schedule_id: '1001',
+    title: 'Study Algebra',
+    created_by: 'user_01',
+    date: '2024-11-21',
+    start_time_utc: '2024-11-21T09:00:00Z',
+    end_time_utc: '2024-11-21T11:00:00Z',
+    type: 'study',
+    status: 'upcoming',
+    meta_data: {
+      chapter: 'Chapter 3',
+      subject: 'Mathematics',
+      topic: 'Algebra Basics',
     },
-    dark: {
-      surface: 'bg-[rgba(16,20,46,0.9)]',
-      text: 'text-white',
-      textSecondary: 'text-white/70',
-      border: 'border-[#4361ee]/20',
-      hover: 'hover:border-[#4361ee]',
-      button: 'bg-[rgba(16,20,46,1)]',
-      buttonHover: 'hover:bg-[#4361ee]/15',
+  },
+  {
+    id: '2',
+    schedule_id: '1002',
+    title: 'Physics Test',
+    created_by: 'user_02',
+    date: '2024-11-22',
+    start_time_utc: '2024-11-22T10:00:00Z',
+    end_time_utc: '2024-11-22T12:00:00Z',
+    type: 'test',
+    status: 'in_progress',
+    meta_data: {
+      chapter: 'Chapter 5',
+      subject: 'Physics',
+      topic: 'Laws of Motion',
     },
-  };
-
-  const currentTheme = isDarkMode ? theme.dark : theme.light;
-
-  const tasks = [
-    {
-      id: '1',
-      schedule_id: 'SCHD001',
-      title: 'Physics: Work and Energy',
-      created_by: 'AI',
-      date: '2024-11-20',
-      start_time_utc: '2024-11-20T10:00:00Z',
-      end_time_utc: '2024-11-20T11:30:00Z',
-      type: 'study', // Enums: study, test, exam_preparation
-      status: 'completed', // Enums: upcoming, in_progress, completed, overdue
-      meta_data: {
-        chapter: '5',
-        subject: 'Physics',
-        topic: 'Work and Energy',
-      },
+  },
+  {
+    id: '3',
+    schedule_id: '1003',
+    title: 'Exam Preparation: Biology',
+    created_by: 'user_03',
+    date: '2024-11-20',
+    start_time_utc: '2024-11-20T15:00:00Z',
+    end_time_utc: '2024-11-20T17:00:00Z',
+    type: 'exam_preparation',
+    status: 'completed',
+    meta_data: {
+      chapter: 'Chapter 7',
+      subject: 'Biology',
+      topic: 'Cell Structure',
     },
-    {
-      id: '2',
-      schedule_id: 'SCHD002',
-      title: 'Math: Algebra Practice Test',
-      created_by: 'Human',
-      date: '2024-11-21',
-      start_time_utc: '2024-11-21T14:00:00Z',
-      end_time_utc: '2024-11-21T15:30:00Z',
-      type: 'test', // Enums: study, test, exam_preparation
-      status: 'in_progress', // Enums: upcoming, in_progress, completed, overdue
-      meta_data: {
-        chapter: '7',
-        subject: 'Math',
-        topic: 'Algebra',
-      },
+  },
+  {
+    id: '4',
+    schedule_id: '1004',
+    title: 'Complete Chemistry Worksheet',
+    created_by: 'user_04',
+    date: '2024-11-19',
+    start_time_utc: '2024-11-19T13:00:00Z',
+    end_time_utc: '2024-11-19T14:30:00Z',
+    type: 'study',
+    status: 'overdue',
+    meta_data: {
+      chapter: 'Chapter 2',
+      subject: 'Chemistry',
+      topic: 'Periodic Table',
     },
-    {
-      id: '3',
-      schedule_id: 'SCHD003',
-      title: 'Chemistry: Organic Compounds Review',
-      created_by: 'AI',
-      date: '2024-11-22',
-      start_time_utc: '2024-11-22T16:00:00Z',
-      end_time_utc: '2024-11-22T17:00:00Z',
-      type: 'exam_preparation', // Enums: study, test, exam_preparation
-      status: 'upcoming', // Enums: upcoming, in_progress, completed, overdue
-      meta_data: {
-        chapter: '12',
-        subject: 'Chemistry',
-        topic: 'Organic Compounds',
-      },
+  },
+  {
+    id: '5',
+    schedule_id: '1005',
+    title: 'Review English Grammar Notes',
+    created_by: 'user_05',
+    date: '2024-11-22',
+    start_time_utc: '2024-11-22T16:00:00Z',
+    end_time_utc: '2024-11-22T17:30:00Z',
+    type: 'study',
+    status: 'upcoming',
+    meta_data: {
+      chapter: 'Chapter 1',
+      subject: 'English',
+      topic: 'Grammar Rules',
     },
-    {
-      id: '4',
-      schedule_id: 'SCHD004',
-      title: 'History: World War II Notes',
-      created_by: 'Human',
-      date: '2024-11-19',
-      start_time_utc: '2024-11-19T10:00:00Z',
-      end_time_utc: '2024-11-19T11:30:00Z',
-      type: 'study', // Enums: study, test, exam_preparation
-      status: 'overdue', // Enums: upcoming, in_progress, completed, overdue
-      meta_data: {
-        chapter: '9',
-        subject: 'History',
-        topic: 'World War II',
-      },
-    },
-  ];
-
-  return (
-    // <div
-    //   className={`
-    //     ${currentTheme.surface} rounded-xl border ${currentTheme.border}
-    //     backdrop-blur-md transition-all duration-300
-    //   `}
-    //   style={{
-    //     boxShadow: '0 10px 30px rgba(67,97,238,0.2)',
-    //   }}
-    // >
-    <Task3Timeline tasks={tasks} theme={currentTheme} />
-    // </div>
-  );
-};
+  },
+];
 
 const TasksSection = () => {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
@@ -405,6 +380,8 @@ const TasksSection = () => {
   const [activeTab, setActiveTab] = useState(
     isPastDate ? StatusOfTasksName.OVERDUE : StatusOfTasksName.UPCOMING
   );
+  const [currentViewTasks, setCurrentViewTasks] = useState<null | Task[]>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const baseStyles = {
     light: {
@@ -440,6 +417,7 @@ const TasksSection = () => {
   };
 
   const theme = isDarkMode ? baseStyles.dark : baseStyles.light;
+  console.log(theme , isDarkMode);
 
   const tabVariants = {
     initial: {
@@ -463,6 +441,12 @@ const TasksSection = () => {
       },
     },
   };
+
+  useEffect(() => {
+    // @ts-ignore
+    setCurrentViewTasks(tasks);
+    // setIsLoading(false);
+  }, [currentDate]);
 
   return (
     <div className={`rounded-xl p-2 transition-all duration-300 ${theme.bg}`}>
@@ -704,7 +688,61 @@ const TasksSection = () => {
           exit="exit"
           variants={tabVariants}
         >
-          <DailyTasksSection />
+          {!isLoading && currentViewTasks && (
+            <>
+              {' '}
+              <Task3Timeline tasks={currentViewTasks} theme={theme} />
+            </>
+          )}
+          {isLoading && (
+            <>
+              <div
+                className={`
+              relative mb-4 p-4 rounded-xl border transition-all duration-300
+              ${theme.surface} ${theme.border} bg-gray-100 dark:bg-gray-800
+            `}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    {/* Header Skeleton */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                      <div className="w-20 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                      <div className="w-4 h-4 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                    </div>
+
+                    {/* Title Skeleton */}
+                    <div className="w-3/4 h-5 rounded bg-gray-300 dark:bg-gray-700 animate-pulse mb-2"></div>
+
+                    {/* Meta Info Skeleton */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                        <div className="w-1/2 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                        <div className="w-3/4 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                      </div>
+                    </div>
+
+                    {/* Subject Info Skeleton */}
+                    <div className="flex gap-2">
+                      <div className="w-1/3 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                      <div className="w-1/5 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                      <div className="w-1/4 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                    </div>
+                  </div>
+
+                  {/* Actions Dropdown Skeleton */}
+                  <div className="relative">
+                    <div className="w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+          {!isLoading && currentViewTasks && <>no data found </>}
         </motion.div>
       </AnimatePresence>
     </div>
