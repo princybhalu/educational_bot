@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { X, Plus } from 'lucide-react';
+import { useSelector } from 'react-redux';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { RootState } from '../../store'; // Adjust import as needed
+import {
+  AddTaskApiCall,
+  UpdateTaskApiCall,
+} from '../../services/api/study-planner';
+import { useNavigate } from 'react-router-dom';
 
-// Validation schema from the original component
+// Validation schema (same as previous implementation)
 const schema = yup.object().shape({
   date: yup.string().required('Date is required'),
   title: yup
@@ -39,20 +45,33 @@ const schema = yup.object().shape({
   }),
 });
 
-// Dark mode theme from design system
-const darkTheme = {
-  bg: 'bg-[#0a0d1e]',
-  surface: 'bg-[rgba(16,20,46,1)]',
-  surface1: 'bg-[rgba(67,97,238,0.15)]',
-  text: 'text-white',
-  textSecondary: 'text-white/70',
-  border: 'border border-[rgba(67,97,238,0.2)]',
-  hover: 'hover:bg-[rgba(67,97,238,0.15)]',
-  button: 'bg-[rgba(16,20,46,0.9)]',
-  buttonHover: 'hover:bg-[rgba(67,97,238,0.15)]',
-};
-
 const AddTaskPage: React.FC = () => {
+  // Theme selection
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+
+  const navigate = useNavigate();
+
+  // Theme configuration based on mode
+  const theme = isDarkMode
+    ? {
+        bg: 'bg-[#0a0d1e]',
+        surface: 'bg-[rgba(16,20,46,1)]',
+        text: 'text-white',
+        textSecondary: 'text-white/70',
+        border: 'border-gray-700',
+        button: 'bg-gray-800',
+        inputBg: 'bg-gray-900',
+      }
+    : {
+        bg: 'bg-white',
+        surface: 'bg-gray-50',
+        text: 'text-gray-900',
+        textSecondary: 'text-gray-600',
+        border: 'border-gray-300',
+        button: 'bg-gray-100',
+        inputBg: 'bg-white',
+      };
+
   const {
     control,
     handleSubmit,
@@ -77,29 +96,49 @@ const AddTaskPage: React.FC = () => {
 
   const taskType = watch('type');
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    reset();
+  const onSubmit = async (updatedTask: any) => {
+    console.log(updatedTask);
+
+    try {
+      let response;
+      updatedTask.start_time =
+        updatedTask.date + ' ' + updatedTask.start_time_utc + ':00.000';
+      updatedTask.end_time =
+        updatedTask.date + ' ' + updatedTask.end_time_utc + ':00.000';
+      console.log({ updatedTask });
+      if (updatedTask.id) {
+        // Edit existing task
+        response = await UpdateTaskApiCall(updatedTask, null, updatedTask.id);
+      } else {
+        // Add new task
+        response = await AddTaskApiCall(updatedTask);
+      }
+
+      if (!response.data.conflict) {
+        const savedTask = response.data.task;
+        navigate('/study-planner/tasks');
+        reset();
+      } else {
+        console.error('Failed to save task');
+      }
+    } catch (error) {
+      console.error('Error saving task:', error);
+    }
   };
 
   return (
     <div
-      className={`min-h-screen ${darkTheme.bg} flex items-center justify-center p-4`}
+      className={`min-h-screen ${theme.bg} ${theme.text} flex items-center justify-center p-4`}
     >
       <div
-        className={`w-full max-w-2xl ${darkTheme.surface} rounded-2xl ${darkTheme.border} p-8 shadow-lg`}
-        style={{ boxShadow: '0 10px 30px rgba(67,97,238,0.2)' }}
+        className={`w-full max-w-2xl ${theme.surface} rounded-2xl border ${theme.border} p-8 shadow-lg`}
       >
-        <div className="flex justify-between items-center mb-8">
-          <h1 className={`text-3xl font-bold ${darkTheme.text}`}>
-            Create New Task
-          </h1>
-        </div>
+        <h1 className={`text-3xl font-bold mb-8`}>Create New Task</h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className={`block mb-2 ${darkTheme.textSecondary}`}>
+              <label className={`block mb-2 ${theme.textSecondary}`}>
                 Date
               </label>
               <Controller
@@ -109,7 +148,7 @@ const AddTaskPage: React.FC = () => {
                   <input
                     {...field}
                     type="date"
-                    className={`w-full p-3 rounded-lg ${darkTheme.button} ${darkTheme.text} ${darkTheme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
+                    className={`w-full p-3 rounded-lg ${theme.inputBg} ${theme.text} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   />
                 )}
               />
@@ -121,7 +160,7 @@ const AddTaskPage: React.FC = () => {
             </div>
 
             <div>
-              <label className={`block mb-2 ${darkTheme.textSecondary}`}>
+              <label className={`block mb-2 ${theme.textSecondary}`}>
                 Task Type
               </label>
               <Controller
@@ -130,7 +169,7 @@ const AddTaskPage: React.FC = () => {
                 render={({ field }) => (
                   <select
                     {...field}
-                    className={`w-full p-3 rounded-lg ${darkTheme.button} ${darkTheme.text} ${darkTheme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
+                    className={`w-full p-3 rounded-lg ${theme.inputBg} ${theme.text} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   >
                     <option value="study">Study</option>
                     <option value="test">Test</option>
@@ -146,10 +185,11 @@ const AddTaskPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Rest of the form remains similar to previous implementation, 
+              just replace theme classes with new theme object */}
+
           <div>
-            <label className={`block mb-2 ${darkTheme.textSecondary}`}>
-              Title
-            </label>
+            <label className={`block mb-2 ${theme.textSecondary}`}>Title</label>
             <Controller
               name="title"
               control={control}
@@ -158,7 +198,7 @@ const AddTaskPage: React.FC = () => {
                   {...field}
                   type="text"
                   placeholder="Enter task title"
-                  className={`w-full p-3 rounded-lg ${darkTheme.button} ${darkTheme.text} ${darkTheme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
+                  className={`w-full p-3 rounded-lg ${theme.button} ${theme.text} ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
                 />
               )}
             />
@@ -171,7 +211,7 @@ const AddTaskPage: React.FC = () => {
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className={`block mb-2 ${darkTheme.textSecondary}`}>
+              <label className={`block mb-2 ${theme.textSecondary}`}>
                 Start Time
               </label>
               <Controller
@@ -181,7 +221,7 @@ const AddTaskPage: React.FC = () => {
                   <input
                     {...field}
                     type="time"
-                    className={`w-full p-3 rounded-lg ${darkTheme.button} ${darkTheme.text} ${darkTheme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
+                    className={`w-full p-3 rounded-lg ${theme.button} ${theme.text} ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
                   />
                 )}
               />
@@ -193,7 +233,7 @@ const AddTaskPage: React.FC = () => {
             </div>
 
             <div>
-              <label className={`block mb-2 ${darkTheme.textSecondary}`}>
+              <label className={`block mb-2 ${theme.textSecondary}`}>
                 End Time
               </label>
               <Controller
@@ -203,7 +243,7 @@ const AddTaskPage: React.FC = () => {
                   <input
                     {...field}
                     type="time"
-                    className={`w-full p-3 rounded-lg ${darkTheme.button} ${darkTheme.text} ${darkTheme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
+                    className={`w-full p-3 rounded-lg ${theme.button} ${theme.text} ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
                   />
                 )}
               />
@@ -217,12 +257,12 @@ const AddTaskPage: React.FC = () => {
 
           {(taskType === 'test' || taskType === 'study') && (
             <div>
-              <h3 className={`text-xl font-semibold ${darkTheme.text} mb-4`}>
+              <h3 className={`text-xl font-semibold ${theme.text} mb-4`}>
                 Meta Data
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label className={`block mb-2 ${darkTheme.textSecondary}`}>
+                  <label className={`block mb-2 ${theme.textSecondary}`}>
                     Subject
                   </label>
                   <Controller
@@ -235,7 +275,7 @@ const AddTaskPage: React.FC = () => {
                         {...field}
                         type="text"
                         placeholder="Enter subject"
-                        className={`w-full p-3 rounded-lg ${darkTheme.button} ${darkTheme.text} ${darkTheme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
+                        className={`w-full p-3 rounded-lg ${theme.button} ${theme.text} ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
                       />
                     )}
                   />
@@ -254,7 +294,7 @@ const AddTaskPage: React.FC = () => {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className={`block mb-2 ${darkTheme.textSecondary}`}>
+                    <label className={`block mb-2 ${theme.textSecondary}`}>
                       Topic (Optional)
                     </label>
                     <Controller
@@ -267,14 +307,14 @@ const AddTaskPage: React.FC = () => {
                           {...field}
                           type="text"
                           placeholder="Enter topic"
-                          className={`w-full p-3 rounded-lg ${darkTheme.button} ${darkTheme.text} ${darkTheme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
+                          className={`w-full p-3 rounded-lg ${theme.button} ${theme.text} ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
                         />
                       )}
                     />
                   </div>
 
                   <div>
-                    <label className={`block mb-2 ${darkTheme.textSecondary}`}>
+                    <label className={`block mb-2 ${theme.textSecondary}`}>
                       Chapter (Optional)
                     </label>
                     <Controller
@@ -287,7 +327,7 @@ const AddTaskPage: React.FC = () => {
                           {...field}
                           type="text"
                           placeholder="Enter chapter"
-                          className={`w-full p-3 rounded-lg ${darkTheme.button} ${darkTheme.text} ${darkTheme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
+                          className={`w-full p-3 rounded-lg ${theme.button} ${theme.text} ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
                         />
                       )}
                     />
@@ -300,13 +340,14 @@ const AddTaskPage: React.FC = () => {
           <div className="flex justify-end space-x-4 mt-8">
             <button
               type="button"
-              className={`px-6 py-3 rounded-lg ${darkTheme.button} ${darkTheme.text} ${darkTheme.buttonHover} transition-all duration-300`}
+              className={`px-6 py-3 rounded-lg ${theme.button} ${theme.text} border ${theme.border} hover:bg-gray-200 transition-all duration-300`}
+              onClick={() => navigate('study-planner/task')}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] text-white px-6 py-3 rounded-lg hover:shadow-[0_0_30px_rgba(67,97,238,0.4)] transition-all duration-300"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300"
             >
               Create Task
             </button>

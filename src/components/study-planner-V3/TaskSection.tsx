@@ -20,6 +20,7 @@ import { Task } from '../../types/study-planner';
 import TaskFormModal from './TaskFormModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StatusOfTasksName } from '../../utils/enums';
+import { useNavigate } from 'react-router-dom';
 
 const statusConfig = {
   upcoming: {
@@ -401,10 +402,6 @@ const TasksSection = () => {
   const isToday = currentDate.toDateString() === new Date().toDateString();
   //@ts-ignore
   const isPastDate = currentDate < new Date().setHours(0, 0, 0, 0);
-  console.log(
-    isPastDate,
-    isPastDate ? StatusOfTasksName.OVERDUE : StatusOfTasksName.UPCOMING
-  );
   const [activeTab, setActiveTab] = useState(
     isPastDate ? StatusOfTasksName.OVERDUE : StatusOfTasksName.UPCOMING
   );
@@ -413,6 +410,7 @@ const TasksSection = () => {
     light: {
       bg: 'bg-white',
       surface: 'bg-white/90',
+      surface1: 'bg-white',
       text: 'text-gray-900',
       textSecondary: 'text-gray-700/70',
       border: 'border-[#4361ee]/20',
@@ -427,6 +425,7 @@ const TasksSection = () => {
     dark: {
       bg: 'bg-[#0a0d1e]',
       surface: 'bg-[rgba(16,20,46,0.9)]',
+      surface1: 'bg-[rgba(16,20,46)]',
       text: 'text-white',
       textSecondary: 'text-white/70',
       border: 'border-[#4361ee]/20',
@@ -629,7 +628,7 @@ const TasksSection = () => {
             whileTap={{ scale: 0.95 }}
           >
             <Clock />
-            {activeTab === 'Upcoming' && (
+            {activeTab === StatusOfTasksName.UPCOMING && (
               <motion.span
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -712,12 +711,125 @@ const TasksSection = () => {
   );
 };
 
+// Custom Date Picker Component
+const DatePicker: React.FC<{
+  theme: any;
+  currentDate: Date;
+  onDateSelect: (date: Date) => void;
+  onClose: () => void;
+}> = ({ theme, currentDate, onDateSelect, onClose }) => {
+  const [selectedDate, setSelectedDate] = useState(currentDate);
+
+  const daysInMonth = (year: number, month: number) => {
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+  const generateCalendarDays = () => {
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const totalDays = daysInMonth(year, month);
+
+    const days = [];
+
+    // Add empty slots for days before the first day of the month
+    for (let i = 0; i < firstDay; i++) {
+      days.push(null);
+    }
+
+    // Add actual days of the month
+    for (let i = 1; i <= totalDays; i++) {
+      days.push(new Date(year, month, i));
+    }
+
+    return days;
+  };
+
+  const handleDateSelect = (date: Date) => {
+    onDateSelect(date);
+    onClose();
+  };
+
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  const changeMonth = (delta: number) => {
+    const newDate = new Date(selectedDate);
+    newDate.setMonth(newDate.getMonth() + delta);
+    setSelectedDate(newDate);
+  };
+
+  const days = generateCalendarDays();
+
+  return (
+    <div
+      className={`absolute top-full left-0 mt-2 ${theme.surface1} ${theme.text} border ${theme.border} rounded-lg shadow-lg p-4 z-10 w-64`}
+    >
+      <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={() => changeMonth(-1)}
+          className={`p-1 ${theme.buttonHover} rounded`}
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <div className="font-semibold">
+          {monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}
+        </div>
+        <button
+          onClick={() => changeMonth(1)}
+          className={`p-1 ${theme.buttonHover} rounded`}
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="grid grid-cols-7 gap-1 text-center">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+          <div key={day} className="font-bold text-xs opacity-70">
+            {day}
+          </div>
+        ))}
+        {days.map((day, index) =>
+          day ? (
+            <button
+              key={index}
+              onClick={() => handleDateSelect(day)}
+              className={`p-1 rounded transition-colors duration-300 ${
+                day.toDateString() === currentDate.toDateString()
+                  ? 'bg-[#4361ee] text-white'
+                  : `${theme.buttonHover} hover:bg-[#4361ee]/10`
+              }`}
+            >
+              {day.getDate()}
+            </button>
+          ) : (
+            <div key={index}></div>
+          )
+        )}
+      </div>
+    </div>
+  );
+};
+
 const DateNavigator: React.FC<{
   theme: any;
   currentDate: Date;
   setCurrentDate: (a: any) => void;
   setActiveTab: (a: string) => void;
 }> = ({ theme, currentDate, setCurrentDate, setActiveTab }) => {
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
   const isToday = (date: Date) => {
     const today = new Date();
     return (
@@ -735,32 +847,46 @@ const DateNavigator: React.FC<{
     return date.toLocaleDateString('en-US', options);
   };
 
+  const changeActiveTab = (date: Date) => {
+    if (isToday(date)) {
+      setActiveTab(StatusOfTasksName.UPCOMING);
+    } else {
+      setActiveTab(StatusOfTasksName.OVERDUE);
+    }
+  };
+
   const handlePrevDay = () => {
-    setCurrentDate(
-      (prev: any) => new Date(prev.getTime() - 24 * 60 * 60 * 1000)
-    );
-    setActiveTab(StatusOfTasksName.OVERDUE);
+    setCurrentDate((prev: any) => {
+      changeActiveTab(new Date(prev.getTime() - 24 * 60 * 60 * 1000));
+      return new Date(prev.getTime() - 24 * 60 * 60 * 1000);
+    });
   };
 
   const handleNextDay = () => {
-    setCurrentDate(
-      (prev: any) => new Date(prev.getTime() + 24 * 60 * 60 * 1000)
-    );
+    setCurrentDate((prev: any) => {
+      changeActiveTab(new Date(prev.getTime() + 24 * 60 * 60 * 1000));
+      return new Date(prev.getTime() + 24 * 60 * 60 * 1000);
+    });
+  };
+
+  const handleDateSelect = (date: Date) => {
+    setCurrentDate(date);
+    changeActiveTab(date);
   };
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4 relative">
       <button
         onClick={handlePrevDay}
         className={`${theme.button} ${theme.buttonHover} ${theme.text} p-2 rounded-lg transition-all duration-300 border ${theme.hover}`}
-        // style={{
-        //   boxShadow: '0 0 20px rgba(67,97,238,0.2)',
-        // }}
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
 
-      <div className={`text-lg font-semibold ${theme.text}`}>
+      <div
+        onClick={() => setShowDatePicker(!showDatePicker)}
+        className={`text-lg font-semibold ${theme.text} cursor-pointer`}
+      >
         {isToday(currentDate) ? (
           <div className="relative">
             <span className="bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent">
@@ -772,6 +898,17 @@ const DateNavigator: React.FC<{
           getFormattedDate(currentDate)
         )}
       </div>
+
+      {showDatePicker && (
+        <DatePicker
+          theme={theme}
+          currentDate={currentDate}
+          onDateSelect={handleDateSelect}
+          onClose={() => {
+            setShowDatePicker(false);
+          }}
+        />
+      )}
 
       <button
         onClick={handleNextDay}
@@ -787,7 +924,7 @@ const AddTaskButton: React.FC<{ theme: any }> = ({ theme }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const navigate = useNavigate();
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
   const toggleModal = () => setIsModalOpen((prev) => !prev);
 
@@ -842,6 +979,7 @@ const AddTaskButton: React.FC<{ theme: any }> = ({ theme }) => {
               onClick={() => {
                 toggleModal();
                 setIsDropdownOpen(false);
+                navigate('/study-planner/add');
               }}
               className={`px-4 py-2 ${theme.buttonHover} cursor-pointer transition-colors duration-300`}
             >
@@ -861,3 +999,74 @@ const AddTaskButton: React.FC<{ theme: any }> = ({ theme }) => {
 };
 
 export default TasksSection;
+
+// const DateNavigator: React.FC<{
+//   theme: any;
+//   currentDate: Date;
+//   setCurrentDate: (a: any) => void;
+//   setActiveTab: (a: string) => void;
+// }> = ({ theme, currentDate, setCurrentDate, setActiveTab }) => {
+//   const isToday = (date: Date) => {
+//     const today = new Date();
+//     return (
+//       date.getDate() === today.getDate() &&
+//       date.getMonth() === today.getMonth() &&
+//       date.getFullYear() === today.getFullYear()
+//     );
+//   };
+
+//   const getFormattedDate = (date: Date) => {
+//     const options: Intl.DateTimeFormatOptions = {
+//       month: 'short',
+//       day: 'numeric',
+//     };
+//     return date.toLocaleDateString('en-US', options);
+//   };
+
+//   const handlePrevDay = () => {
+//     setCurrentDate(
+//       (prev: any) => new Date(prev.getTime() - 24 * 60 * 60 * 1000)
+//     );
+//     setActiveTab(StatusOfTasksName.OVERDUE);
+//   };
+
+//   const handleNextDay = () => {
+//     setCurrentDate(
+//       (prev: any) => new Date(prev.getTime() + 24 * 60 * 60 * 1000)
+//     );
+//   };
+
+//   return (
+//     <div className="flex items-center gap-4">
+//       <button
+//         onClick={handlePrevDay}
+//         className={`${theme.button} ${theme.buttonHover} ${theme.text} p-2 rounded-lg transition-all duration-300 border ${theme.hover}`}
+//         // style={{
+//         //   boxShadow: '0 0 20px rgba(67,97,238,0.2)',
+//         // }}
+//       >
+//         <ChevronLeft className="w-4 h-4" />
+//       </button>
+
+//       <div className={`text-lg font-semibold ${theme.text}`}>
+//         {isToday(currentDate) ? (
+//           <div className="relative">
+//             <span className="bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent">
+//               Today
+//             </span>
+//             <span className="block mt-1 h-0.5 bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] rounded-full" />
+//           </div>
+//         ) : (
+//           getFormattedDate(currentDate)
+//         )}
+//       </div>
+
+//       <button
+//         onClick={handleNextDay}
+//         className={`${theme.button} ${theme.buttonHover} ${theme.text} p-2 rounded-lg transition-all duration-300 border ${theme.hover}`}
+//       >
+//         <ChevronRight className="w-4 h-4" />
+//       </button>
+//     </div>
+//   );
+// };

@@ -42,6 +42,7 @@ interface TaskModalProps {
   theme: {
     bg: string;
     surface: string;
+    surface1: string;
     text: string;
     textSecondary: string;
     border: string;

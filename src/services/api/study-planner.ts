@@ -1,26 +1,26 @@
 import http from '../http';
 
 export const GetSchedulerListForUserApiCall = () => {
-  // res object
-  return {
-    Status: 'Success',
-    data: [
-      {
-        id: '602e6028-ab52-4fd8-963f-847644cb4d30',
-        title: 'Main',
-        created_by: '62154c2d-a793-4f98-8f74-bf3ac576fc6f',
-        created_at: '2024-10-20T05:33:08.981Z',
-        is_active: true,
-      },
-      {
-        id: '602e6028-ab52-4fd8-963f-847644cb4d30',
-        title: 'Main',
-        created_by: '62154c2d-a793-4f98-8f74-bf3ac576fc6f',
-        created_at: '2024-10-20T05:33:08.981Z',
-        is_active: false,
-      },
-    ],
-  };
+  // // res object
+  // return {
+  //   Status: 'Success',
+  //   data: [
+  //     {
+  //       id: '602e6028-ab52-4fd8-963f-847644cb4d30',
+  //       title: 'Main',
+  //       created_by: '62154c2d-a793-4f98-8f74-bf3ac576fc6f',
+  //       created_at: '2024-10-20T05:33:08.981Z',
+  //       is_active: true,
+  //     },
+  //     {
+  //       id: '602e6028-ab52-4fd8-963f-847644cb4d30',
+  //       title: 'Main',
+  //       created_by: '62154c2d-a793-4f98-8f74-bf3ac576fc6f',
+  //       created_at: '2024-10-20T05:33:08.981Z',
+  //       is_active: false,
+  //     },
+  //   ],
+  // };
 
   return http.get({
     url: '/scheduler-service/schedules',

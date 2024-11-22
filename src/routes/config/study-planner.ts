@@ -3,7 +3,7 @@ import { RouteConfig } from '../../types/route';
 import StudyPlannerDashboard from 'pages/study-planner/MainPage';
 import CalendarView from 'pages/study-planner/CalendarView';
 const AddFormOfTask = lazy(
-  () => import('../../pages/study-planner/AddFormOfTask')
+  () => import('../../pages/study-planner/AddFormOfTask2')
 );
 
 export const StudyPlannerRoutes: RouteConfig[] = [
