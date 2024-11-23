@@ -16,6 +16,7 @@ const TitleSection: React.FC = () => {
     "Hi! Tell me your goals, and I'll plan tasks to help you achieve them!"
   );
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -46,7 +47,10 @@ const TitleSection: React.FC = () => {
           <div className="hidden md:flex items-center gap-4">
             {/* Generate AI Button - Web View */}
             <button
-              onClick={() => setShowAITextarea(true)}
+              onClick={() => {
+                console.log('vej');
+                navigate('/study-planner-chat/new');
+              }}
               className={`
                     px-6 py-2.5 rounded-lg font-medium
                     transition-all duration-300

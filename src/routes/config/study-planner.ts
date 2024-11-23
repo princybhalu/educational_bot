@@ -5,6 +5,7 @@ import CalendarView from 'pages/study-planner/CalendarView';
 const AddFormOfTask = lazy(
   () => import('../../pages/study-planner/AddFormOfTask2')
 );
+const ChatScreen = lazy(() => import('../../pages/study-planner/ChatScreen'));
 
 export const StudyPlannerRoutes: RouteConfig[] = [
   // {
@@ -24,19 +25,27 @@ export const StudyPlannerRoutes: RouteConfig[] = [
     // isProfilingRequired: true,
   },
   {
+    path: '/study-planner/edit',
+    key: 'study-planner-edit',
+    // isProtected: true,
+    element: AddFormOfTask,
+    islayout: true,
+    // isProfilingRequired: true,
+  },
+  {
+    path: '/study-planner-chat/:chatId',
+    key: 'studyPlanner',
+    // isProtected: true,
+    // isProfilingRequired: true,
+    element: ChatScreen,
+    islayout: true,
+  },
+  {
     path: '/study-planner/:tab',
     key: 'study-planner',
     // isProtected: true,
     element: StudyPlannerDashboard,
     islayout: true,
     // isProfilingRequired: true,
-  },
-  {
-    path: '/study-planner/calendar/:scheduleId',
-    key: 'studyPlanner',
-    // isProtected: true,
-    // isProfilingRequired: true,
-    element: CalendarView,
-    islayout: true,
   },
 ];

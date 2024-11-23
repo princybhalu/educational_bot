@@ -107,6 +107,7 @@ export const AddTaskByQueryApiCall = (body: any) => {
   return http.post({
     url: '/scheduler-service/task/query',
     data: body,
+    messageSettings: { hideSuccessMessage: true },
   });
 };
 

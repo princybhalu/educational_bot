@@ -2,7 +2,7 @@ import React from 'react';
 import { FaDatabase } from 'react-icons/fa6';
 
 export default function NoDataFound({
-  displayText,
+  displayText = 'No Data Found',
   size = 30,
 }: {
   displayText: string;

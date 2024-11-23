@@ -1,0 +1,757 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Send } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import Orbit from '../../components/avatar/Orbit';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  createChatTrackerId,
+  getChatByChatTrackerId,
+} from '../../services/api/chat-apis';
+import { AddTaskByQueryApiCall } from '../../services/api/study-planner';
+import { ChatLogsType } from '../../types/chat-logs';
+import {
+  Calendar,
+  Clock,
+  ArrowRight,
+  Book,
+  FileText,
+  GraduationCap,
+  CheckCircle,
+  AlertCircle,
+  Timer,
+  MoreVertical,
+  Edit3,
+  Trash2,
+  CircleCheck,
+} from 'lucide-react';
+import { Task } from '../../types/study-planner';
+import NoDataFound from '../../components/shared/NoDataFound';
+import {
+  getFromLocalStorage,
+  saveToLocalStorage,
+} from '../../utils/helperFunc';
+
+const messages = [
+  "What's your main focus today? Share your goals or study topics, and I'll create a tailored schedule to help you achieve them!",
+  "Facing study challenges? Let me know what's on your mind—be it time management, tough topics, or exam stress—and I'll craft the perfect study plan.",
+  "Tell me exactly what you need to work on—like 'Prepare for the math test' or 'Complete history notes'—and I'll schedule it for you!",
+  "Not sure how to prioritize? Just mention your subjects, deadlines, or study hours, and I'll build a smart study plan for you.",
+  "Type in what you want to study, how long you have, or even just Help me plan! and I'll take care of the rest.",
+  "Whether it's cramming for an exam or maintaining daily progress, let me know your study goals, and I'll optimize your schedule for success.",
+  "Struggling to stay organized? Share your study needs or upcoming deadlines, and I'll generate a customized, efficient plan.",
+];
+
+const chatMsg = '';
+
+export default function ChatScreen() {
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+  const { chatId } = useParams();
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const ChatScreenTextAreaBoxRef = useRef();
+  const navigate = useNavigate();
+  const [chatLogs, setChatLogs] = useState<ChatLogsType[] | null>(null);
+  const [loadingChat, setLoadingChat] = useState(false);
+  const [aiResLoading, setAiResLoading] = useState(false);
+
+  const ApiCallToChatTrackerId = async () => {
+    try {
+      if (ChatScreenTextAreaBoxRef.current) {
+        saveToLocalStorage(
+          'new-task-que',
+          // @ts-ignore
+          ChatScreenTextAreaBoxRef.current.value
+        );
+      }
+      const res = await createChatTrackerId();
+
+      navigate('/study-planner-chat/' + res.data.chat_tracker_id);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const ApiCallToQuery = async (msg: string) => {
+    try {
+      setAiResLoading(true);
+      let tempData = {
+        role: 'user',
+        content: msg,
+      };
+      // @ts-ignore
+      setChatLogs((prev: ChatLogsType[] | null) => {
+        if (prev) {
+          return [...prev, tempData];
+        }
+        return [tempData];
+      });
+      const res = await AddTaskByQueryApiCall({
+        query: msg,
+        chat_tracker_id: chatId,
+      });
+      const tempArray = res.data.map((task: any) => {
+        return task.tasks;
+      });
+      console.log(res.data);
+      tempData = {
+        role: 'assistant',
+        content: JSON.stringify(tempArray),
+      };
+      // @ts-ignore
+      setChatLogs((prev: ChatLogsType[] | null) => {
+        if (prev) {
+          return [...prev, tempData];
+        }
+        return [tempData];
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setAiResLoading(false);
+    }
+  };
+
+  const ApiCallToGetChat = async () => {
+    try {
+      console.log('in chat call');
+      setLoadingChat(true);
+      const res = await getChatByChatTrackerId(chatId ?? '');
+      console.log(res.data, res.data.messages, ' :  res.data.messages');
+      setChatLogs(res.data.messages);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoadingChat(false);
+    }
+  };
+  useEffect(() => {
+    let interval: any;
+    const chatMsgByLocal = getFromLocalStorage('new-task-que');
+    console.log({ chatMsgByLocal, chatId, c: chatId && !chatMsgByLocal });
+    if (chatId === 'new') {
+      interval = setInterval(() => {
+        setCurrentMessageIndex(
+          (prevIndex) => (prevIndex + 1) % messages.length
+        );
+      }, 5000);
+    } else if (chatId && !chatMsgByLocal) {
+      ApiCallToGetChat();
+    } else if (chatMsgByLocal) {
+      const addUserPromat: ChatLogsType = {
+        role: 'user',
+        content: chatMsg,
+      };
+      setChatLogs([addUserPromat]);
+      ApiCallToQuery(chatMsgByLocal).then();
+      saveToLocalStorage('new-task-que', '');
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [chatId]);
+
+  return (
+    <>
+      {chatId === 'new' && (
+        <>
+          <div
+            className={`
+        flex flex-col items-center justify-center h-full
+        transition-colors duration-300
+        ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
+      `}
+          >
+            {/* Orbit Component */}
+            <div className="mb-6">
+              <Orbit opration={null} size={100} />
+            </div>
+
+            {/* Title */}
+            <h1 className="text-2xl md:text-4xl font-bold font-[Darker Grotesque] bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent mb-6">
+              What can I help with?
+            </h1>
+
+            {/* Rotating Message */}
+            <div
+              key={currentMessageIndex}
+              className={`
+          w-[90%] md:w-1/2 text-center rounded-xl shadow-lg py-4 px-6 mb-6
+          transition-all duration-300
+          ${
+            isDarkMode
+              ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)] text-white/70'
+              : 'bg-white/90 border border-gray-200 text-gray-600'
+          }
+          hover:shadow-lg
+          ${
+            isDarkMode
+              ? 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.2)]'
+              : 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.1)]'
+          }
+        `}
+            >
+              {messages[currentMessageIndex]}
+            </div>
+
+            {/* Input Area */}
+            <div
+              className={`
+          flex items-center w-[90%] md:w-1/2 rounded-xl shadow-lg p-4
+          ${
+            isDarkMode
+              ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)]'
+              : 'bg-white/90 border border-gray-200'
+          }
+        `}
+            >
+              <input
+                //@ts-ignore
+                ref={ChatScreenTextAreaBoxRef}
+                type="text"
+                placeholder="Message AI Assistant"
+                className={`
+            flex-1 bg-transparent border-none outline-none text-sm md:text-base
+            ${
+              isDarkMode
+                ? 'text-white placeholder-white/50'
+                : 'text-gray-900 placeholder-gray-500'
+            }
+          `}
+              />
+              <button
+                className={`
+            flex items-center justify-center w-10 h-10 rounded-lg
+            transition-all duration-300
+            bg-gradient-to-r from-[#4361ee] to-[#4cc9f0]
+            text-white hover:shadow-lg
+            hover:shadow-[#4361ee]/20
+          `}
+                aria-label="Send"
+                onClick={() => {
+                  ApiCallToChatTrackerId();
+                }}
+              >
+                <Send size={20} />
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {chatId !== 'new' && (
+        <>
+          {chatLogs && (
+            <>
+              <EnhancedChatHistory
+                messages={chatLogs}
+                ApiCallToQuery={ApiCallToQuery}
+                aiResLoading={aiResLoading}
+                loadingChat={loadingChat}
+              />
+            </>
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
+const statusConfig = {
+  upcoming: {
+    bg: 'bg-blue-500/10',
+    border: 'border-blue-500/20',
+    text: 'text-blue-500',
+    icon: Clock,
+    hover: 'hover:border-blue-500/50',
+  },
+  in_progress: {
+    bg: 'bg-yellow-500/10',
+    border: 'border-yellow-500/20',
+    text: 'text-yellow-500',
+    icon: Timer,
+    hover: 'hover:border-yellow-500/50',
+  },
+  completed: {
+    bg: 'bg-green-500/10',
+    border: 'border-green-500/20',
+    text: 'text-green-500',
+    icon: CheckCircle,
+    hover: 'hover:border-green-500/50',
+  },
+  overdue: {
+    bg: 'bg-red-500/10',
+    border: 'border-red-500/20',
+    text: 'text-red-500',
+    icon: AlertCircle,
+    hover: 'hover:border-red-500/50',
+  },
+  pending: {
+    bg: 'bg-blue-500/10',
+    border: 'border-blue-500/20',
+    text: 'text-blue-500',
+    icon: Clock,
+    hover: 'hover:border-blue-500/50',
+  },
+};
+
+const typeConfig = {
+  study: {
+    icon: Book,
+    label: 'Study Session',
+  },
+  test: {
+    icon: FileText,
+    label: 'Test',
+  },
+  exam_preparation: {
+    icon: GraduationCap,
+    label: 'Exam Prep',
+  },
+};
+
+function TaskCard({ task, theme }: { task: Task; theme: any }) {
+  // @ts-ignore
+  const status = statusConfig[task.status ?? 'pending'];
+  // @ts-ignore
+  const type = typeConfig[task.type];
+  const TypeIcon = type?.icon || Book;
+  const StatusIcon = status?.icon || Clock;
+
+  const formatTime = (dateTimeStr: string) => {
+    const date = new Date(dateTimeStr);
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
+  return (
+    <div
+      className={`
+        mb-4 p-4 rounded-xl border transition-all duration-300
+        ${theme.surface} ${status.border} ${status.bg} ${status.hover}
+      `}
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <TypeIcon className={`w-5 h-5 ${status.text}`} />
+            <span className={`text-xs md:text-sm font-medium ${status.text}`}>
+              {type?.label || 'Task'}
+            </span>
+            <StatusIcon className={`w-4 h-4 ${status.text}`} />
+          </div>
+
+          <h3 className={`text-md md:text-lg font-semibold mb-2 ${theme.text}`}>
+            {task.title}
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+            <div className={`flex items-center gap-2 ${theme.textSecondary}`}>
+              <Calendar className="w-4 h-4" />
+              <span className="text-xs md:text-sm">
+                {new Date(task.date).toLocaleDateString()}
+              </span>
+            </div>
+            <div className={`flex items-center gap-2 ${theme.textSecondary}`}>
+              <Clock className="w-4 h-4" />
+              <span className="text-xs md:text-sm">
+                {formatTime(task.start_time_utc)}{' '}
+                <ArrowRight className="w-4 h-4 inline" />{' '}
+                {formatTime(task.end_time_utc)}
+              </span>
+            </div>
+          </div>
+
+          <div className={`text-xs md:text-sm ${theme.textSecondary}`}>
+            <span className="font-medium">{task.meta_data?.subject}</span>
+            <span className="mx-2">•</span>
+            <span>Chapter {task.meta_data?.chapter}</span>
+            <span className="mx-2">•</span>
+            <span>{task.meta_data?.topic}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Define message type
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+interface EnhancedChatHistoryProps {
+  messages: Message[];
+  ApiCallToQuery: (query: string) => void;
+  aiResLoading: boolean;
+  loadingChat: boolean;
+}
+
+const EnhancedChatHistory: React.FC<EnhancedChatHistoryProps> = ({
+  messages,
+  ApiCallToQuery,
+  aiResLoading,
+  loadingChat,
+}) => {
+  const isDarkMode = useSelector(
+    (state: { theme: { isDarkMode: boolean } }) => state.theme.isDarkMode
+  );
+  const inputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  const baseStyles = {
+    light: {
+      bg: 'bg-white',
+      surface: 'bg-white/90',
+      surface1: 'bg-white',
+      text: 'text-gray-900',
+      textSecondary: 'text-gray-700/70',
+      border: 'border-[#4361ee]/20',
+      hover: 'hover:border-[#4361ee]',
+      button: 'bg-white/90',
+      buttonHover: 'hover:bg-[#4361ee]/10',
+      tabBackground: 'bg-blue-100',
+      tabText: 'text-gray-800',
+      activeTabBackground: 'bg-white',
+      activeTabText: 'text-black',
+    },
+    dark: {
+      bg: 'bg-[#0a0d1e]',
+      surface: 'bg-[rgba(16,20,46,0.9)]',
+      surface1: 'bg-[rgba(16,20,46)]',
+      text: 'text-white',
+      textSecondary: 'text-white/70',
+      border: 'border-[#4361ee]/20',
+      hover: 'hover:border-[#4361ee]',
+      button: 'bg-[rgba(16,20,46,1)]',
+      buttonHover: 'hover:bg-[#4361ee]/15',
+      tabBackground: 'bg-[#1a2456]',
+      tabText: 'text-white/80',
+      activeTabBackground: 'bg-white/10',
+      activeTabText: 'text-white',
+    },
+  };
+
+  const theme = isDarkMode ? baseStyles.dark : baseStyles.light;
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const renderMessageContent = (content: string, role: string) => {
+    try {
+      console.log(role, ' : role');
+      if (role === 'user') {
+        return <div className="whitespace-pre-wrap break-words">{content}</div>;
+      }
+
+      console.log(content);
+      const parsedContent = JSON.parse(content);
+      console.log(parsedContent, ' : parsedContent');
+      const data = parsedContent.data ?? parsedContent;
+
+      return (
+        <div className="space-y-4">
+          {
+            // @ts-ignore
+            data.map((task: any, idx: number) => (
+              <TaskCard key={idx} task={task} theme={theme} />
+            ))
+          }
+        </div>
+      );
+    } catch (err) {
+      console.log('er ', err);
+      return <div className="whitespace-pre-wrap break-words">{content}</div>;
+    }
+  };
+
+  return (
+    <div
+      className={`flex flex-col h-screen ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}`}
+    >
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {!loadingChat &&
+          messages.length > 0 &&
+          messages.map((message, index) => (
+            <div
+              key={index}
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} gap-4`}
+            >
+              {message.role === 'assistant' && (
+                <div className="flex-shrink-0 mt-1">
+                  <Orbit size={40} opration={null} />
+                </div>
+              )}
+              <div
+                className={`
+                max-w-[85%] rounded-xl p-4
+                ${
+                  message.role === 'user'
+                    ? 'bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] text-white'
+                    : `${theme.surface} border ${theme.border} ${theme.text}`
+                }
+              `}
+              >
+                <div
+                  className={
+                    message.role === 'assistant'
+                      ? 'prose prose-sm dark:prose-invert'
+                      : ''
+                  }
+                >
+                  {renderMessageContent(message.content, message.role)}
+                </div>
+              </div>
+            </div>
+          ))}
+        {aiResLoading && (
+          <>
+            {/* add ai response skeleton */}
+            <AIResponseSkeleton />
+          </>
+        )}
+        {loadingChat && (
+          <>
+            {/* add loading chat skeleton */}
+            <ChatLoadingSkeleton />
+          </>
+        )}
+        {!loadingChat && messages.length === 0 && (
+          <>
+            <div className="h-full flex flex-col justify-center items-center">
+              <NoDataFound displayText={'Not any chat fouund'} />
+              <div className="mt-10">
+                <button
+                  className=""
+                  onClick={() => navigate('/study-planner-chat/new')}
+                >
+                  {' '}
+                  Start a conversation
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div ref={messagesEndRef} />
+      </div>
+
+      <div className="p-4 sticky bottom-0 bg-inherit">
+        <div
+          className={`flex items-center rounded-xl shadow-lg p-4 ${theme.surface} border ${theme.border}`}
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Message AI Assistant"
+            className={`flex-1 bg-transparent border-none outline-none text-sm md:text-base ${theme.text} placeholder-${isDarkMode ? 'white/50' : 'gray-500'}`}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && inputRef.current?.value) {
+                ApiCallToQuery(inputRef.current.value);
+                inputRef.current.value = '';
+              }
+            }}
+          />
+          <button
+            className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] text-white hover:shadow-lg hover:shadow-[#4361ee]/20 transition-all duration-300"
+            onClick={() => {
+              if (inputRef.current?.value) {
+                ApiCallToQuery(inputRef.current.value);
+                inputRef.current.value = '';
+              }
+            }}
+          >
+            <Send size={20} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MessageSkeleton = ({ isAI = true }: { isAI?: boolean }) => {
+  return (
+    <div
+      className={`flex ${isAI ? 'justify-start' : 'justify-end'} gap-4 w-full`}
+    >
+      {isAI && (
+        <div className="flex-shrink-0 mt-1">
+          <Orbit size={40} opration={null} />
+        </div>
+      )}
+      <div
+        className={`
+        ${isAI ? 'w-2/3' : 'w-1/2'}
+        rounded-xl p-4
+        animate-pulse
+        ${isAI ? 'bg-gray-200 dark:bg-gray-800' : 'bg-blue-200 dark:bg-blue-800'}
+      `}
+      >
+        <div className="space-y-3">
+          <div
+            className={`h-4 rounded ${isAI ? 'w-3/4' : 'w-full'} bg-gray-300 dark:bg-gray-700`}
+          />
+          <div
+            className={`h-4 rounded ${isAI ? 'w-1/2' : 'w-3/4'} bg-gray-300 dark:bg-gray-700`}
+          />
+          {isAI && (
+            <>
+              <div className="h-4 rounded w-4/5 bg-gray-300 dark:bg-gray-700" />
+              <div className="h-4 rounded w-2/3 bg-gray-300 dark:bg-gray-700" />
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ChatLoadingSkeleton = () => {
+  return (
+    <div className="space-y-6 p-4">
+      {[...Array(3)].map((_, index) => (
+        <MessageSkeleton key={index} isAI={index % 2 === 0} />
+      ))}
+    </div>
+  );
+};
+
+export const AIResponseSkeleton = () => <MessageSkeleton isAI={true} />;
+
+const ChatHistoryScreen: React.FC<{
+  messages: ChatLogsType[];
+  ApiCallToQuery: (a: string) => void;
+}> = ({ messages, ApiCallToQuery }) => {
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  const formatMessage = (content: string) => {
+    try {
+      const jsonObj: any = JSON.parse(content);
+      return (
+        <pre className="overflow-x-auto">
+          <code>{JSON.stringify(jsonObj, null, 2)}</code>
+        </pre>
+      );
+    } catch {
+      return content;
+    }
+  };
+
+  return (
+    <div
+      className={`
+          flex flex-col h-screen
+          transition-colors duration-300
+          ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
+        `}
+    >
+      {/* Chat Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {
+          // @ts-ignore
+          messages.map((message, index) => (
+            <div
+              key={index}
+              className={`flex ${
+                message.role === 'user' ? 'justify-end' : 'justify-start'
+              } gap-4`}
+            >
+              {message.role === 'assistant' && (
+                <div className="flex-shrink-0 mt-1">
+                  <Orbit opration={null} size={40} />
+                </div>
+              )}
+              <div
+                className={`
+                  max-w-[80%] rounded-xl p-4
+                  ${
+                    message.role === 'user'
+                      ? 'bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] text-white'
+                      : isDarkMode
+                        ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)] text-white/90'
+                        : 'bg-white border border-gray-200 text-gray-900'
+                  }
+                  ${
+                    message.role === 'assistant'
+                      ? 'hover:shadow-lg transition-shadow duration-300'
+                      : ''
+                  }
+                  ${
+                    isDarkMode && message.role === 'assistant'
+                      ? 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.2)]'
+                      : message.role === 'assistant'
+                        ? 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.1)]'
+                        : ''
+                  }
+                `}
+              >
+                <div
+                  className={`${message.role === 'assistant' ? 'prose prose-sm dark:prose-invert' : ''}`}
+                >
+                  {formatMessage(message.content)}
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      {/* Input Area */}
+      <div className="p-4">
+        <div
+          className={`
+              flex items-center rounded-xl shadow-lg p-4
+              ${
+                isDarkMode
+                  ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)]'
+                  : 'bg-white/90 border border-gray-200'
+              }
+            `}
+        >
+          <input
+            // @ts-ignore
+            ref={textAreaRef}
+            type="text"
+            placeholder="Message AI Assistant"
+            className={`
+                flex-1 bg-transparent border-none outline-none text-sm md:text-base
+                ${
+                  isDarkMode
+                    ? 'text-white placeholder-white/50'
+                    : 'text-gray-900 placeholder-gray-500'
+                }
+              `}
+          />
+          <button
+            className={`
+                flex items-center justify-center w-10 h-10 rounded-lg
+                transition-all duration-300
+                bg-gradient-to-r from-[#4361ee] to-[#4cc9f0]
+                text-white hover:shadow-lg
+                hover:shadow-[#4361ee]/20
+              `}
+            aria-label="Send"
+            onClick={() => {
+              if (textAreaRef.current?.value) {
+                ApiCallToQuery(textAreaRef.current?.value);
+              }
+            }}
+          >
+            <Send size={20} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};

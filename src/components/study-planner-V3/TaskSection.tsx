@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  CircleCheck,
+  Plus,
+} from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import {
@@ -21,6 +27,12 @@ import TaskFormModal from './TaskFormModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StatusOfTasksName } from '../../utils/enums';
 import { useNavigate } from 'react-router-dom';
+import {
+  GetTaskBetweenRangeApiCall,
+  UpdateTaskApiCall,
+} from 'services/api/study-planner';
+import NoDataFound from '../../components/shared/NoDataFound';
+import { saveToLocalStorage } from '../../utils/helperFunc';
 
 const statusConfig = {
   upcoming: {
@@ -51,6 +63,13 @@ const statusConfig = {
     icon: AlertCircle,
     hover: 'hover:border-red-500/50',
   },
+  pending: {
+    bg: 'bg-blue-500/10',
+    border: 'border-blue-500/20',
+    text: 'text-blue-500',
+    icon: Clock,
+    hover: 'hover:border-blue-500/50',
+  },
 };
 
 const typeConfig = {
@@ -68,12 +87,13 @@ const typeConfig = {
   },
 };
 
-const Task3Card: React.FC<{
+const TaskCard: React.FC<{
   task: Task;
   isHighlighted: boolean;
   classes?: string;
   theme: any;
-}> = ({ task, isHighlighted, classes, theme }) => {
+  CompleteTaskStatus: (a: Task) => any;
+}> = ({ task, isHighlighted, classes, theme, CompleteTaskStatus }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   //@ts-ignore
@@ -82,6 +102,13 @@ const Task3Card: React.FC<{
   const type = typeConfig[task.type];
   const TypeIcon = type.icon;
   const StatusIcon = status.icon;
+
+  const navigate = useNavigate();
+
+  const editTask = (task: Task) => {
+    saveToLocalStorage('get-edit-task', task);
+    navigate('/study-planner/edit');
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -185,7 +212,7 @@ const Task3Card: React.FC<{
             >
               <div className="py-2">
                 <button
-                  onClick={() => console.log('Edit task:', task.id)}
+                  onClick={() => editTask(task)}
                   className={`
                     w-full px-4 py-2 text-left flex items-center gap-2
                     ${theme.buttonHover} ${theme.text} transition-colors duration-300
@@ -195,14 +222,14 @@ const Task3Card: React.FC<{
                   Edit Task
                 </button>
                 <button
-                  onClick={() => console.log('Delete task:', task.id)}
+                  onClick={() => CompleteTaskStatus(task)}
                   className={`
-                    w-full px-4 py-2 text-left flex items-center gap-2 text-red-500
-                    hover:bg-red-500/10 transition-colors duration-300
+                    w-full px-4 py-2 text-left flex items-center gap-2 text-green-500
+                    hover:bg-green-500/10 transition-colors duration-300
                   `}
                 >
-                  <Trash2 className="w-4 h-4" />
-                  Delete Task
+                  <CircleCheck className="w-4 h-4" />
+                  Complete Task
                 </button>
               </div>
             </div>
@@ -213,10 +240,12 @@ const Task3Card: React.FC<{
   );
 };
 
-const Task3Timeline: React.FC<{ tasks: Task[]; theme: any }> = ({
-  tasks,
-  theme,
-}) => {
+const TaskTimeline: React.FC<{
+  tasks: Task[];
+  theme: any;
+  activeTab: string;
+  CompleteTaskStatus: (a: Task) => void;
+}> = ({ tasks, theme, CompleteTaskStatus, activeTab }) => {
   const [sortedTasks, setSortedTasks] = useState<Task[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -225,8 +254,16 @@ const Task3Timeline: React.FC<{ tasks: Task[]; theme: any }> = ({
   useEffect(() => {
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
-
-    setSortedTasks(tasks);
+    const temp: Task[] = [];
+    tasks.forEach((task) => {
+      if (
+        task.status === activeTab ||
+        (activeTab === StatusOfTasksName.UPCOMING && task.status === 'pending')
+      ) {
+        temp.push(task);
+      }
+    });
+    setSortedTasks(temp);
     const currIndex = tasks.findIndex(
       (item) =>
         getMinutesFromTime(item.start_time_utc) <= currentTime &&
@@ -274,477 +311,24 @@ const Task3Timeline: React.FC<{ tasks: Task[]; theme: any }> = ({
         className="h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide px-4"
         aria-label="Task timeline"
       >
-        {sortedTasks.map((task, index) => (
-          <Task3Card
-            key={task.id}
-            task={task}
-            isHighlighted={isHighlighted(task, index)}
-            classes="task-item"
-            theme={theme}
-          />
-        ))}
+        {sortedTasks.length > 0 &&
+          sortedTasks.map((task, index) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              isHighlighted={isHighlighted(task, index)}
+              classes="task-item"
+              theme={theme}
+              CompleteTaskStatus={CompleteTaskStatus}
+            />
+          ))}
+
+        {sortedTasks.length === 0 && (
+          <>
+            <NoDataFound displayText={'No Any Tasks Found'} />
+          </>
+        )}
       </div>
-    </div>
-  );
-};
-
-const tasks: Task[] = [
-  {
-    id: '1',
-    schedule_id: '1001',
-    title: 'Study Algebra',
-    created_by: 'user_01',
-    date: '2024-11-21',
-    start_time_utc: '2024-11-21T09:00:00Z',
-    end_time_utc: '2024-11-21T11:00:00Z',
-    type: 'study',
-    status: 'upcoming',
-    meta_data: {
-      chapter: 'Chapter 3',
-      subject: 'Mathematics',
-      topic: 'Algebra Basics',
-    },
-  },
-  {
-    id: '2',
-    schedule_id: '1002',
-    title: 'Physics Test',
-    created_by: 'user_02',
-    date: '2024-11-22',
-    start_time_utc: '2024-11-22T10:00:00Z',
-    end_time_utc: '2024-11-22T12:00:00Z',
-    type: 'test',
-    status: 'in_progress',
-    meta_data: {
-      chapter: 'Chapter 5',
-      subject: 'Physics',
-      topic: 'Laws of Motion',
-    },
-  },
-  {
-    id: '3',
-    schedule_id: '1003',
-    title: 'Exam Preparation: Biology',
-    created_by: 'user_03',
-    date: '2024-11-20',
-    start_time_utc: '2024-11-20T15:00:00Z',
-    end_time_utc: '2024-11-20T17:00:00Z',
-    type: 'exam_preparation',
-    status: 'completed',
-    meta_data: {
-      chapter: 'Chapter 7',
-      subject: 'Biology',
-      topic: 'Cell Structure',
-    },
-  },
-  {
-    id: '4',
-    schedule_id: '1004',
-    title: 'Complete Chemistry Worksheet',
-    created_by: 'user_04',
-    date: '2024-11-19',
-    start_time_utc: '2024-11-19T13:00:00Z',
-    end_time_utc: '2024-11-19T14:30:00Z',
-    type: 'study',
-    status: 'overdue',
-    meta_data: {
-      chapter: 'Chapter 2',
-      subject: 'Chemistry',
-      topic: 'Periodic Table',
-    },
-  },
-  {
-    id: '5',
-    schedule_id: '1005',
-    title: 'Review English Grammar Notes',
-    created_by: 'user_05',
-    date: '2024-11-22',
-    start_time_utc: '2024-11-22T16:00:00Z',
-    end_time_utc: '2024-11-22T17:30:00Z',
-    type: 'study',
-    status: 'upcoming',
-    meta_data: {
-      chapter: 'Chapter 1',
-      subject: 'English',
-      topic: 'Grammar Rules',
-    },
-  },
-];
-
-const TasksSection = () => {
-  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const isToday = currentDate.toDateString() === new Date().toDateString();
-  //@ts-ignore
-  const isPastDate = currentDate < new Date().setHours(0, 0, 0, 0);
-  const [activeTab, setActiveTab] = useState(
-    isPastDate ? StatusOfTasksName.OVERDUE : StatusOfTasksName.UPCOMING
-  );
-  const [currentViewTasks, setCurrentViewTasks] = useState<null | Task[]>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const baseStyles = {
-    light: {
-      bg: 'bg-white',
-      surface: 'bg-white/90',
-      surface1: 'bg-white',
-      text: 'text-gray-900',
-      textSecondary: 'text-gray-700/70',
-      border: 'border-[#4361ee]/20',
-      hover: 'hover:border-[#4361ee]',
-      button: 'bg-white/90',
-      buttonHover: 'hover:bg-[#4361ee]/10',
-      tabBackground: 'bg-blue-100',
-      tabText: 'text-gray-800',
-      activeTabBackground: 'bg-white',
-      activeTabText: 'text-black',
-    },
-    dark: {
-      bg: 'bg-[#0a0d1e]',
-      surface: 'bg-[rgba(16,20,46,0.9)]',
-      surface1: 'bg-[rgba(16,20,46)]',
-      text: 'text-white',
-      textSecondary: 'text-white/70',
-      border: 'border-[#4361ee]/20',
-      hover: 'hover:border-[#4361ee]',
-      button: 'bg-[rgba(16,20,46,1)]',
-      buttonHover: 'hover:bg-[#4361ee]/15',
-      tabBackground: 'bg-[#1a2456]',
-      tabText: 'text-white/80',
-      activeTabBackground: 'bg-white/10',
-      activeTabText: 'text-white',
-    },
-  };
-
-  const theme = isDarkMode ? baseStyles.dark : baseStyles.light;
-  console.log(theme , isDarkMode);
-
-  const tabVariants = {
-    initial: {
-      opacity: 0,
-      x: activeTab === 'Upcoming' ? 50 : -50,
-    },
-    animate: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.3,
-        ease: 'easeInOut',
-      },
-    },
-    exit: {
-      opacity: 0,
-      x: activeTab === 'Upcoming' ? -50 : 50,
-      transition: {
-        duration: 0.3,
-        ease: 'easeInOut',
-      },
-    },
-  };
-
-  useEffect(() => {
-    // @ts-ignore
-    setCurrentViewTasks(tasks);
-    // setIsLoading(false);
-  }, [currentDate]);
-
-  return (
-    <div className={`rounded-xl p-2 transition-all duration-300 ${theme.bg}`}>
-      <div className="flex sm:flex-row items-center justify-between mb-6 space-y-4 sm:space-y-0">
-        <DateNavigator
-          theme={theme}
-          currentDate={currentDate}
-          setCurrentDate={setCurrentDate}
-          setActiveTab={setActiveTab}
-        />
-        <div className="flex items-center space-x-4">
-          {isToday && (
-            <div
-              className={`hidden sm:flex justify-center ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1`}
-              style={{
-                width: 'fit-content',
-              }}
-            >
-              <motion.div
-                className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
-                ${
-                  activeTab === StatusOfTasksName.COMPLETED
-                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
-                    : ''
-                }`}
-                onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
-                whileTap={{ scale: 0.95 }}
-              >
-                <CheckCircle />
-                {activeTab === 'Completed' && (
-                  <motion.span
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="ml-2"
-                  >
-                    Completed
-                  </motion.span>
-                )}
-              </motion.div>
-
-              <motion.div
-                className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
-                ${
-                  activeTab === StatusOfTasksName.UPCOMING
-                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
-                    : ''
-                }`}
-                onClick={() => setActiveTab(StatusOfTasksName.UPCOMING)}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Clock />
-                {activeTab === StatusOfTasksName.UPCOMING && (
-                  <motion.span
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="ml-2"
-                  >
-                    Upcoming
-                  </motion.span>
-                )}
-              </motion.div>
-            </div>
-          )}
-          {isPastDate && (
-            <div
-              className={`hidden sm:flex justify-center ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1`}
-              style={{
-                width: 'fit-content',
-              }}
-            >
-              <motion.div
-                className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
-                  ${
-                    activeTab === StatusOfTasksName.OVERDUE
-                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
-                      : ''
-                  }`}
-                onClick={() => setActiveTab(StatusOfTasksName.OVERDUE)}
-                whileTap={{ scale: 0.95 }}
-              >
-                <AlertCircle />
-                {activeTab === StatusOfTasksName.OVERDUE && (
-                  <motion.span
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="ml-2"
-                  >
-                    OverDue
-                  </motion.span>
-                )}
-              </motion.div>
-
-              <motion.div
-                className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
-                  ${
-                    activeTab === StatusOfTasksName.COMPLETED
-                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
-                      : ''
-                  }`}
-                onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
-                whileTap={{ scale: 0.95 }}
-              >
-                <CheckCircle />
-                {activeTab === StatusOfTasksName.COMPLETED && (
-                  <motion.span
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="ml-2"
-                  >
-                    Completed
-                  </motion.span>
-                )}
-              </motion.div>
-            </div>
-          )}
-          <AddTaskButton theme={theme} />
-        </div>
-      </div>
-
-      {/* Mobile Tabs - Shown only on small screens and for today's date */}
-      {isToday && (
-        <div
-          className={`sm:hidden flex justify-end ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1 mb-4`}
-          style={{
-            width: 'fit-content',
-          }}
-        >
-          <motion.div
-            className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
-                ${
-                  activeTab === StatusOfTasksName.COMPLETED
-                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
-                    : ''
-                }`}
-            onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
-            whileTap={{ scale: 0.95 }}
-          >
-            <CheckCircle />
-            {activeTab === 'Completed' && (
-              <motion.span
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2 }}
-                className="ml-2"
-              >
-                Completed
-              </motion.span>
-            )}
-          </motion.div>
-
-          <motion.div
-            className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
-                ${
-                  activeTab === StatusOfTasksName.UPCOMING
-                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
-                    : ''
-                }`}
-            onClick={() => setActiveTab(StatusOfTasksName.UPCOMING)}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Clock />
-            {activeTab === StatusOfTasksName.UPCOMING && (
-              <motion.span
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2 }}
-                className="ml-2"
-              >
-                Upcoming
-              </motion.span>
-            )}
-          </motion.div>
-        </div>
-      )}
-      {isPastDate && (
-        <div
-          className={`sm:hidden flex justify-end ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1 mb-4`}
-          style={{
-            width: 'fit-content',
-          }}
-        >
-          <motion.div
-            className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
-                  ${
-                    activeTab === StatusOfTasksName.OVERDUE
-                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
-                      : ''
-                  }`}
-            onClick={() => setActiveTab(StatusOfTasksName.OVERDUE)}
-            whileTap={{ scale: 0.95 }}
-          >
-            <AlertCircle />
-            {activeTab === StatusOfTasksName.OVERDUE && (
-              <motion.span
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2 }}
-                className="ml-2"
-              >
-                OverDue
-              </motion.span>
-            )}
-          </motion.div>
-
-          <motion.div
-            className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
-                  ${
-                    activeTab === StatusOfTasksName.COMPLETED
-                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
-                      : ''
-                  }`}
-            onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
-            whileTap={{ scale: 0.95 }}
-          >
-            <CheckCircle />
-            {activeTab === StatusOfTasksName.COMPLETED && (
-              <motion.span
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2 }}
-                className="ml-2"
-              >
-                Completed
-              </motion.span>
-            )}
-          </motion.div>
-        </div>
-      )}
-
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          variants={tabVariants}
-        >
-          {!isLoading && currentViewTasks && (
-            <>
-              {' '}
-              <Task3Timeline tasks={currentViewTasks} theme={theme} />
-            </>
-          )}
-          {isLoading && (
-            <>
-              <div
-                className={`
-              relative mb-4 p-4 rounded-xl border transition-all duration-300
-              ${theme.surface} ${theme.border} bg-gray-100 dark:bg-gray-800
-            `}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    {/* Header Skeleton */}
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-                      <div className="w-20 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-                      <div className="w-4 h-4 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-                    </div>
-
-                    {/* Title Skeleton */}
-                    <div className="w-3/4 h-5 rounded bg-gray-300 dark:bg-gray-700 animate-pulse mb-2"></div>
-
-                    {/* Meta Info Skeleton */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-                        <div className="w-1/2 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-                        <div className="w-3/4 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-                      </div>
-                    </div>
-
-                    {/* Subject Info Skeleton */}
-                    <div className="flex gap-2">
-                      <div className="w-1/3 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-                      <div className="w-1/5 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-                      <div className="w-1/4 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-                    </div>
-                  </div>
-
-                  {/* Actions Dropdown Skeleton */}
-                  <div className="relative">
-                    <div className="w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-          {!isLoading && currentViewTasks && <>no data found </>}
-        </motion.div>
-      </AnimatePresence>
     </div>
   );
 };
@@ -882,7 +466,18 @@ const DateNavigator: React.FC<{
       month: 'short',
       day: 'numeric',
     };
-    return date.toLocaleDateString('en-US', options);
+    return (
+      <>
+        {' '}
+        <div className="relative flex items-center gap-2">
+          <CalendarDays className="" />
+          {/* <span className="bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent"> */}
+          {date.toLocaleDateString('en-US', options)}
+          {/* </span> */}
+          {/* <span className="block mt-1 h-0.5 bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] rounded-full" /> */}
+        </div>
+      </>
+    );
   };
 
   const changeActiveTab = (date: Date) => {
@@ -926,7 +521,8 @@ const DateNavigator: React.FC<{
         className={`text-lg font-semibold ${theme.text} cursor-pointer`}
       >
         {isToday(currentDate) ? (
-          <div className="relative">
+          <div className="relative flex items-center gap-2">
+            <CalendarDays className="text-[#4361ee]" />
             <span className="bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent">
               Today
             </span>
@@ -1006,7 +602,7 @@ const AddTaskButton: React.FC<{ theme: any }> = ({ theme }) => {
           <ul className={`py-2 text-sm ${theme.text}`}>
             <li
               onClick={() => {
-                console.log('By Prompt selected');
+                navigate('/study-planner-chat/new');
                 setIsDropdownOpen(false);
               }}
               className={`px-4 py-2 ${theme.buttonHover} cursor-pointer transition-colors duration-300`}
@@ -1036,75 +632,427 @@ const AddTaskButton: React.FC<{ theme: any }> = ({ theme }) => {
   );
 };
 
+const TasksSection = () => {
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const isToday = currentDate.toDateString() === new Date().toDateString();
+  //@ts-ignore
+  const isPastDate = currentDate < new Date().setHours(0, 0, 0, 0);
+  const [activeTab, setActiveTab] = useState(
+    isPastDate ? StatusOfTasksName.OVERDUE : StatusOfTasksName.UPCOMING
+  );
+  const [currentViewTasks, setCurrentViewTasks] = useState<null | Task[]>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const baseStyles = {
+    light: {
+      bg: 'bg-white',
+      surface: 'bg-white/90',
+      surface1: 'bg-white',
+      text: 'text-gray-900',
+      textSecondary: 'text-gray-700/70',
+      border: 'border-[#4361ee]/20',
+      hover: 'hover:border-[#4361ee]',
+      button: 'bg-white/90',
+      buttonHover: 'hover:bg-[#4361ee]/10',
+      tabBackground: 'bg-blue-100',
+      tabText: 'text-gray-800',
+      activeTabBackground: 'bg-white',
+      activeTabText: 'text-black',
+    },
+    dark: {
+      bg: 'bg-[#0a0d1e]',
+      surface: 'bg-[rgba(16,20,46,0.9)]',
+      surface1: 'bg-[rgba(16,20,46)]',
+      text: 'text-white',
+      textSecondary: 'text-white/70',
+      border: 'border-[#4361ee]/20',
+      hover: 'hover:border-[#4361ee]',
+      button: 'bg-[rgba(16,20,46,1)]',
+      buttonHover: 'hover:bg-[#4361ee]/15',
+      tabBackground: 'bg-[#1a2456]',
+      tabText: 'text-white/80',
+      activeTabBackground: 'bg-white/10',
+      activeTabText: 'text-white',
+    },
+  };
+
+  const theme = isDarkMode ? baseStyles.dark : baseStyles.light;
+
+  const tabVariants = {
+    initial: {
+      opacity: 0,
+      x: activeTab === 'Upcoming' ? 50 : -50,
+    },
+    animate: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        ease: 'easeInOut',
+      },
+    },
+    exit: {
+      opacity: 0,
+      x: activeTab === 'Upcoming' ? -50 : 50,
+      transition: {
+        duration: 0.3,
+        ease: 'easeInOut',
+      },
+    },
+  };
+
+  const CompleteTaskStatus = async (task: Task) => {
+    try {
+      console.log(task);
+      setCurrentViewTasks((prev: any) => {
+        // @ts-ignore
+        const t1 = prev.find((t) => t.id === task.id);
+        // @ts-ignore
+        if (t1) t1.status = 'completed';
+        return [...prev];
+      });
+      const res = await UpdateTaskApiCall(
+        { status: 'completed' },
+        null,
+        task.id
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    const apiCall = async () => {
+      try {
+        const today = new Date(currentDate);
+        const endDate = today.toISOString().split('T')[0];
+        const res = await GetTaskBetweenRangeApiCall(null, endDate, endDate);
+        const sortedData = res.data.sort((a: any, b: any) => {
+          // @ts-ignore
+          return new Date(a.start_time_utc) - new Date(b.start_time_utc);
+        });
+        setCurrentViewTasks(sortedData);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    apiCall().then();
+  }, [currentDate]);
+
+  return (
+    <div className={`rounded-xl p-2 transition-all duration-300 ${theme.bg}`}>
+      <div className="flex sm:flex-row items-center justify-between mb-6 space-y-4 sm:space-y-0">
+        <DateNavigator
+          theme={theme}
+          currentDate={currentDate}
+          setCurrentDate={setCurrentDate}
+          setActiveTab={setActiveTab}
+        />
+        <div className="flex items-center space-x-4">
+          {isToday && (
+            <div
+              className={`hidden sm:flex justify-center ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1`}
+              style={{
+                width: 'fit-content',
+              }}
+            >
+              <motion.div
+                className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
+                ${
+                  activeTab === StatusOfTasksName.COMPLETED
+                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                    : ''
+                }`}
+                onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
+                whileTap={{ scale: 0.95 }}
+              >
+                <CheckCircle />
+                {activeTab === StatusOfTasksName.COMPLETED && (
+                  <motion.span
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-2"
+                  >
+                    Completed
+                  </motion.span>
+                )}
+              </motion.div>
+
+              <motion.div
+                className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
+                ${
+                  activeTab === StatusOfTasksName.UPCOMING
+                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                    : ''
+                }`}
+                onClick={() => setActiveTab(StatusOfTasksName.UPCOMING)}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Clock />
+                {activeTab === StatusOfTasksName.UPCOMING && (
+                  <motion.span
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-2"
+                  >
+                    Upcoming
+                  </motion.span>
+                )}
+              </motion.div>
+            </div>
+          )}
+          {isPastDate && (
+            <div
+              className={`hidden sm:flex justify-center ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1`}
+              style={{
+                width: 'fit-content',
+              }}
+            >
+              <motion.div
+                className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
+                  ${
+                    activeTab === StatusOfTasksName.OVERDUE
+                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                      : ''
+                  }`}
+                onClick={() => setActiveTab(StatusOfTasksName.OVERDUE)}
+                whileTap={{ scale: 0.95 }}
+              >
+                <AlertCircle />
+                {activeTab === StatusOfTasksName.OVERDUE && (
+                  <motion.span
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-2"
+                  >
+                    OverDue
+                  </motion.span>
+                )}
+              </motion.div>
+
+              <motion.div
+                className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
+                  ${
+                    activeTab === StatusOfTasksName.COMPLETED
+                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                      : ''
+                  }`}
+                onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
+                whileTap={{ scale: 0.95 }}
+              >
+                <CheckCircle />
+                {activeTab === StatusOfTasksName.COMPLETED && (
+                  <motion.span
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-2"
+                  >
+                    Completed
+                  </motion.span>
+                )}
+              </motion.div>
+            </div>
+          )}
+          <AddTaskButton theme={theme} />
+        </div>
+      </div>
+
+      {/* Mobile Tabs - Shown only on small screens and for today's date */}
+      {isToday && (
+        <div
+          className={`sm:hidden flex justify-end ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1 mb-4`}
+          style={{
+            width: 'fit-content',
+          }}
+        >
+          <motion.div
+            className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
+                ${
+                  activeTab === StatusOfTasksName.COMPLETED
+                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                    : ''
+                }`}
+            onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
+            whileTap={{ scale: 0.95 }}
+          >
+            <CheckCircle />
+            {activeTab === StatusOfTasksName.COMPLETED && (
+              <motion.span
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className="ml-2"
+              >
+                Completed
+              </motion.span>
+            )}
+          </motion.div>
+
+          <motion.div
+            className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
+                ${
+                  activeTab === StatusOfTasksName.UPCOMING
+                    ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                    : ''
+                }`}
+            onClick={() => setActiveTab(StatusOfTasksName.UPCOMING)}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Clock />
+            {activeTab === StatusOfTasksName.UPCOMING && (
+              <motion.span
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className="ml-2"
+              >
+                Upcoming
+              </motion.span>
+            )}
+          </motion.div>
+        </div>
+      )}
+      {isPastDate && (
+        <div
+          className={`sm:hidden flex justify-end ${theme.tabBackground} rounded-3xl ${theme.tabText} gap-2 p-1 mb-4`}
+          style={{
+            width: 'fit-content',
+          }}
+        >
+          <motion.div
+            className={`flex justify-center rounded-3xl p-2 cursor-pointer transition-all duration-300 
+                  ${
+                    activeTab === StatusOfTasksName.OVERDUE
+                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                      : ''
+                  }`}
+            onClick={() => setActiveTab(StatusOfTasksName.OVERDUE)}
+            whileTap={{ scale: 0.95 }}
+          >
+            <AlertCircle />
+            {activeTab === StatusOfTasksName.OVERDUE && (
+              <motion.span
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className="ml-2"
+              >
+                OverDue
+              </motion.span>
+            )}
+          </motion.div>
+
+          <motion.div
+            className={`flex justify-center rounded-3xl p-2 cursor-pointer gap-1 transition-all duration-300
+                  ${
+                    activeTab === StatusOfTasksName.COMPLETED
+                      ? `${theme.activeTabBackground} ${theme.activeTabText}`
+                      : ''
+                  }`}
+            onClick={() => setActiveTab(StatusOfTasksName.COMPLETED)}
+            whileTap={{ scale: 0.95 }}
+          >
+            <CheckCircle />
+            {activeTab === StatusOfTasksName.COMPLETED && (
+              <motion.span
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className="ml-2"
+              >
+                Completed
+              </motion.span>
+            )}
+          </motion.div>
+        </div>
+      )}
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={tabVariants}
+        >
+          {!isLoading && currentViewTasks && currentViewTasks.length > 0 && (
+            <>
+              {' '}
+              <TaskTimeline
+                tasks={currentViewTasks}
+                theme={theme}
+                CompleteTaskStatus={CompleteTaskStatus}
+                activeTab={activeTab}
+              />
+            </>
+          )}
+          {isLoading && (
+            <>
+              <div
+                className={`relative mb-4 p-6 rounded-xl border transition-all duration-300
+                  ${theme.surface} ${theme.border} bg-gray-100 dark:bg-gray-900`}
+              >
+                {/* Header Skeleton */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                    <div className="w-24 h-5 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                  </div>
+                  <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                </div>
+
+                {/* Title Skeleton */}
+                <div className="w-3/4 h-6 rounded bg-gray-300 dark:bg-gray-700 animate-pulse mb-4"></div>
+
+                {/* Meta Info Skeleton */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                    <div className="w-1/2 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                    <div className="w-1/2 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                  </div>
+                </div>
+
+                {/* Details Skeleton */}
+                <div className="flex flex-col gap-2">
+                  <div className="w-full h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                  <div className="w-3/4 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                </div>
+
+                {/* Footer Skeleton */}
+                <div className="mt-4 flex justify-between">
+                  <div className="w-1/4 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                  <div className="w-1/6 h-4 rounded bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {!isLoading && currentViewTasks && currentViewTasks.length === 0 && (
+            <>
+              {' '}
+              <div className="mt-10">
+                {' '}
+                <NoDataFound displayText={'No Any Tasks Found'} />
+              </div>{' '}
+            </>
+          )}
+          {/* {!isLoading && currentViewTasks && <> <NoDataFound displayText={"No Any Tasks Found"} /> </>} */}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+};
+
 export default TasksSection;
-
-// const DateNavigator: React.FC<{
-//   theme: any;
-//   currentDate: Date;
-//   setCurrentDate: (a: any) => void;
-//   setActiveTab: (a: string) => void;
-// }> = ({ theme, currentDate, setCurrentDate, setActiveTab }) => {
-//   const isToday = (date: Date) => {
-//     const today = new Date();
-//     return (
-//       date.getDate() === today.getDate() &&
-//       date.getMonth() === today.getMonth() &&
-//       date.getFullYear() === today.getFullYear()
-//     );
-//   };
-
-//   const getFormattedDate = (date: Date) => {
-//     const options: Intl.DateTimeFormatOptions = {
-//       month: 'short',
-//       day: 'numeric',
-//     };
-//     return date.toLocaleDateString('en-US', options);
-//   };
-
-//   const handlePrevDay = () => {
-//     setCurrentDate(
-//       (prev: any) => new Date(prev.getTime() - 24 * 60 * 60 * 1000)
-//     );
-//     setActiveTab(StatusOfTasksName.OVERDUE);
-//   };
-
-//   const handleNextDay = () => {
-//     setCurrentDate(
-//       (prev: any) => new Date(prev.getTime() + 24 * 60 * 60 * 1000)
-//     );
-//   };
-
-//   return (
-//     <div className="flex items-center gap-4">
-//       <button
-//         onClick={handlePrevDay}
-//         className={`${theme.button} ${theme.buttonHover} ${theme.text} p-2 rounded-lg transition-all duration-300 border ${theme.hover}`}
-//         // style={{
-//         //   boxShadow: '0 0 20px rgba(67,97,238,0.2)',
-//         // }}
-//       >
-//         <ChevronLeft className="w-4 h-4" />
-//       </button>
-
-//       <div className={`text-lg font-semibold ${theme.text}`}>
-//         {isToday(currentDate) ? (
-//           <div className="relative">
-//             <span className="bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent">
-//               Today
-//             </span>
-//             <span className="block mt-1 h-0.5 bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] rounded-full" />
-//           </div>
-//         ) : (
-//           getFormattedDate(currentDate)
-//         )}
-//       </div>
-
-//       <button
-//         onClick={handleNextDay}
-//         className={`${theme.button} ${theme.buttonHover} ${theme.text} p-2 rounded-lg transition-all duration-300 border ${theme.hover}`}
-//       >
-//         <ChevronRight className="w-4 h-4" />
-//       </button>
-//     </div>
-//   );
-// };

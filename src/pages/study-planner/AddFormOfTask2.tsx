@@ -9,6 +9,7 @@ import {
   UpdateTaskApiCall,
 } from '../../services/api/study-planner';
 import { useNavigate } from 'react-router-dom';
+import { formatTime, getFromLocalStorage } from '../../utils/helperFunc';
 
 // Validation schema (same as previous implementation)
 const schema = yup.object().shape({
@@ -48,6 +49,7 @@ const schema = yup.object().shape({
 const AddTaskPage: React.FC = () => {
   // Theme selection
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+  const [task, setTask] = useState(getFromLocalStorage('get-edit-task'));
 
   const navigate = useNavigate();
 
@@ -80,18 +82,31 @@ const AddTaskPage: React.FC = () => {
     reset,
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: {
-      date: '',
-      title: '',
-      type: 'study',
-      start_time_utc: '',
-      end_time_utc: '',
-      meta_data: {
-        subject: '',
-        topic: '',
-        chapter: '',
-      },
-    },
+    defaultValues: task
+      ? {
+          date: task.date.split('T')[0],
+          title: task.title,
+          type: task.type,
+          start_time_utc: formatTime(task.start_time_utc),
+          end_time_utc: formatTime(task.end_time_utc),
+          meta_data: {
+            subject: task.meta_data.subject,
+            topic: task.meta_data.topic,
+            chapter: task.meta_data.chapter,
+          },
+        }
+      : {
+          date: '',
+          title: '',
+          type: 'study',
+          start_time_utc: '',
+          end_time_utc: '',
+          meta_data: {
+            subject: '',
+            topic: '',
+            chapter: '',
+          },
+        },
   });
 
   const taskType = watch('type');
@@ -106,9 +121,13 @@ const AddTaskPage: React.FC = () => {
       updatedTask.end_time =
         updatedTask.date + ' ' + updatedTask.end_time_utc + ':00.000';
       console.log({ updatedTask });
-      if (updatedTask.id) {
+      if (task) {
         // Edit existing task
-        response = await UpdateTaskApiCall(updatedTask, null, updatedTask.id);
+        response = await UpdateTaskApiCall(
+          { ...updatedTask, id: task.id },
+          null,
+          task.id
+        );
       } else {
         // Add new task
         response = await AddTaskApiCall(updatedTask);
@@ -292,6 +311,26 @@ const AddTaskPage: React.FC = () => {
                   }
                 </div>
 
+                <div>
+                  <label className={`block mb-2 ${theme.textSecondary}`}>
+                    Chapter (Optional)
+                  </label>
+                  <Controller
+                    //@ts-ignore
+                    name="meta_data.chapter"
+                    control={control}
+                    render={({ field }) => (
+                      //@ts-ignore
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="Enter chapter"
+                        className={`w-full p-3 rounded-lg ${theme.button} ${theme.text} ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
+                      />
+                    )}
+                  />
+                </div>
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label className={`block mb-2 ${theme.textSecondary}`}>
@@ -312,26 +351,6 @@ const AddTaskPage: React.FC = () => {
                       )}
                     />
                   </div>
-
-                  <div>
-                    <label className={`block mb-2 ${theme.textSecondary}`}>
-                      Chapter (Optional)
-                    </label>
-                    <Controller
-                      //@ts-ignore
-                      name="meta_data.chapter"
-                      control={control}
-                      render={({ field }) => (
-                        //@ts-ignore
-                        <input
-                          {...field}
-                          type="text"
-                          placeholder="Enter chapter"
-                          className={`w-full p-3 rounded-lg ${theme.button} ${theme.text} ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#4361ee]`}
-                        />
-                      )}
-                    />
-                  </div>
                 </div>
               </div>
             </div>
@@ -341,7 +360,7 @@ const AddTaskPage: React.FC = () => {
             <button
               type="button"
               className={`px-6 py-3 rounded-lg ${theme.button} ${theme.text} border ${theme.border} hover:bg-gray-200 transition-all duration-300`}
-              onClick={() => navigate('study-planner/task')}
+              onClick={() => navigate('/study-planner/task')}
             >
               Cancel
             </button>
@@ -349,7 +368,7 @@ const AddTaskPage: React.FC = () => {
               type="submit"
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300"
             >
-              Create Task
+              {task ? 'Update Task' : 'Create Task'}
             </button>
           </div>
         </form>

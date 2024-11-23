@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { Task } from '../../types/study-planner';
@@ -27,6 +27,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { GetTaskBetweenRangeApiCall } from 'services/api/study-planner';
+import NoDataFound from '../../components/shared/NoDataFound';
+import { useNavigate } from 'react-router-dom';
 
 const ProgressOfDailyAndWeekly: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
@@ -94,7 +97,7 @@ const ProgressOfDailyAndWeekly: React.FC = () => {
 
   return (
     <div
-      className={`grid grid-cols-1 md:grid-cols-2 gap-6 p-6 ${themeColors.background} rounded-2xl shadow-2xl`}
+      className={`w-[90%] mx-auto mb-4 grid grid-cols-1 md:grid-cols-2 gap-6 p-6 ${themeColors.background} rounded-2xl shadow-2xl`}
     >
       {/* Daily Progress Section */}
       <div
@@ -203,9 +206,80 @@ const ProgressOfDailyAndWeekly: React.FC = () => {
   );
 };
 
-const UpcomingTasks: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
+const UpcomingTasks: React.FC<{ tasks: Task[] | null }> = ({ tasks }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+  const navigate = useNavigate();
+
+  if (!tasks) {
+    return (
+      <>
+        <div
+          className={`w-[90%] m-4 mb-4 rounded-xl shadow-lg overflow-hidden transition-colors duration-300 ${
+            isDarkMode
+              ? 'bg-[rgba(16,20,46,0.9)] border border-[rgba(67,97,238,0.2)]'
+              : 'bg-white/90 border border-gray-200'
+          }`}
+        >
+          <div className="p-3 md:p-6">
+            {/* Header Skeleton */}
+            <div className="flex justify-between items-center w-full mb-4">
+              {/* Previous Button Skeleton */}
+              <div
+                className={`w-10 h-10 rounded-full ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+                } animate-pulse`}
+              ></div>
+
+              {/* Title Skeleton */}
+              <div
+                className={`w-40 h-6 rounded ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-gray-300'
+                } animate-pulse`}
+              ></div>
+
+              {/* Next Button Skeleton */}
+              <div
+                className={`w-10 h-10 rounded-full ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+                } animate-pulse`}
+              ></div>
+            </div>
+
+            {/* Task Card Skeleton */}
+            <div
+              className={`flex items-center space-x-4 p-4 rounded-lg shadow-lg ${
+                isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
+              }`}
+            >
+              {/* Icon Skeleton */}
+              <div
+                className={`w-12 h-12 rounded-full ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-gray-300'
+                } animate-pulse`}
+              ></div>
+
+              {/* Text Content Skeleton */}
+              <div className="flex-grow space-y-2">
+                {/* Task Title Skeleton */}
+                <div
+                  className={`w-3/4 h-5 rounded ${
+                    isDarkMode ? 'bg-gray-700' : 'bg-gray-300'
+                  } animate-pulse`}
+                ></div>
+                {/* Task Time Skeleton */}
+                <div
+                  className={`w-1/2 h-4 rounded ${
+                    isDarkMode ? 'bg-gray-600' : 'bg-gray-300'
+                  } animate-pulse`}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   const currentTask = tasks[currentIndex];
 
@@ -251,6 +325,9 @@ const UpcomingTasks: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
     if (currentIndex < tasks.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     }
+    // else if(tasks.length-1 === currentIndex){
+    //   navigate("/study-planner/tasks");
+    // }
   };
 
   const handlePrev = () => {
@@ -261,9 +338,9 @@ const UpcomingTasks: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
 
   return (
     <div
-      className={`w-full max-w-xl mb-4 rounded-xl shadow-lg overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[rgba(16,20,46,0.9)] border border-[rgba(67,97,238,0.2)]' : 'bg-white/90 border border-gray-200'}`}
+      className={`w-[90%] m-4 mb-4 rounded-xl shadow-lg overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[rgba(16,20,46,0.9)] border border-[rgba(67,97,238,0.2)]' : 'bg-white/90 border border-gray-200'}`}
     >
-      <div className="p-6">
+      <div className="p-3 md:p-6">
         {/* <h2 className="text-2xl font-bold mb-6 font-[Darker Grotesque] bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent">
           Task View
         </h2> */}
@@ -302,39 +379,54 @@ const UpcomingTasks: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
           </button>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentTask.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className={`flex items-center space-x-4 p-4 rounded-lg shadow-lg ${getCardBackground(currentTask.type)}`}
-          >
-            <div>{renderTaskIcon(currentTask.status, currentTask.type)}</div>
+        {tasks && tasks.length === 0 && (
+          <>
+            <NoDataFound displayText={'No Any Tasks Found'} />
+          </>
+        )}
 
-            <div className="flex-grow">
-              <h3
-                className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+        {tasks && tasks.length > 0 && (
+          <>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentTask.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className={`flex items-center space-x-4 p-4 rounded-lg shadow-lg ${getCardBackground(currentTask?.type)}`}
               >
-                {currentTask.title}
-              </h3>
-              <p
-                className={`text-sm ${isDarkMode ? 'text-white/70' : 'text-gray-600'}`}
-              >
-                {new Date(currentTask.start_time_utc).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}{' '}
-                -{' '}
-                {new Date(currentTask.end_time_utc).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </p>
-            </div>
-          </motion.div>
-        </AnimatePresence>
+                <div>
+                  {renderTaskIcon(currentTask.status, currentTask.type)}
+                </div>
+
+                <div className="flex-grow">
+                  <h3
+                    className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  >
+                    {currentTask.title}
+                  </h3>
+                  <p
+                    className={`text-sm ${isDarkMode ? 'text-white/70' : 'text-gray-600'}`}
+                  >
+                    {new Date(currentTask.start_time_utc).toLocaleTimeString(
+                      [],
+                      {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      }
+                    )}{' '}
+                    -{' '}
+                    {new Date(currentTask.end_time_utc).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </>
+        )}
       </div>
     </div>
   );
@@ -359,9 +451,9 @@ const UpcomingExam: React.FC = () => {
 
   return (
     <div
-      className={`w-full max-w-xl mb-4 rounded-xl shadow-lg overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[rgba(16,20,46,0.9)] border border-[rgba(67,97,238,0.2)]' : 'bg-white/90 border border-gray-200'}`}
+      className={`w-[90%]  m-4 mb-4 rounded-xl shadow-lg overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[rgba(16,20,46,0.9)] border border-[rgba(67,97,238,0.2)]' : 'bg-white/90 border border-gray-200'}`}
     >
-      <div className="p-6">
+      <div className="p-3 md:p-6">
         <div className="flex justify-between items-center w-full mb-4">
           {/* <span className={`text-lg font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             {`Task ${currentIndex + 1} of ${tasks.length}`}
@@ -416,7 +508,7 @@ const FocusChart = () => {
 
   return (
     <div
-      className={`w-full rounded-xl mb-4 p-6 transition-colors duration-300 ${
+      className={`w-[90%] mx-auto rounded-xl mb-4 p-6 transition-colors duration-300 ${
         isDarkMode
           ? 'bg-[rgba(16,20,46,0.9)] border border-[rgba(67,97,238,0.2)]'
           : 'bg-white/90 border border-gray-200'
@@ -483,78 +575,106 @@ const FocusChart = () => {
 };
 
 const OverviewSection: React.FC = () => {
-  const tasks = [
-    {
-      id: '1',
-      schedule_id: 'SCHD001',
-      title: 'Physics: Work and Energy',
-      created_by: 'AI',
-      date: '2024-11-20',
-      start_time_utc: '2024-11-20T10:00:00Z',
-      end_time_utc: '2024-11-20T11:30:00Z',
-      type: 'study', // Enums: study, test, exam_preparation
-      status: 'completed', // Enums: upcoming, in_progress, completed, overdue
-      meta_data: {
-        chapter: '5',
-        subject: 'Physics',
-        topic: 'Work and Energy',
-      },
-    },
-    {
-      id: '2',
-      schedule_id: 'SCHD002',
-      title: 'Math: Algebra Practice Test',
-      created_by: 'Human',
-      date: '2024-11-21',
-      start_time_utc: '2024-11-21T14:00:00Z',
-      end_time_utc: '2024-11-21T15:30:00Z',
-      type: 'test', // Enums: study, test, exam_preparation
-      status: 'in_progress', // Enums: upcoming, in_progress, completed, overdue
-      meta_data: {
-        chapter: '7',
-        subject: 'Math',
-        topic: 'Algebra',
-      },
-    },
-    {
-      id: '3',
-      schedule_id: 'SCHD003',
-      title: 'Chemistry: Organic Compounds Review',
-      created_by: 'AI',
-      date: '2024-11-22',
-      start_time_utc: '2024-11-22T16:00:00Z',
-      end_time_utc: '2024-11-22T17:00:00Z',
-      type: 'exam_preparation', // Enums: study, test, exam_preparation
-      status: 'upcoming', // Enums: upcoming, in_progress, completed, overdue
-      meta_data: {
-        chapter: '12',
-        subject: 'Chemistry',
-        topic: 'Organic Compounds',
-      },
-    },
-    {
-      id: '4',
-      schedule_id: 'SCHD004',
-      title: 'History: World War II Notes',
-      created_by: 'Human',
-      date: '2024-11-19',
-      start_time_utc: '2024-11-19T10:00:00Z',
-      end_time_utc: '2024-11-19T11:30:00Z',
-      type: 'study', // Enums: study, test, exam_preparation
-      status: 'overdue', // Enums: upcoming, in_progress, completed, overdue
-      meta_data: {
-        chapter: '9',
-        subject: 'History',
-        topic: 'World War II',
-      },
-    },
-  ];
+  const [tasks, setTasks] = useState<null | Task[]>(null);
+
+  // const tasks = [
+  //   {
+  //     id: '1',
+  //     schedule_id: 'SCHD001',
+  //     title: 'Physics: Work and Energy',
+  //     created_by: 'AI',
+  //     date: '2024-11-20',
+  //     start_time_utc: '2024-11-20T10:00:00Z',
+  //     end_time_utc: '2024-11-20T11:30:00Z',
+  //     type: 'study', // Enums: study, test, exam_preparation
+  //     status: 'completed', // Enums: upcoming, in_progress, completed, overdue
+  //     meta_data: {
+  //       chapter: '5',
+  //       subject: 'Physics',
+  //       topic: 'Work and Energy',
+  //     },
+  //   },
+  //   {
+  //     id: '2',
+  //     schedule_id: 'SCHD002',
+  //     title: 'Math: Algebra Practice Test',
+  //     created_by: 'Human',
+  //     date: '2024-11-21',
+  //     start_time_utc: '2024-11-21T14:00:00Z',
+  //     end_time_utc: '2024-11-21T15:30:00Z',
+  //     type: 'test', // Enums: study, test, exam_preparation
+  //     status: 'in_progress', // Enums: upcoming, in_progress, completed, overdue
+  //     meta_data: {
+  //       chapter: '7',
+  //       subject: 'Math',
+  //       topic: 'Algebra',
+  //     },
+  //   },
+  //   {
+  //     id: '3',
+  //     schedule_id: 'SCHD003',
+  //     title: 'Chemistry: Organic Compounds Review',
+  //     created_by: 'AI',
+  //     date: '2024-11-22',
+  //     start_time_utc: '2024-11-22T16:00:00Z',
+  //     end_time_utc: '2024-11-22T17:00:00Z',
+  //     type: 'exam_preparation', // Enums: study, test, exam_preparation
+  //     status: 'upcoming', // Enums: upcoming, in_progress, completed, overdue
+  //     meta_data: {
+  //       chapter: '12',
+  //       subject: 'Chemistry',
+  //       topic: 'Organic Compounds',
+  //     },
+  //   },
+  //   {
+  //     id: '4',
+  //     schedule_id: 'SCHD004',
+  //     title: 'History: World War II Notes',
+  //     created_by: 'Human',
+  //     date: '2024-11-19',
+  //     start_time_utc: '2024-11-19T10:00:00Z',
+  //     end_time_utc: '2024-11-19T11:30:00Z',
+  //     type: 'study', // Enums: study, test, exam_preparation
+  //     status: 'overdue', // Enums: upcoming, in_progress, completed, overdue
+  //     meta_data: {
+  //       chapter: '9',
+  //       subject: 'History',
+  //       topic: 'World War II',
+  //     },
+  //   },
+  // ];
+
+  useEffect(() => {
+    const apiCall = async () => {
+      try {
+        const today = new Date();
+        const endDate = today.toISOString().split('T')[0];
+        const res = await GetTaskBetweenRangeApiCall(null, endDate, endDate);
+
+        // add code here
+        const tasks = res.data
+          .filter((item: any) => item.status === 'pending')
+          .sort(
+            (item: any) =>
+              +new Date(item.start_time_utc) < +new Date(item.start_time_utc)
+          );
+
+        console.log(tasks, res.data);
+        setTasks(tasks);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    apiCall().then();
+  }, []);
 
   return (
     <>
       {' '}
-      <div className="flex flex-col md:flex-row justify-between">
-        <UpcomingTasks tasks={tasks} /> <UpcomingExam />
+      <div className="flex flex-col w-[90%] mx-auto md:flex-row justify-between">
+        <UpcomingTasks tasks={tasks} />
+        <UpcomingExam />
       </div>
       <FocusChart />
       <ProgressOfDailyAndWeekly />{' '}
