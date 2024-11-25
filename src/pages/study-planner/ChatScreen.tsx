@@ -8,7 +8,10 @@ import {
   createChatTrackerId,
   getChatByChatTrackerId,
 } from '../../services/api/chat-apis';
-import { AddTaskByQueryApiCall } from '../../services/api/study-planner';
+import {
+  AddTaskByQueryApiCall,
+  RemoveTaskApiCall,
+} from '../../services/api/study-planner';
 import { ChatLogsType } from '../../types/chat-logs';
 import {
   Calendar,
@@ -44,247 +47,6 @@ const messages = [
 ];
 
 const chatMsg = '';
-
-export default function ChatScreen() {
-  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
-  const { chatId } = useParams();
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const ChatScreenTextAreaBoxRef = useRef();
-  const navigate = useNavigate();
-  const [chatLogs, setChatLogs] = useState<ChatLogsType[] | null>(null);
-  const [loadingChat, setLoadingChat] = useState(false);
-  const [aiResLoading, setAiResLoading] = useState(false);
-
-  const handleBack = () => {
-    navigate(-1);
-  };
-
-  const ApiCallToChatTrackerId = async () => {
-    try {
-      if (ChatScreenTextAreaBoxRef.current) {
-        saveToLocalStorage(
-          'new-task-que',
-          // @ts-ignore
-          ChatScreenTextAreaBoxRef.current.value
-        );
-      }
-      const res = await createChatTrackerId();
-
-      navigate('/study-planner-chat/' + res.data.chat_tracker_id);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const ApiCallToQuery = async (msg: string) => {
-    try {
-      setAiResLoading(true);
-      let tempData = {
-        role: 'user',
-        content: msg,
-      };
-      // @ts-ignore
-      setChatLogs((prev: ChatLogsType[] | null) => {
-        if (prev) {
-          return [...prev, tempData];
-        }
-        return [tempData];
-      });
-      const res = await AddTaskByQueryApiCall({
-        query: msg,
-        chat_tracker_id: chatId,
-      });
-      const tempArray = res.data.map((task: any) => {
-        return task.tasks;
-      });
-      console.log(res.data);
-      tempData = {
-        role: 'assistant',
-        content: JSON.stringify(tempArray),
-      };
-      // @ts-ignore
-      setChatLogs((prev: ChatLogsType[] | null) => {
-        if (prev) {
-          return [...prev, tempData];
-        }
-        return [tempData];
-      });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setAiResLoading(false);
-    }
-  };
-
-  const ApiCallToGetChat = async () => {
-    try {
-      console.log('in chat call');
-      setLoadingChat(true);
-      const res = await getChatByChatTrackerId(chatId ?? '');
-      console.log(res.data, res.data.messages, ' :  res.data.messages');
-      setChatLogs(res.data.messages);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoadingChat(false);
-    }
-  };
-  useEffect(() => {
-    let interval: any;
-    const chatMsgByLocal = getFromLocalStorage('new-task-que');
-    console.log({ chatMsgByLocal, chatId, c: chatId && !chatMsgByLocal });
-    if (chatId === 'new') {
-      interval = setInterval(() => {
-        setCurrentMessageIndex(
-          (prevIndex) => (prevIndex + 1) % messages.length
-        );
-      }, 5000);
-    } else if (chatId && !chatMsgByLocal) {
-      ApiCallToGetChat();
-    } else if (chatMsgByLocal) {
-      const addUserPromat: ChatLogsType = {
-        role: 'user',
-        content: chatMsg,
-      };
-      setChatLogs([addUserPromat]);
-      ApiCallToQuery(chatMsgByLocal).then();
-      saveToLocalStorage('new-task-que', '');
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [chatId]);
-
-  return (
-    <>
-      <div
-        className={`
-              flex flex-col items-center justify-center h-full
-              transition-colors duration-300
-              ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
-            `}
-      >
-        {/* Back Navigation Button */}
-        <div
-          className={`
-        w-full p-4
-        ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
-      `}
-        >
-          <button
-            onClick={handleBack}
-            className={`
-            flex items-center gap-2 px-4 py-2 rounded-lg
-            transition-all duration-300
-            ${
-              isDarkMode
-                ? 'text-white/70 hover:bg-[rgba(16,20,46,1)]'
-                : 'text-gray-600 hover:bg-white/90'
-            }
-          `}
-          >
-            <ArrowLeft size={20} />
-            <span>Back</span>
-          </button>
-        </div>
-
-        {chatId === 'new' && (
-          <>
-            <div
-              className={`
-              flex flex-col items-center justify-center h-full w-full
-              transition-colors duration-300
-              ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
-            `}
-            >
-              <div className="mb-6">
-                <Orbit opration={null} size={100} />
-              </div>
-
-              <h1 className="text-2xl md:text-4xl font-bold font-[Darker Grotesque] bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent mb-6">
-                What can I help with?
-              </h1>
-
-              <div
-                key={currentMessageIndex}
-                className={`
-                w-[90%] md:w-1/2 text-center rounded-xl shadow-lg py-4 px-6 mb-6
-                transition-all duration-300
-                ${
-                  isDarkMode
-                    ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)] text-white/70'
-                    : 'bg-white/90 border border-gray-200 text-gray-600'
-                }
-                hover:shadow-lg
-                ${
-                  isDarkMode
-                    ? 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.2)]'
-                    : 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.1)]'
-                }
-              `}
-              >
-                {messages[currentMessageIndex]}
-              </div>
-
-              <div
-                className={`
-                flex items-center w-[90%] md:w-1/2 rounded-xl shadow-lg p-4
-                ${
-                  isDarkMode
-                    ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)]'
-                    : 'bg-white/90 border border-gray-200'
-                }
-              `}
-              >
-                <input
-                  //@ts-ignore
-                  ref={ChatScreenTextAreaBoxRef}
-                  type="text"
-                  placeholder="Message AI Assistant"
-                  className={`
-                  flex-1 bg-transparent border-none outline-none text-sm md:text-base
-                  ${
-                    isDarkMode
-                      ? 'text-white placeholder-white/50'
-                      : 'text-gray-900 placeholder-gray-500'
-                  }
-                `}
-                />
-                <button
-                  className={`
-                  flex items-center justify-center w-10 h-10 rounded-lg
-                  transition-all duration-300
-                  bg-gradient-to-r from-[#4361ee] to-[#4cc9f0]
-                  text-white hover:shadow-lg
-                  hover:shadow-[#4361ee]/20
-                `}
-                  aria-label="Send"
-                  onClick={ApiCallToChatTrackerId}
-                >
-                  <Send size={20} />
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-
-        {chatId !== 'new' && (
-          <>
-            {chatLogs && (
-              <EnhancedChatHistory
-                messages={chatLogs}
-                ApiCallToQuery={ApiCallToQuery}
-                aiResLoading={aiResLoading}
-                loadingChat={loadingChat}
-              />
-            )}
-          </>
-        )}
-      </div>
-    </>
-  );
-}
 
 // const statusConfig = {
 //   upcoming: {
@@ -437,35 +199,32 @@ const typeConfig = {
   study: {
     icon: Book,
     label: 'Study Session',
-    lightBg: 'bg-indigo-50',
-    darkBg: 'bg-[rgba(16,20,46,1)]',
-    lightBorder: 'border-indigo-200',
-    darkBorder: 'border-indigo-500/20',
-    lightHover: 'hover:border-indigo-300',
-    darkHover: 'hover:border-indigo-500/40',
-    darkShadow: 'shadow-indigo-500/10',
+    lightBg: 'bg-blue-50',
+    darkBg: 'bg-blue-400/10', // Lighter blue with lower opacity
+    lightBorder: 'border-blue-200',
+    darkBorder: 'border-blue-500', // Brighter border for visibility
+    lightHover: 'hover:border-blue-300',
+    darkHover: 'hover:border-blue-400', // More visible hover effect
   },
   test: {
     icon: FileText,
     label: 'Test',
-    lightBg: 'bg-purple-50',
-    darkBg: 'bg-[rgba(16,20,46,1)]',
-    lightBorder: 'border-purple-200',
-    darkBorder: 'border-purple-500/20',
-    lightHover: 'hover:border-purple-300',
-    darkHover: 'hover:border-purple-500/40',
-    darkShadow: 'shadow-purple-500/10',
+    lightBg: 'bg-rose-50',
+    darkBg: 'bg-rose-400/10', // Lighter rose with lower opacity
+    lightBorder: 'border-rose-200',
+    darkBorder: 'border-rose-500', // Brighter border for visibility
+    lightHover: 'hover:border-rose-300',
+    darkHover: 'hover:border-rose-400', // More visible hover effect
   },
   exam_preparation: {
     icon: GraduationCap,
     label: 'Exam Prep',
-    lightBg: 'bg-teal-50',
-    darkBg: 'bg-[rgba(16,20,46,1)]',
-    lightBorder: 'border-teal-200',
-    darkBorder: 'border-teal-500/20',
-    lightHover: 'hover:border-teal-300',
-    darkHover: 'hover:border-teal-500/40',
-    darkShadow: 'shadow-teal-500/10',
+    lightBg: 'bg-emerald-50',
+    darkBg: 'bg-emerald-400/10', // Lighter emerald with lower opacity
+    lightBorder: 'border-emerald-200',
+    darkBorder: 'border-emerald-500', // Brighter border for visibility
+    lightHover: 'hover:border-emerald-300',
+    darkHover: 'hover:border-emerald-400', // More visible hover effect
   },
 };
 
@@ -479,6 +238,14 @@ function TaskCard({ task, theme }: { task: Task; theme: any }) {
   const isDark = useSelector(
     (state: { theme: { isDarkMode: boolean } }) => state.theme.isDarkMode
   );
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const navigate = useNavigate();
+  const editTask = (task: Task) => {
+    saveToLocalStorage('get-edit-task', task);
+    navigate('/study-planner/edit');
+  };
 
   const getTypeStyles = () => {
     return {
@@ -499,6 +266,20 @@ function TaskCard({ task, theme }: { task: Task; theme: any }) {
       hour12: true,
     });
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div
@@ -547,6 +328,54 @@ function TaskCard({ task, theme }: { task: Task; theme: any }) {
             <span>{task.meta_data?.topic}</span>
           </div>
         </div>
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            className={`p-2 rounded-lg ${theme.button} ${theme.buttonHover} transition-colors duration-300`}
+          >
+            <MoreVertical className={`w-5 h-5 ${theme.text}`} />
+          </button>
+
+          {showDropdown && (
+            <div
+              className={`
+                absolute right-0 mt-2 w-48 rounded-lg border ${theme.surface} 
+                ${theme.border} backdrop-blur-md shadow-lg z-50
+              `}
+              style={{
+                boxShadow: '0 10px 30px rgba(67,97,238,0.2)',
+              }}
+            >
+              <div className="py-2">
+                <button
+                  onClick={() => editTask(task)}
+                  className={`
+                    w-full px-4 py-2 text-left flex items-center gap-2
+                    ${theme.buttonHover} ${theme.text} transition-colors duration-300
+                  `}
+                >
+                  <Edit3 className="w-4 h-4" />
+                  Edit Task
+                </button>
+                {/* <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    DeleteTaskStatus(task);
+                  }}
+                  className={`
+                    w-full px-4 py-2 text-left flex items-center gap-2 text-red-500
+                    hover:bg-red-500/10 transition-colors duration-300
+                    w-full px-4 py-2 text-left flex items-center gap-2 text-green-500
+                    hover:bg-green-500/10 transition-colors duration-300
+                  `}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Task
+                </button> */}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -554,7 +383,7 @@ function TaskCard({ task, theme }: { task: Task; theme: any }) {
 
 interface Message {
   role: 'user' | 'assistant';
-  content: string;
+  message: string;
 }
 
 interface EnhancedChatHistoryProps {
@@ -620,23 +449,17 @@ const EnhancedChatHistory: React.FC<EnhancedChatHistoryProps> = ({
     scrollToBottom();
   }, [messages]);
 
-  const renderMessageContent = (content: string, role: string) => {
+  const renderMessageContent = (content: any, role: string) => {
     try {
-      console.log(role, ' : role');
+      console.log(role, ' : role', content, content.length);
       if (role === 'user') {
         return <div className="whitespace-pre-wrap break-words">{content}</div>;
       }
-
-      console.log(content);
-      const parsedContent = JSON.parse(content);
-      console.log(parsedContent, ' : parsedContent');
-      const data = parsedContent.data ?? parsedContent;
-
       return (
         <div className="space-y-4">
           {
             // @ts-ignore
-            data.map((task: any, idx: number) => (
+            content.map((task: any, idx: number) => (
               <TaskCard key={idx} task={task} theme={theme} />
             ))
           }
@@ -653,12 +476,12 @@ const EnhancedChatHistory: React.FC<EnhancedChatHistoryProps> = ({
       <div className="flex-1 w-full overflow-y-auto p-4 space-y-4">
         {!loadingChat &&
           messages.length > 0 &&
-          messages.map((message, index) => (
+          messages.map((item, index) => (
             <div
               key={index}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} gap-4`}
+              className={`flex ${item.role === 'user' ? 'justify-end' : 'justify-start'} gap-4`}
             >
-              {message.role === 'assistant' && (
+              {item.role === 'assistant' && (
                 <div className="flex-shrink-0 mt-1">
                   <Orbit size={40} opration={null} />
                 </div>
@@ -667,7 +490,7 @@ const EnhancedChatHistory: React.FC<EnhancedChatHistoryProps> = ({
                 className={`
                 max-w-[85%] rounded-xl p-4
                 ${
-                  message.role === 'user'
+                  item.role === 'user'
                     ? 'bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] text-white'
                     : `${theme.surface} border ${theme.border} ${theme.text}`
                 }
@@ -675,12 +498,12 @@ const EnhancedChatHistory: React.FC<EnhancedChatHistoryProps> = ({
               >
                 <div
                   className={
-                    message.role === 'assistant'
+                    item.role === 'assistant'
                       ? 'prose prose-sm dark:prose-invert'
                       : ''
                   }
                 >
-                  {renderMessageContent(message.content, message.role)}
+                  {renderMessageContent(item.message, item.role)}
                 </div>
               </div>
             </div>
@@ -833,3 +656,244 @@ const ChatLoadingSkeleton = () => {
 };
 
 export const AIResponseSkeleton = () => <MessageSkeleton isAI={true} />;
+
+export default function ChatScreen() {
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+  const { chatId } = useParams();
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const ChatScreenTextAreaBoxRef = useRef();
+  const navigate = useNavigate();
+  const [chatLogs, setChatLogs] = useState<ChatLogsType[] | null>(null);
+  const [loadingChat, setLoadingChat] = useState(false);
+  const [aiResLoading, setAiResLoading] = useState(false);
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const ApiCallToChatTrackerId = async () => {
+    try {
+      if (ChatScreenTextAreaBoxRef.current) {
+        saveToLocalStorage(
+          'new-task-que',
+          // @ts-ignore
+          ChatScreenTextAreaBoxRef.current.value
+        );
+      }
+      const res = await createChatTrackerId();
+
+      navigate('/study-planner-chat/' + res.data.chat_tracker_id);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const ApiCallToQuery = async (msg: string) => {
+    try {
+      setAiResLoading(true);
+      let tempData = {
+        role: 'user',
+        message: msg,
+      };
+      // @ts-ignore
+      setChatLogs((prev: ChatLogsType[] | null) => {
+        if (prev) {
+          return [...prev, tempData];
+        }
+        return [tempData];
+      });
+      const res = await AddTaskByQueryApiCall({
+        query: msg,
+        chat_tracker_id: chatId,
+      });
+      const tempArray = res.data.map((task: any) => {
+        return { ...task.tasks };
+      });
+      console.log(res.data);
+      tempData = {
+        role: 'assistant',
+        message: tempArray,
+      };
+      // @ts-ignore
+      setChatLogs((prev: ChatLogsType[] | null) => {
+        if (prev) {
+          return [...prev, tempData];
+        }
+        return [tempData];
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setAiResLoading(false);
+    }
+  };
+
+  const ApiCallToGetChat = async () => {
+    try {
+      console.log('in chat call');
+      setLoadingChat(true);
+      const res = await getChatByChatTrackerId(chatId ?? '');
+      console.log(res.data, ' :  res.data.messages');
+      setChatLogs(res.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoadingChat(false);
+    }
+  };
+  useEffect(() => {
+    let interval: any;
+    const chatMsgByLocal = getFromLocalStorage('new-task-que');
+    console.log({ chatMsgByLocal, chatId, c: chatId && !chatMsgByLocal });
+    if (chatId === 'new') {
+      interval = setInterval(() => {
+        setCurrentMessageIndex(
+          (prevIndex) => (prevIndex + 1) % messages.length
+        );
+      }, 5000);
+    } else if (chatId && !chatMsgByLocal) {
+      ApiCallToGetChat();
+    } else if (chatMsgByLocal) {
+      const addUserPromat: ChatLogsType = {
+        role: 'user',
+        message: chatMsg,
+      };
+      setChatLogs([addUserPromat]);
+      ApiCallToQuery(chatMsgByLocal).then();
+      saveToLocalStorage('new-task-que', '');
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [chatId]);
+
+  return (
+    <>
+      <div
+        className={`
+              flex flex-col items-center justify-center h-full
+              transition-colors duration-300
+              ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
+            `}
+      >
+        {/* Back Navigation Button */}
+        <div
+          className={`
+        w-full p-4
+        ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
+      `}
+        >
+          <button
+            onClick={handleBack}
+            className={`
+            flex items-center gap-2 px-4 py-2 rounded-lg
+            transition-all duration-300
+            ${
+              isDarkMode
+                ? 'text-white/70 hover:bg-[rgba(16,20,46,1)]'
+                : 'text-gray-600 hover:bg-white/90'
+            }
+          `}
+          >
+            <ArrowLeft size={20} />
+            <span>Back</span>
+          </button>
+        </div>
+
+        {chatId === 'new' && (
+          <>
+            <div
+              className={`
+              flex flex-col items-center justify-center h-full w-full
+              transition-colors duration-300
+              ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
+            `}
+            >
+              <div className="mb-6">
+                <Orbit opration={null} size={100} />
+              </div>
+
+              <h1 className="text-2xl md:text-4xl font-bold font-[Darker Grotesque] bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent mb-6">
+                What can I help with?
+              </h1>
+
+              <div
+                key={currentMessageIndex}
+                className={`
+                w-[90%] md:w-1/2 text-center rounded-xl shadow-lg py-4 px-6 mb-6
+                transition-all duration-300
+                ${
+                  isDarkMode
+                    ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)] text-white/70'
+                    : 'bg-white/90 border border-gray-200 text-gray-600'
+                }
+                hover:shadow-lg
+                ${
+                  isDarkMode
+                    ? 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.2)]'
+                    : 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.1)]'
+                }
+              `}
+              >
+                {messages[currentMessageIndex]}
+              </div>
+
+              <div
+                className={`
+                flex items-center w-[90%] md:w-1/2 rounded-xl shadow-lg p-4
+                ${
+                  isDarkMode
+                    ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)]'
+                    : 'bg-white/90 border border-gray-200'
+                }
+              `}
+              >
+                <input
+                  //@ts-ignore
+                  ref={ChatScreenTextAreaBoxRef}
+                  type="text"
+                  placeholder="Message AI Assistant"
+                  className={`
+                  flex-1 bg-transparent border-none outline-none text-sm md:text-base
+                  ${
+                    isDarkMode
+                      ? 'text-white placeholder-white/50'
+                      : 'text-gray-900 placeholder-gray-500'
+                  }
+                `}
+                />
+                <button
+                  className={`
+                  flex items-center justify-center w-10 h-10 rounded-lg
+                  transition-all duration-300
+                  bg-gradient-to-r from-[#4361ee] to-[#4cc9f0]
+                  text-white hover:shadow-lg
+                  hover:shadow-[#4361ee]/20
+                `}
+                  aria-label="Send"
+                  onClick={ApiCallToChatTrackerId}
+                >
+                  <Send size={20} />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {chatId !== 'new' && (
+          <>
+            {chatLogs && (
+              <EnhancedChatHistory
+                messages={chatLogs}
+                ApiCallToQuery={ApiCallToQuery}
+                aiResLoading={aiResLoading}
+                loadingChat={loadingChat}
+              />
+            )}
+          </>
+        )}
+      </div>
+    </>
+  );
+}

@@ -9,7 +9,7 @@ export const createChatTrackerId = async () => {
 
 export const getChatByChatTrackerId = async (chatTrackerId: string) => {
   return http.get({
-    url: '/chat-service/chat-tracker/' + chatTrackerId,
+    url: '/scheduler-service/task-chat-tracker/' + chatTrackerId,
     messageSettings: { hideSuccessMessage: true },
   });
 };

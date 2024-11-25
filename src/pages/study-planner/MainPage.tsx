@@ -142,7 +142,7 @@ const TitleSection: React.FC = () => {
           {/* Generate AI Button - Mobile View */}
           <div className="md:hidden flex items-center justify-end">
             <button
-              onClick={() => setShowAITextarea(true)}
+              onClick={() => navigate('/study-planner-chat/new')}
               className={`
                     px-6 py-2.5 rounded-lg font-medium
                     transition-all duration-300
@@ -193,7 +193,7 @@ const TitleSection: React.FC = () => {
                       `}
                 >
                   <div className="py-2">
-                    <button
+                    {/* <button
                       className={`
                             w-full px-4 py-2 text-left
                             transition-colors duration-300
@@ -205,7 +205,7 @@ const TitleSection: React.FC = () => {
                           `}
                     >
                       Chat History
-                    </button>
+                    </button> */}
                     <button
                       className={`
                             w-full px-4 py-2 text-left

@@ -30,6 +30,7 @@ import {
 import { GetTaskBetweenRangeApiCall } from 'services/api/study-planner';
 import NoDataFound from '../../components/shared/NoDataFound';
 import { useNavigate } from 'react-router-dom';
+import { StatusOfTasksName } from '../../utils/enums';
 
 const ProgressOfDailyAndWeekly: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
@@ -653,7 +654,7 @@ const OverviewSection: React.FC = () => {
 
         // add code here
         const tasks = res.data
-          .filter((item: any) => item.status === 'pending')
+          .filter((item: any) => item.status === StatusOfTasksName.UPCOMING)
           .sort(
             (item: any) =>
               +new Date(item.start_time_utc) < +new Date(item.start_time_utc)

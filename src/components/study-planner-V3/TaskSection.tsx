@@ -29,6 +29,7 @@ import { StatusOfTasksName } from '../../utils/enums';
 import { useNavigate } from 'react-router-dom';
 import {
   GetTaskBetweenRangeApiCall,
+  RemoveTaskApiCall,
   UpdateTaskApiCall,
 } from 'services/api/study-planner';
 import NoDataFound from '../../components/shared/NoDataFound';
@@ -69,43 +70,44 @@ const typeConfig = {
   study: {
     icon: Book,
     label: 'Study Session',
-    lightBg: 'bg-indigo-50',
-    darkBg: 'bg-indigo-900/20',
-    lightBorder: 'border-indigo-200',
-    darkBorder: 'border-indigo-700',
-    lightHover: 'hover:border-indigo-300',
-    darkHover: 'hover:border-indigo-600',
+    lightBg: 'bg-blue-50',
+    darkBg: 'bg-blue-400/10', // Lighter blue with lower opacity
+    lightBorder: 'border-blue-200',
+    darkBorder: 'border-blue-500', // Brighter border for visibility
+    lightHover: 'hover:border-blue-300',
+    darkHover: 'hover:border-blue-400', // More visible hover effect
   },
   test: {
     icon: FileText,
     label: 'Test',
-    lightBg: 'bg-purple-50',
-    darkBg: 'bg-purple-900/20',
-    lightBorder: 'border-purple-200',
-    darkBorder: 'border-purple-700',
-    lightHover: 'hover:border-purple-300',
-    darkHover: 'hover:border-purple-600',
+    lightBg: 'bg-rose-50',
+    darkBg: 'bg-rose-400/10', // Lighter rose with lower opacity
+    lightBorder: 'border-rose-200',
+    darkBorder: 'border-rose-500', // Brighter border for visibility
+    lightHover: 'hover:border-rose-300',
+    darkHover: 'hover:border-rose-400', // More visible hover effect
   },
   exam_preparation: {
     icon: GraduationCap,
     label: 'Exam Prep',
-    lightBg: 'bg-teal-50',
-    darkBg: 'bg-teal-900/20',
-    lightBorder: 'border-teal-200',
-    darkBorder: 'border-teal-700',
-    lightHover: 'hover:border-teal-300',
-    darkHover: 'hover:border-teal-600',
+    lightBg: 'bg-emerald-50',
+    darkBg: 'bg-emerald-400/10', // Lighter emerald with lower opacity
+    lightBorder: 'border-emerald-200',
+    darkBorder: 'border-emerald-500', // Brighter border for visibility
+    lightHover: 'hover:border-emerald-300',
+    darkHover: 'hover:border-emerald-400', // More visible hover effect
   },
 };
-
 function TaskCard({
   task,
   theme,
   CompleteTaskStatus,
+  DeleteTaskStatus,
 }: {
   task: Task;
   theme: any;
   CompleteTaskStatus: (a: Task) => void;
+  DeleteTaskStatus: (a: Task) => void;
 }) {
   // @ts-ignore
   const status = statusConfig[task.status];
@@ -113,7 +115,16 @@ function TaskCard({
   const type = typeConfig[task.type] || typeConfig.study; // Fallback to study type
   const TypeIcon = type?.icon || Book;
   const StatusIcon = status?.icon || Clock;
-  const isDark = theme.surface.includes('dark');
+  const isDark = useSelector((state: RootState) => state.theme.isDarkMode);
+
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const navigate = useNavigate();
+  const editTask = (task: Task) => {
+    saveToLocalStorage('get-edit-task', task);
+    navigate('/study-planner/edit');
+  };
 
   const getTypeStyles = () => {
     return {
@@ -133,6 +144,20 @@ function TaskCard({
       hour12: true,
     });
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div
@@ -180,6 +205,69 @@ function TaskCard({
             <span>{task.meta_data?.topic}</span>
           </div>
         </div>
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            className={`p-2 rounded-lg ${theme.button} ${theme.buttonHover} transition-colors duration-300`}
+          >
+            <MoreVertical className={`w-5 h-5 ${theme.text}`} />
+          </button>
+
+          {showDropdown && (
+            <div
+              className={`
+                absolute right-0 mt-2 w-48 rounded-lg border ${theme.surface} 
+                ${theme.border} backdrop-blur-md shadow-lg z-50
+              `}
+              style={{
+                boxShadow: '0 10px 30px rgba(67,97,238,0.2)',
+              }}
+            >
+              <div className="py-2">
+                <button
+                  onClick={() => editTask(task)}
+                  className={`
+                    w-full px-4 py-2 text-left flex items-center gap-2
+                    ${theme.buttonHover} ${theme.text} transition-colors duration-300
+                  `}
+                >
+                  <Edit3 className="w-4 h-4" />
+                  Edit Task
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    DeleteTaskStatus(task);
+                  }}
+                  className={`
+                    w-full px-4 py-2 text-left flex items-center gap-2 text-red-500
+                    hover:bg-red-500/10 transition-colors duration-300
+                    w-full px-4 py-2 text-left flex items-center gap-2 text-green-500
+                    hover:bg-green-500/10 transition-colors duration-300
+                  `}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Task
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    CompleteTaskStatus(task);
+                  }}
+                  className={`
+                    w-full px-4 py-2 text-left flex items-center gap-2 text-green-500
+                    hover:bg-green-500/10 transition-colors duration-300
+                    w-full px-4 py-2 text-left flex items-center gap-2 text-green-500
+                    hover:bg-green-500/10 transition-colors duration-300
+                  `}
+                >
+                  <CircleCheck className="w-4 h-4" />
+                  Complete Task
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -190,7 +278,8 @@ const TaskTimeline: React.FC<{
   theme: any;
   activeTab: string;
   CompleteTaskStatus: (a: Task) => void;
-}> = ({ tasks, theme, CompleteTaskStatus, activeTab }) => {
+  DeleteTaskStatus: (a: Task) => void;
+}> = ({ tasks, theme, CompleteTaskStatus, activeTab, DeleteTaskStatus }) => {
   const [sortedTasks, setSortedTasks] = useState<Task[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -264,6 +353,7 @@ const TaskTimeline: React.FC<{
               task={task}
               theme={theme}
               CompleteTaskStatus={CompleteTaskStatus}
+              DeleteTaskStatus={DeleteTaskStatus}
             />
           ))}
 
@@ -673,6 +763,24 @@ const TasksSection = () => {
     }
   };
 
+  const DeleteTaskStatus = async (task: Task) => {
+    try {
+      console.log(task);
+      const res = await RemoveTaskApiCall(task.id);
+      setCurrentViewTasks((prev: any) => {
+        // @ts-ignore
+        const index = prev.findIndex((prev) => prev.id === task.id);
+        if (index !== -1) {
+          return [...prev.slice(0, index), ...prev.slice(index + 1)];
+        } else {
+          return prev;
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     const apiCall = async () => {
       try {
@@ -943,6 +1051,7 @@ const TasksSection = () => {
                 theme={theme}
                 CompleteTaskStatus={CompleteTaskStatus}
                 activeTab={activeTab}
+                DeleteTaskStatus={DeleteTaskStatus}
               />
             </>
           )}

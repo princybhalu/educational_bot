@@ -9,7 +9,11 @@ import {
   UpdateTaskApiCall,
 } from '../../services/api/study-planner';
 import { useNavigate } from 'react-router-dom';
-import { formatTime, getFromLocalStorage } from '../../utils/helperFunc';
+import {
+  formatTime,
+  getFromLocalStorage,
+  saveToLocalStorage,
+} from '../../utils/helperFunc';
 
 // Validation schema (same as previous implementation)
 const schema = yup.object().shape({
@@ -135,6 +139,7 @@ const AddTaskPage: React.FC = () => {
 
       if (!response.data.conflict) {
         const savedTask = response.data.task;
+        saveToLocalStorage('get-edit-task', null);
         navigate('/study-planner/tasks');
         reset();
       } else {
@@ -360,7 +365,10 @@ const AddTaskPage: React.FC = () => {
             <button
               type="button"
               className={`px-6 py-3 rounded-lg ${theme.button} ${theme.text} border ${theme.border} hover:bg-gray-200 transition-all duration-300`}
-              onClick={() => navigate('/study-planner/task')}
+              onClick={() => {
+                saveToLocalStorage('get-edit-task', null);
+                navigate('/study-planner/tasks');
+              }}
             >
               Cancel
             </button>
