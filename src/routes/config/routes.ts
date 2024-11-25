@@ -45,7 +45,7 @@ export const routes: RouteConfig[] = [
     path: '/dashboard',
     key: 'dashboard',
     isProtected: true,
-    isProfilingRequired: true,
+    // isProfilingRequired: true,
     element: Dashboard,
     islayout: true,
   },

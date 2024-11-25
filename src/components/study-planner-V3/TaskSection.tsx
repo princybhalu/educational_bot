@@ -63,27 +63,38 @@ const statusConfig = {
     icon: AlertCircle,
     hover: 'hover:border-red-500/50',
   },
-  pending: {
-    bg: 'bg-blue-500/10',
-    border: 'border-blue-500/20',
-    text: 'text-blue-500',
-    icon: Clock,
-    hover: 'hover:border-blue-500/50',
-  },
 };
 
 const typeConfig = {
   study: {
     icon: Book,
     label: 'Study Session',
+    lightBg: 'bg-indigo-50',
+    darkBg: 'bg-indigo-900/20',
+    lightBorder: 'border-indigo-200',
+    darkBorder: 'border-indigo-700',
+    lightHover: 'hover:border-indigo-300',
+    darkHover: 'hover:border-indigo-600',
   },
   test: {
     icon: FileText,
     label: 'Test',
+    lightBg: 'bg-purple-50',
+    darkBg: 'bg-purple-900/20',
+    lightBorder: 'border-purple-200',
+    darkBorder: 'border-purple-700',
+    lightHover: 'hover:border-purple-300',
+    darkHover: 'hover:border-purple-600',
   },
   exam_preparation: {
     icon: GraduationCap,
     label: 'Exam Prep',
+    lightBg: 'bg-teal-50',
+    darkBg: 'bg-teal-900/20',
+    lightBorder: 'border-teal-200',
+    darkBorder: 'border-teal-700',
+    lightHover: 'hover:border-teal-300',
+    darkHover: 'hover:border-teal-600',
   },
 };
 
@@ -149,7 +160,6 @@ const TaskCard: React.FC<{
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          {/* Header */}
           <div className="flex items-center gap-2 mb-2">
             <TypeIcon className={`w-5 h-5 ${status.text}`} />
             <span className={`text-xs md:text-sm font-medium ${status.text}`}>
@@ -158,12 +168,10 @@ const TaskCard: React.FC<{
             <StatusIcon className={`w-4 h-4 ${status.text}`} />
           </div>
 
-          {/* Title */}
           <h3 className={`text-md md:text-lg font-semibold mb-2 ${theme.text}`}>
             {task.title}
           </h3>
 
-          {/* Meta Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
             <div className={`flex items-center gap-2 ${theme.textSecondary}`}>
               <Calendar className="w-4 h-4" />
@@ -181,13 +189,12 @@ const TaskCard: React.FC<{
             </div>
           </div>
 
-          {/* Subject Info */}
           <div className={`text-xs md:text-sm ${theme.textSecondary}`}>
-            <span className="font-medium">{task.meta_data.subject}</span>
+            <span className="font-medium">{task.meta_data?.subject}</span>
             <span className="mx-2">•</span>
-            <span>Chapter {task.meta_data.chapter}</span>
+            <span>Chapter {task.meta_data?.chapter}</span>
             <span className="mx-2">•</span>
-            <span>{task.meta_data.topic}</span>
+            <span>{task.meta_data?.topic}</span>
           </div>
         </div>
 
@@ -260,6 +267,7 @@ const TaskTimeline: React.FC<{
         task.status === activeTab ||
         (activeTab === StatusOfTasksName.UPCOMING && task.status === 'pending')
       ) {
+        console.log(task);
         temp.push(task);
       }
     });
@@ -461,6 +469,11 @@ const DateNavigator: React.FC<{
     );
   };
 
+  const isPastDate = (date: Date) => {
+    // @ts-ignore
+    return date < new Date().setHours(0, 0, 0, 0);
+  };
+
   const getFormattedDate = (date: Date) => {
     const options: Intl.DateTimeFormatOptions = {
       month: 'short',
@@ -483,8 +496,10 @@ const DateNavigator: React.FC<{
   const changeActiveTab = (date: Date) => {
     if (isToday(date)) {
       setActiveTab(StatusOfTasksName.UPCOMING);
-    } else {
+    } else if (isPastDate(date)) {
       setActiveTab(StatusOfTasksName.OVERDUE);
+    } else {
+      setActiveTab(StatusOfTasksName.UPCOMING);
     }
   };
 
@@ -732,6 +747,7 @@ const TasksSection = () => {
           // @ts-ignore
           return new Date(a.start_time_utc) - new Date(b.start_time_utc);
         });
+        console.log(sortedData, 'kvjeiu');
         setCurrentViewTasks(sortedData);
       } catch (err) {
         console.log(err);

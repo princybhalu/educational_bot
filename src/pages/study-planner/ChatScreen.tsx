@@ -24,6 +24,7 @@ import {
   Edit3,
   Trash2,
   CircleCheck,
+  ArrowLeft,
 } from 'lucide-react';
 import { Task } from '../../types/study-planner';
 import NoDataFound from '../../components/shared/NoDataFound';
@@ -53,6 +54,10 @@ export default function ChatScreen() {
   const [chatLogs, setChatLogs] = useState<ChatLogsType[] | null>(null);
   const [loadingChat, setLoadingChat] = useState(false);
   const [aiResLoading, setAiResLoading] = useState(false);
+
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   const ApiCallToChatTrackerId = async () => {
     try {
@@ -153,109 +158,249 @@ export default function ChatScreen() {
 
   return (
     <>
-      {chatId === 'new' && (
-        <>
-          <div
-            className={`
-        flex flex-col items-center justify-center h-full
-        transition-colors duration-300
+      <div
+        className={`
+              flex flex-col items-center justify-center h-full
+              transition-colors duration-300
+              ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
+            `}
+      >
+        {/* Back Navigation Button */}
+        <div
+          className={`
+        w-full p-4
         ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
       `}
-          >
-            {/* Orbit Component */}
-            <div className="mb-6">
-              <Orbit opration={null} size={100} />
-            </div>
-
-            {/* Title */}
-            <h1 className="text-2xl md:text-4xl font-bold font-[Darker Grotesque] bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent mb-6">
-              What can I help with?
-            </h1>
-
-            {/* Rotating Message */}
-            <div
-              key={currentMessageIndex}
-              className={`
-          w-[90%] md:w-1/2 text-center rounded-xl shadow-lg py-4 px-6 mb-6
-          transition-all duration-300
-          ${
-            isDarkMode
-              ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)] text-white/70'
-              : 'bg-white/90 border border-gray-200 text-gray-600'
-          }
-          hover:shadow-lg
-          ${
-            isDarkMode
-              ? 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.2)]'
-              : 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.1)]'
-          }
-        `}
-            >
-              {messages[currentMessageIndex]}
-            </div>
-
-            {/* Input Area */}
-            <div
-              className={`
-          flex items-center w-[90%] md:w-1/2 rounded-xl shadow-lg p-4
-          ${
-            isDarkMode
-              ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)]'
-              : 'bg-white/90 border border-gray-200'
-          }
-        `}
-            >
-              <input
-                //@ts-ignore
-                ref={ChatScreenTextAreaBoxRef}
-                type="text"
-                placeholder="Message AI Assistant"
-                className={`
-            flex-1 bg-transparent border-none outline-none text-sm md:text-base
+        >
+          <button
+            onClick={handleBack}
+            className={`
+            flex items-center gap-2 px-4 py-2 rounded-lg
+            transition-all duration-300
             ${
               isDarkMode
-                ? 'text-white placeholder-white/50'
-                : 'text-gray-900 placeholder-gray-500'
+                ? 'text-white/70 hover:bg-[rgba(16,20,46,1)]'
+                : 'text-gray-600 hover:bg-white/90'
             }
           `}
-              />
-              <button
-                className={`
-            flex items-center justify-center w-10 h-10 rounded-lg
-            transition-all duration-300
-            bg-gradient-to-r from-[#4361ee] to-[#4cc9f0]
-            text-white hover:shadow-lg
-            hover:shadow-[#4361ee]/20
-          `}
-                aria-label="Send"
-                onClick={() => {
-                  ApiCallToChatTrackerId();
-                }}
-              >
-                <Send size={20} />
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+          >
+            <ArrowLeft size={20} />
+            <span>Back</span>
+          </button>
+        </div>
 
-      {chatId !== 'new' && (
-        <>
-          {chatLogs && (
-            <>
+        {chatId === 'new' && (
+          <>
+            <div
+              className={`
+              flex flex-col items-center justify-center h-full w-full
+              transition-colors duration-300
+              ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
+            `}
+            >
+              <div className="mb-6">
+                <Orbit opration={null} size={100} />
+              </div>
+
+              <h1 className="text-2xl md:text-4xl font-bold font-[Darker Grotesque] bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent mb-6">
+                What can I help with?
+              </h1>
+
+              <div
+                key={currentMessageIndex}
+                className={`
+                w-[90%] md:w-1/2 text-center rounded-xl shadow-lg py-4 px-6 mb-6
+                transition-all duration-300
+                ${
+                  isDarkMode
+                    ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)] text-white/70'
+                    : 'bg-white/90 border border-gray-200 text-gray-600'
+                }
+                hover:shadow-lg
+                ${
+                  isDarkMode
+                    ? 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.2)]'
+                    : 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.1)]'
+                }
+              `}
+              >
+                {messages[currentMessageIndex]}
+              </div>
+
+              <div
+                className={`
+                flex items-center w-[90%] md:w-1/2 rounded-xl shadow-lg p-4
+                ${
+                  isDarkMode
+                    ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)]'
+                    : 'bg-white/90 border border-gray-200'
+                }
+              `}
+              >
+                <input
+                  //@ts-ignore
+                  ref={ChatScreenTextAreaBoxRef}
+                  type="text"
+                  placeholder="Message AI Assistant"
+                  className={`
+                  flex-1 bg-transparent border-none outline-none text-sm md:text-base
+                  ${
+                    isDarkMode
+                      ? 'text-white placeholder-white/50'
+                      : 'text-gray-900 placeholder-gray-500'
+                  }
+                `}
+                />
+                <button
+                  className={`
+                  flex items-center justify-center w-10 h-10 rounded-lg
+                  transition-all duration-300
+                  bg-gradient-to-r from-[#4361ee] to-[#4cc9f0]
+                  text-white hover:shadow-lg
+                  hover:shadow-[#4361ee]/20
+                `}
+                  aria-label="Send"
+                  onClick={ApiCallToChatTrackerId}
+                >
+                  <Send size={20} />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {chatId !== 'new' && (
+          <>
+            {chatLogs && (
               <EnhancedChatHistory
                 messages={chatLogs}
                 ApiCallToQuery={ApiCallToQuery}
                 aiResLoading={aiResLoading}
                 loadingChat={loadingChat}
               />
-            </>
-          )}
-        </>
-      )}
+            )}
+          </>
+        )}
+      </div>
     </>
   );
 }
+
+// const statusConfig = {
+//   upcoming: {
+//     bg: 'bg-blue-500/10',
+//     border: 'border-blue-500/20',
+//     text: 'text-blue-500',
+//     icon: Clock,
+//     hover: 'hover:border-blue-500/50',
+//   },
+//   in_progress: {
+//     bg: 'bg-yellow-500/10',
+//     border: 'border-yellow-500/20',
+//     text: 'text-yellow-500',
+//     icon: Timer,
+//     hover: 'hover:border-yellow-500/50',
+//   },
+//   completed: {
+//     bg: 'bg-green-500/10',
+//     border: 'border-green-500/20',
+//     text: 'text-green-500',
+//     icon: CheckCircle,
+//     hover: 'hover:border-green-500/50',
+//   },
+//   overdue: {
+//     bg: 'bg-red-500/10',
+//     border: 'border-red-500/20',
+//     text: 'text-red-500',
+//     icon: AlertCircle,
+//     hover: 'hover:border-red-500/50',
+//   },
+// };
+
+// const typeConfig = {
+//   study: {
+//     icon: Book,
+//     label: 'Study Session',
+//   },
+//   test: {
+//     icon: FileText,
+//     label: 'Test',
+//   },
+//   exam_preparation: {
+//     icon: GraduationCap,
+//     label: 'Exam Prep',
+//   },
+// };
+
+// function TaskCard({ task, theme }: { task: any; theme: any }) {
+//   // @ts-ignore
+//   const status = statusConfig[task.status ?? 'upcoming'];
+//   // @ts-ignore
+//   const type = typeConfig[task.type];
+//   const TypeIcon = type?.icon || Book;
+//   const StatusIcon = status?.icon || Clock;
+
+//   const formatTime = (dateTimeStr: string) => {
+//     const date = new Date(dateTimeStr);
+//     return date.toLocaleTimeString('en-US', {
+//       hour: '2-digit',
+//       minute: '2-digit',
+//       hour12: true,
+//     });
+//   };
+
+//   return (
+//     <div
+//       className={`
+//         mb-4 p-4 rounded-xl border transition-all duration-300
+//         ${theme.surface} ${status.border} ${status.bg} ${status.hover}
+//       `}
+//     >
+//       <div className="flex items-start justify-between">
+//         <div className="flex-1">
+//           <div className="flex items-center gap-2 mb-2">
+//             <TypeIcon className={`w-5 h-5 ${status.text}`} />
+//             <span className={`text-xs md:text-sm font-medium ${status.text}`}>
+//               {type?.label || 'Task'}
+//             </span>
+//             <StatusIcon className={`w-4 h-4 ${status.text}`} />
+//           </div>
+
+//           <h3 className={`text-md md:text-lg font-semibold mb-2 ${theme.text}`}>
+//             {task.title}
+//           </h3>
+
+//           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+//             <div className={`flex items-center gap-2 ${theme.textSecondary}`}>
+//               <Calendar className="w-4 h-4" />
+//               <span className="text-xs md:text-sm">
+//                 {new Date(task.date).toLocaleDateString()}
+//               </span>
+//             </div>
+//             <div className={`flex items-center gap-2 ${theme.textSecondary}`}>
+//               <Clock className="w-4 h-4" />
+//               <span className="text-xs md:text-sm">
+//                 {formatTime(task.start_time_utc)}{' '}
+//                 <ArrowRight className="w-4 h-4 inline" />{' '}
+//                 {formatTime(task.end_time_utc)}
+//               </span>
+//             </div>
+//           </div>
+
+//           <div className={`text-xs md:text-sm ${theme.textSecondary}`}>
+//             <span className="font-medium">{task.metaData?.subject}</span>
+//             <span className="mx-2">•</span>
+//             <span>Chapter {task.metaData?.chapter}</span>
+//             <span className="mx-2">•</span>
+//             <span>{task.metaData?.topic}</span>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// Define message type
 
 const statusConfig = {
   upcoming: {
@@ -286,37 +431,65 @@ const statusConfig = {
     icon: AlertCircle,
     hover: 'hover:border-red-500/50',
   },
-  pending: {
-    bg: 'bg-blue-500/10',
-    border: 'border-blue-500/20',
-    text: 'text-blue-500',
-    icon: Clock,
-    hover: 'hover:border-blue-500/50',
-  },
 };
 
 const typeConfig = {
   study: {
     icon: Book,
     label: 'Study Session',
+    lightBg: 'bg-indigo-50',
+    darkBg: 'bg-[rgba(16,20,46,1)]',
+    lightBorder: 'border-indigo-200',
+    darkBorder: 'border-indigo-500/20',
+    lightHover: 'hover:border-indigo-300',
+    darkHover: 'hover:border-indigo-500/40',
+    darkShadow: 'shadow-indigo-500/10',
   },
   test: {
     icon: FileText,
     label: 'Test',
+    lightBg: 'bg-purple-50',
+    darkBg: 'bg-[rgba(16,20,46,1)]',
+    lightBorder: 'border-purple-200',
+    darkBorder: 'border-purple-500/20',
+    lightHover: 'hover:border-purple-300',
+    darkHover: 'hover:border-purple-500/40',
+    darkShadow: 'shadow-purple-500/10',
   },
   exam_preparation: {
     icon: GraduationCap,
     label: 'Exam Prep',
+    lightBg: 'bg-teal-50',
+    darkBg: 'bg-[rgba(16,20,46,1)]',
+    lightBorder: 'border-teal-200',
+    darkBorder: 'border-teal-500/20',
+    lightHover: 'hover:border-teal-300',
+    darkHover: 'hover:border-teal-500/40',
+    darkShadow: 'shadow-teal-500/10',
   },
 };
 
 function TaskCard({ task, theme }: { task: Task; theme: any }) {
   // @ts-ignore
-  const status = statusConfig[task.status ?? 'pending'];
+  const status = statusConfig[task?.status ?? 'upcoming'];
   // @ts-ignore
-  const type = typeConfig[task.type];
+  const type = typeConfig[task?.type] || typeConfig.study; // Fallback to study type
   const TypeIcon = type?.icon || Book;
   const StatusIcon = status?.icon || Clock;
+  const isDark = useSelector(
+    (state: { theme: { isDarkMode: boolean } }) => state.theme.isDarkMode
+  );
+
+  const getTypeStyles = () => {
+    return {
+      bg: isDark ? type.darkBg : type.lightBg,
+      border: isDark ? type.darkBorder : type.lightBorder,
+      hover: isDark ? type.darkHover : type.lightHover,
+      shadow: isDark ? type.darkShadow : '',
+    };
+  };
+
+  const typeStyles = getTypeStyles();
 
   const formatTime = (dateTimeStr: string) => {
     const date = new Date(dateTimeStr);
@@ -331,7 +504,8 @@ function TaskCard({ task, theme }: { task: Task; theme: any }) {
     <div
       className={`
         mb-4 p-4 rounded-xl border transition-all duration-300
-        ${theme.surface} ${status.border} ${status.bg} ${status.hover}
+        ${typeStyles.bg} ${typeStyles.border} ${typeStyles.hover}
+        ${isDark ? 'shadow-lg' : ''} ${typeStyles.shadow}
       `}
     >
       <div className="flex items-start justify-between">
@@ -378,7 +552,6 @@ function TaskCard({ task, theme }: { task: Task; theme: any }) {
   );
 }
 
-// Define message type
 interface Message {
   role: 'user' | 'assistant';
   content: string;
@@ -476,10 +649,8 @@ const EnhancedChatHistory: React.FC<EnhancedChatHistoryProps> = ({
   };
 
   return (
-    <div
-      className={`flex flex-col h-screen ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}`}
-    >
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <>
+      <div className="flex-1 w-full overflow-y-auto p-4 space-y-4">
         {!loadingChat &&
           messages.length > 0 &&
           messages.map((message, index) => (
@@ -546,7 +717,7 @@ const EnhancedChatHistory: React.FC<EnhancedChatHistoryProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 sticky bottom-0 bg-inherit">
+      <div className="p-4 w-full sticky bottom-0 bg-inherit">
         <div
           className={`flex items-center rounded-xl shadow-lg p-4 ${theme.surface} border ${theme.border}`}
         >
@@ -575,40 +746,69 @@ const EnhancedChatHistory: React.FC<EnhancedChatHistoryProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
-const MessageSkeleton = ({ isAI = true }: { isAI?: boolean }) => {
+const MessageSkeleton = ({ isAI = true }: { isAI: boolean }) => {
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+  const getGlassBackground = (isAI: boolean) => {
+    if (isDarkMode) {
+      return isAI ? 'rgba(16,20,46,0.9)' : 'rgba(67,97,238,0.15)';
+    }
+    return isAI ? 'rgba(255,255,255,0.9)' : 'rgba(67,97,238,0.1)';
+  };
+
   return (
     <div
       className={`flex ${isAI ? 'justify-start' : 'justify-end'} gap-4 w-full`}
     >
       {isAI && (
-        <div className="flex-shrink-0 mt-1">
-          <Orbit size={40} opration={null} />
+        <div className="flex-shrink-0 mt-1 w-10 h-10 rounded-full relative overflow-hidden">
+          <div
+            className="absolute inset-0 animate-pulse"
+            style={{
+              background: `linear-gradient(90deg, ${isDarkMode ? '#4361ee' : '#4cc9f0'}, ${isDarkMode ? '#4cc9f0' : '#4361ee'})`,
+              boxShadow: `0 0 20px ${isDarkMode ? 'rgba(67,97,238,0.4)' : 'rgba(76,201,240,0.4)'}`,
+            }}
+          />
         </div>
       )}
       <div
         className={`
-        ${isAI ? 'w-2/3' : 'w-1/2'}
-        rounded-xl p-4
-        animate-pulse
-        ${isAI ? 'bg-gray-200 dark:bg-gray-800' : 'bg-blue-200 dark:bg-blue-800'}
-      `}
+          ${isAI ? 'w-2/3' : 'w-1/2'}
+          rounded-xl p-4
+          relative overflow-hidden
+          backdrop-blur-lg
+        `}
+        style={{
+          background: getGlassBackground(isAI),
+          border: `1px solid ${isDarkMode ? 'rgba(67,97,238,0.2)' : 'rgba(76,201,240,0.2)'}`,
+          boxShadow: `0 10px 30px ${isDarkMode ? 'rgba(67,97,238,0.2)' : 'rgba(76,201,240,0.2)'}`,
+        }}
       >
         <div className="space-y-3">
-          <div
-            className={`h-4 rounded ${isAI ? 'w-3/4' : 'w-full'} bg-gray-300 dark:bg-gray-700`}
-          />
-          <div
-            className={`h-4 rounded ${isAI ? 'w-1/2' : 'w-3/4'} bg-gray-300 dark:bg-gray-700`}
-          />
-          {isAI && (
-            <>
-              <div className="h-4 rounded w-4/5 bg-gray-300 dark:bg-gray-700" />
-              <div className="h-4 rounded w-2/3 bg-gray-300 dark:bg-gray-700" />
-            </>
+          {[...(isAI ? [3 / 4, 1 / 2, 4 / 5, 2 / 3] : [1, 3 / 4])].map(
+            (width, index) => (
+              <div
+                key={index}
+                className="h-4 rounded relative overflow-hidden"
+                style={{
+                  width: `${width * 100}%`,
+                  background: isDarkMode
+                    ? 'rgba(255,255,255,0.1)'
+                    : 'rgba(0,0,0,0.1)',
+                }}
+              >
+                <div
+                  className="absolute inset-0 animate-shimmer"
+                  style={{
+                    background: `linear-gradient(90deg, transparent, ${isDarkMode ? 'rgba(67,97,238,0.2)' : 'rgba(76,201,240,0.2)'}, transparent)`,
+                    transform: 'translateX(-100%)',
+                  }}
+                />
+              </div>
+            )
           )}
         </div>
       </div>
@@ -617,8 +817,14 @@ const MessageSkeleton = ({ isAI = true }: { isAI?: boolean }) => {
 };
 
 const ChatLoadingSkeleton = () => {
+  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
   return (
-    <div className="space-y-6 p-4">
+    <div
+      className="space-y-6 p-4"
+      style={{
+        background: isDarkMode ? '#0a0d1e' : '#ffffff',
+      }}
+    >
       {[...Array(3)].map((_, index) => (
         <MessageSkeleton key={index} isAI={index % 2 === 0} />
       ))}
@@ -627,131 +833,3 @@ const ChatLoadingSkeleton = () => {
 };
 
 export const AIResponseSkeleton = () => <MessageSkeleton isAI={true} />;
-
-const ChatHistoryScreen: React.FC<{
-  messages: ChatLogsType[];
-  ApiCallToQuery: (a: string) => void;
-}> = ({ messages, ApiCallToQuery }) => {
-  const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
-  const formatMessage = (content: string) => {
-    try {
-      const jsonObj: any = JSON.parse(content);
-      return (
-        <pre className="overflow-x-auto">
-          <code>{JSON.stringify(jsonObj, null, 2)}</code>
-        </pre>
-      );
-    } catch {
-      return content;
-    }
-  };
-
-  return (
-    <div
-      className={`
-          flex flex-col h-screen
-          transition-colors duration-300
-          ${isDarkMode ? 'bg-[#0a0d1e]' : 'bg-gray-50'}
-        `}
-    >
-      {/* Chat Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {
-          // @ts-ignore
-          messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex ${
-                message.role === 'user' ? 'justify-end' : 'justify-start'
-              } gap-4`}
-            >
-              {message.role === 'assistant' && (
-                <div className="flex-shrink-0 mt-1">
-                  <Orbit opration={null} size={40} />
-                </div>
-              )}
-              <div
-                className={`
-                  max-w-[80%] rounded-xl p-4
-                  ${
-                    message.role === 'user'
-                      ? 'bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] text-white'
-                      : isDarkMode
-                        ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)] text-white/90'
-                        : 'bg-white border border-gray-200 text-gray-900'
-                  }
-                  ${
-                    message.role === 'assistant'
-                      ? 'hover:shadow-lg transition-shadow duration-300'
-                      : ''
-                  }
-                  ${
-                    isDarkMode && message.role === 'assistant'
-                      ? 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.2)]'
-                      : message.role === 'assistant'
-                        ? 'hover:shadow-[0_10px_30px_rgba(67,97,238,0.1)]'
-                        : ''
-                  }
-                `}
-              >
-                <div
-                  className={`${message.role === 'assistant' ? 'prose prose-sm dark:prose-invert' : ''}`}
-                >
-                  {formatMessage(message.content)}
-                </div>
-              </div>
-            </div>
-          ))
-        }
-      </div>
-
-      {/* Input Area */}
-      <div className="p-4">
-        <div
-          className={`
-              flex items-center rounded-xl shadow-lg p-4
-              ${
-                isDarkMode
-                  ? 'bg-[rgba(16,20,46,1)] border border-[rgba(67,97,238,0.2)]'
-                  : 'bg-white/90 border border-gray-200'
-              }
-            `}
-        >
-          <input
-            // @ts-ignore
-            ref={textAreaRef}
-            type="text"
-            placeholder="Message AI Assistant"
-            className={`
-                flex-1 bg-transparent border-none outline-none text-sm md:text-base
-                ${
-                  isDarkMode
-                    ? 'text-white placeholder-white/50'
-                    : 'text-gray-900 placeholder-gray-500'
-                }
-              `}
-          />
-          <button
-            className={`
-                flex items-center justify-center w-10 h-10 rounded-lg
-                transition-all duration-300
-                bg-gradient-to-r from-[#4361ee] to-[#4cc9f0]
-                text-white hover:shadow-lg
-                hover:shadow-[#4361ee]/20
-              `}
-            aria-label="Send"
-            onClick={() => {
-              if (textAreaRef.current?.value) {
-                ApiCallToQuery(textAreaRef.current?.value);
-              }
-            }}
-          >
-            <Send size={20} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};

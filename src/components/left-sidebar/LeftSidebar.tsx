@@ -180,6 +180,7 @@ import {
   MessageSquare,
   Settings,
   Palette,
+  Route,
 } from 'lucide-react';
 
 interface LeftSidebarProps {
@@ -198,8 +199,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
     { icon: GraduationCap, label: 'Learning', path: '/learning' },
-    { icon: MessageSquare, label: 'Chat', path: '/chat' },
-    { icon: Palette, label: 'Theme', path: '/theme' },
+    { icon: Route, label: 'Study Planner', path: '/study-planner/overview' },
     { icon: Settings, label: 'Settings', path: '/settings' },
   ];
 
