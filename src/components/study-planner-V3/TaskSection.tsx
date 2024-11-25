@@ -98,42 +98,32 @@ const typeConfig = {
   },
 };
 
-const TaskCard: React.FC<{
+function TaskCard({
+  task,
+  theme,
+  CompleteTaskStatus,
+}: {
   task: Task;
-  isHighlighted: boolean;
-  classes?: string;
   theme: any;
-  CompleteTaskStatus: (a: Task) => any;
-}> = ({ task, isHighlighted, classes, theme, CompleteTaskStatus }) => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  //@ts-ignore
+  CompleteTaskStatus: (a: Task) => void;
+}) {
+  // @ts-ignore
   const status = statusConfig[task.status];
-  //@ts-ignore
-  const type = typeConfig[task.type];
-  const TypeIcon = type.icon;
-  const StatusIcon = status.icon;
+  // @ts-ignore
+  const type = typeConfig[task.type] || typeConfig.study; // Fallback to study type
+  const TypeIcon = type?.icon || Book;
+  const StatusIcon = status?.icon || Clock;
+  const isDark = theme.surface.includes('dark');
 
-  const navigate = useNavigate();
-
-  const editTask = (task: Task) => {
-    saveToLocalStorage('get-edit-task', task);
-    navigate('/study-planner/edit');
+  const getTypeStyles = () => {
+    return {
+      bg: isDark ? type.darkBg : type.lightBg,
+      border: isDark ? type.darkBorder : type.lightBorder,
+      hover: isDark ? type.darkHover : type.lightHover,
+    };
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const typeStyles = getTypeStyles();
 
   const formatTime = (dateTimeStr: string) => {
     const date = new Date(dateTimeStr);
@@ -147,23 +137,16 @@ const TaskCard: React.FC<{
   return (
     <div
       className={`
-        relative mb-4 p-4 rounded-xl border transition-all duration-300
-        ${theme.surface} ${status.border} ${status.bg} ${status.hover}
-        ${isHighlighted ? 'scale-[1.02] shadow-lg ring-2 ring-[#4361ee]/30' : ''}
-        ${classes}
+        mb-4 p-4 rounded-xl border transition-all duration-300
+        ${typeStyles.bg} ${typeStyles.border} ${typeStyles.hover}
       `}
-      style={{
-        boxShadow: isHighlighted
-          ? '0 0 30px rgba(67,97,238,0.2)'
-          : '0 10px 20px rgba(67,97,238,0.1)',
-      }}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <TypeIcon className={`w-5 h-5 ${status.text}`} />
             <span className={`text-xs md:text-sm font-medium ${status.text}`}>
-              {type.label}
+              {type?.label || 'Task'}
             </span>
             <StatusIcon className={`w-4 h-4 ${status.text}`} />
           </div>
@@ -197,55 +180,10 @@ const TaskCard: React.FC<{
             <span>{task.meta_data?.topic}</span>
           </div>
         </div>
-
-        {/* Actions Dropdown */}
-        <div className="relative" ref={dropdownRef}>
-          <button
-            onClick={() => setShowDropdown(!showDropdown)}
-            className={`p-2 rounded-lg ${theme.button} ${theme.buttonHover} transition-colors duration-300`}
-          >
-            <MoreVertical className={`w-5 h-5 ${theme.text}`} />
-          </button>
-
-          {showDropdown && (
-            <div
-              className={`
-                absolute right-0 mt-2 w-48 rounded-lg border ${theme.surface} 
-                ${theme.border} backdrop-blur-md shadow-lg z-50
-              `}
-              style={{
-                boxShadow: '0 10px 30px rgba(67,97,238,0.2)',
-              }}
-            >
-              <div className="py-2">
-                <button
-                  onClick={() => editTask(task)}
-                  className={`
-                    w-full px-4 py-2 text-left flex items-center gap-2
-                    ${theme.buttonHover} ${theme.text} transition-colors duration-300
-                  `}
-                >
-                  <Edit3 className="w-4 h-4" />
-                  Edit Task
-                </button>
-                <button
-                  onClick={() => CompleteTaskStatus(task)}
-                  className={`
-                    w-full px-4 py-2 text-left flex items-center gap-2 text-green-500
-                    hover:bg-green-500/10 transition-colors duration-300
-                  `}
-                >
-                  <CircleCheck className="w-4 h-4" />
-                  Complete Task
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
-};
+}
 
 const TaskTimeline: React.FC<{
   tasks: Task[];
@@ -324,8 +262,6 @@ const TaskTimeline: React.FC<{
             <TaskCard
               key={task.id}
               task={task}
-              isHighlighted={isHighlighted(task, index)}
-              classes="task-item"
               theme={theme}
               CompleteTaskStatus={CompleteTaskStatus}
             />
