@@ -52,3 +52,20 @@ export interface Task {
     topic?: string;
   };
 }
+
+export interface TaskForChatRes {
+  id: string;
+  schedule_id: string;
+  title: string;
+  created_by: string;
+  date: string;
+  startTime?: string;
+  endTime?: string;
+  type: string; //enusms :  study , test , exam_prepration
+  status: string; // enums: upcoming , in_progress , completed , overdue
+  metaData: {
+    chapter?: string;
+    subject?: string;
+    topic?: string;
+  };
+}
