@@ -4,7 +4,6 @@ export const AskQuetionApiCall = (body: any) => {
   if (!body) {
     return http.post({
       url: '/knowledge-base-service/psychological-profie/ask-question',
-      // data: {},
       messageSettings: { hideSuccessMessage: true },
     });
   }

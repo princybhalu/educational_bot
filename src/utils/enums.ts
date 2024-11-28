@@ -16,6 +16,8 @@ export const PsychologicalProfileRoutesName = {
   AI_CRAFTING: '/psychological-profile/ai-crafting',
 };
 
+export const Introduction;
+
 export const QuestionStatus = {
   ACTIVE: 'active',
   DISABLE: 'disable',

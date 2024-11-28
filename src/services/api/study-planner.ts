@@ -28,9 +28,6 @@ export const GetSchedulerListForUserApiCall = () => {
   });
 };
 
-//  req body : {
-//     "is_active": false
-// }
 export const UpdateStatusOfSchedulerApiCall = (
   body: any,
   schedulerId: string
@@ -41,10 +38,6 @@ export const UpdateStatusOfSchedulerApiCall = (
   });
 };
 
-// req body : {
-//     "schedule_title": "Main",
-//     "is_active": true
-// }
 export const CreateSchedulerApiCall = (body: any) => {
   return http.post({
     url: '/scheduler-service/schedule',
@@ -79,19 +72,6 @@ export const GetTaskBetweenRangeApiCall = (
   });
 };
 
-// req body : {
-//     "schedule_id": "a87ba569-12c7-431e-9806-af455ffadc3b",
-//     "title": "one",
-//     "date": "01/20/2024",
-//     "start_time": "9:20:00",
-//     "end_time": "9:30:00",
-//     "type": "study",
-//     "meta_data": {
-//          "chapter": "1",
-//          "subject": "Mathematics",
-//          "topic": ""
-//     }
-// }
 export const AddTaskApiCall = (body: any) => {
   return http.post({
     url: '/scheduler-service/task',
@@ -99,10 +79,6 @@ export const AddTaskApiCall = (body: any) => {
   });
 };
 
-// req body : {
-//     "schedule_id": "23f0f3cb-a893-4261-9f57-100bd4cb6253",
-//     "query": "i will study computer networks day after tommorow at 6 pm to 9 pm"
-// }
 export const AddTaskByQueryApiCall = (body: any) => {
   return http.post({
     url: '/scheduler-service/task/query',
@@ -117,7 +93,6 @@ export const RemoveTaskApiCall = (taskId: string) => {
   });
 };
 
-// TODO : their is not any update api so we can not set rrsize and drop and edit events
 export const UpdateTaskApiCall = (
   body: any,
   scheduleId: string | null,

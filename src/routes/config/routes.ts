@@ -8,15 +8,6 @@ const Login = lazy(() => import('../../pages/login1'));
 const Register = lazy(() => import('../../pages/register1'));
 const Dashboard = lazy(() => import('../../pages/Dashboard'));
 const BasicInfo = lazy(() => import('../../pages/BasicInfo'));
-const StudyPlannerDashboard = lazy(() => import('../../pages/study-planner'));
-const LearningPathDashboard = lazy(() => import('../../pages/learning-path'));
-const ChapterList = lazy(() => import('../../pages/learning-path/ChapterList'));
-const LearningChatView = lazy(
-  () => import('../../pages/learning-path/LearningChatView')
-);
-const CalendarView = lazy(
-  () => import('../../pages/study-planner/CalendarView')
-);
 const NotFound = lazy(() => import('../../components/shared/NotFoundPage'));
 
 export const routes: RouteConfig[] = [
@@ -51,31 +42,6 @@ export const routes: RouteConfig[] = [
   },
   ...PsychologicalProfileRoutes,
   ...StudyPlannerRoutes,
-
-  {
-    path: '/learning-path',
-    key: 'learningPath',
-    isProtected: true,
-    // isProfilingRequired: true,
-    element: LearningPathDashboard,
-    islayout: true,
-  },
-  {
-    path: '/learning-path/chapter-list/:subjectId/:subjectName',
-    key: 'learningPathChapterList',
-    isProtected: true,
-    // isProfilingRequired: true,
-    element: ChapterList,
-    islayout: true,
-  },
-  {
-    path: '/learning-path/chat-view/:type/:relevantId/:topicName',
-    key: 'chatView',
-    isProtected: true,
-    // isProfilingRequired: true,
-    element: LearningChatView,
-    islayout: true,
-  },
   {
     path: '*',
     key: 'not-found',

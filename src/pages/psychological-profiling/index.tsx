@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import { PsychologicalProfileRoutesName } from '../../utils/enums';
 import { Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import IntroductionComp from '../../components/profilingV2_1/IntroductionComp';
-import AssessmentChoice from '../../components/profilingV2_1/AssessmentChoice';
+import IntroductionComp from '../../components/profiling/IntroductionComp';
+import AssessmentChoice from '../../components/profiling/AssessmentChoice';
 
 const Introduction: React.FC = () => {
   const [isTypingComplete, setIsTypingComplete] = useState<boolean>(false);

@@ -3,9 +3,8 @@ import { MoreVertical, Bot } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import Orbit from '../../components/avatar/Orbit';
-import OverviewSection from '../../components/study-planner-V3/OverviewSection';
-import TaskSection from '../../components/study-planner-V3/TaskSection';
-import TaskFormModal from '../../components/study-planner-V3/TaskFormModal';
+import OverviewSection from '../../components/study-planner/OverviewSection';
+import TaskSection from '../../components/study-planner/TaskSection';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const TitleSection: React.FC = () => {
