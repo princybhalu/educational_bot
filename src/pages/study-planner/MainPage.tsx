@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MoreVertical, Bot } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import Orbit from '../../components/avatar/Orbit';
+import Orbit from '../../components/avatar/orbit';
 import OverviewSection from '../../components/study-planner/OverviewSection';
 import TaskSection from '../../components/study-planner/TaskSection';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -251,7 +251,7 @@ const TitleSection: React.FC = () => {
                     rounded-full flex items-center justify-center
                   `}
             >
-              <Orbit opration={null} size={50} />
+              <Orbit operation={null} size={50} />
             </div>
             <p
               className={`flex-1 md:text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}

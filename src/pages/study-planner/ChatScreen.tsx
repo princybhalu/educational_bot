@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Send } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import Orbit from '../../components/avatar/Orbit';
+import Orbit from '../../components/avatar/orbit';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   createChatTrackerId,
@@ -483,7 +483,7 @@ const EnhancedChatHistory: React.FC<EnhancedChatHistoryProps> = ({
             >
               {item.role === 'assistant' && (
                 <div className="flex-shrink-0 mt-1">
-                  <Orbit size={40} opration={null} />
+                  <Orbit size={40} operation={null} />
                 </div>
               )}
               <div
@@ -811,7 +811,7 @@ export default function ChatScreen() {
             `}
             >
               <div className="mb-6">
-                <Orbit opration={null} size={100} />
+                <Orbit operation={null} size={100} />
               </div>
 
               <h1 className="text-2xl md:text-4xl font-bold font-[Darker Grotesque] bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent mb-6">

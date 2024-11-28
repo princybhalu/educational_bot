@@ -11,10 +11,10 @@ const UserAnalysisSection = lazy(
   () => import('../../pages/psychological-profiling/UserAnalysis')
 );
 const FreeDescriptionSection = lazy(
-  () => import('../../pages/psychological-profiling/FreeDescription')
+  () => import('../../pages/psychological-profiling/free-description')
 );
 const AiCraftingSection = lazy(
-  () => import('../../pages/psychological-profiling/AiCrafting')
+  () => import('../../pages/psychological-profiling/ai-crafting')
 );
 
 export const PsychologicalProfileRoutes: RouteConfig[] = [

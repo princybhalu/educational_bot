@@ -1,35 +1,3 @@
-// import React from 'react';
-// const BeatExam = () => {
-//   return (
-//     <>
-//       <div className="flex flex-col p-10 lg:px-48 gap-10">
-//         <div className="text-blue-900 text-3xl font-semibold text-3xl md:text-4xl lg:text-5xl md:leading-none font-semibold text-[#003366]">
-//           Beat Exam Stress With Confidence
-//         </div>
-//         <div className="flex flex-col md:flex-row gap-10">
-//           <div className="w-full h-[250px] bg-sky-300 flex items-center justify-center">
-//             Image
-//           </div>
-//           <div className="flex flex-col justify-between py-4 gap-10">
-//             <div className="text-xl leading-relaxed my-10">
-//               We know how stressful exams be. That&apos;s why{' '}
-//               <b>our AI goes beyond just teaching.</b>
-//               It helps you tackle your exam anxiety by understanding your
-//               learning style and customizing the approach accodingly.
-//               You&apos;ll <b>fill more confident and prepared</b>&nbsp;then even
-//               before!
-//             </div>
-//             <button className="py-2 px-4 bg-blue-900 hover:bg-blue-800 text-white text-md font-semibold rounded-md inline w-fit">
-//               Let AI Help You Overcome Exam Stress
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-// export default BeatExam;
-
 import React from 'react';
 import { FaBookOpen } from 'react-icons/fa';
 
@@ -53,7 +21,9 @@ const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
   </div>
 );
 
-const BeatExam: React.FC<{handlNavigationToRegister : any}> = ({ handlNavigationToRegister }) => {
+const BeatExam: React.FC<{ handlNavigationToRegister: any }> = ({
+  handlNavigationToRegister,
+}) => {
   return (
     <section className="w-full py-40 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -86,7 +56,10 @@ const BeatExam: React.FC<{handlNavigationToRegister : any}> = ({ handlNavigation
               </p>
 
               <div className="flex items-center">
-                <button className="group relative inline-flex items-center justify-center px-6 py-3 bg-[#003366] text-white rounded-lg font-medium hover:bg-[#002347] transition-all duration-200 transform hover:translate-y-[-2px] hover:shadow-lg" onClick={handlNavigationToRegister}>
+                <button
+                  className="group relative inline-flex items-center justify-center px-6 py-3 bg-[#003366] text-white rounded-lg font-medium hover:bg-[#002347] transition-all duration-200 transform hover:translate-y-[-2px] hover:shadow-lg"
+                  onClick={handlNavigationToRegister}
+                >
                   <span className="relative">
                     Let AI Help You Overcome Exam Stress
                   </span>

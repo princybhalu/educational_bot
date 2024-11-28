@@ -8,7 +8,7 @@ import {
 } from 'services/api/profiling';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import Orbit from '../../components/avatar/Orbit';
+import Orbit from '../../components/avatar/orbit';
 import TypingAnimtionCard from '../../components/shared/TypingAnimtionCard';
 import { storeAnalysisData } from 'store/psychologicalProfileSlice';
 
@@ -21,7 +21,7 @@ const FreeDescription: React.FC = () => {
   const [showFeedback, setShowFeedback] = useState<boolean>(false);
   const [isCalledCreateProfile, setIsCalledCreateProfile] = useState(false);
   const navigate = useNavigate();
-  const [orbitOpartion, setOrbitOpartion] = useState<'loading' | null>(null);
+  const [orbitOpartion, setOrbitOpartion] = useState<'typing' | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isVisibleOfFeedback, setIsVisibleOfFeedback] = useState(false);
 
@@ -63,7 +63,7 @@ const FreeDescription: React.FC = () => {
         setIsSubmitting(false);
         setFeedback(mockFeedback);
         setIsVisibleOfFeedback(true);
-        setOrbitOpartion('loading');
+        setOrbitOpartion('typing');
       }
     } catch (error) {
       setIsSubmitting(false);
@@ -78,7 +78,7 @@ const FreeDescription: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
-      setOrbitOpartion('loading');
+      setOrbitOpartion('typing');
     }, 2000);
 
     const tempApiCall = async () => {
@@ -106,7 +106,7 @@ const FreeDescription: React.FC = () => {
     <div className="min-h-screen w-full bg-black p-4 flex flex-col items-center justify-center">
       <div className="w-full max-w-3xl space-y-8">
         {/* Avatar Section with lighter shade when typing */}
-        <Orbit opration={orbitOpartion} />
+        <Orbit operation={orbitOpartion} />
 
         {/* Initial Message */}
         {/* Messages Container */}

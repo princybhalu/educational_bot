@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Oribt from '../../components/avatar/Orbit';
+import Oribt from '../../components/avatar/orbit';
 import '../../style/psychological-profile-introduction.css';
 
 const AiTeacherSetup = () => {
@@ -308,7 +308,7 @@ const AiTeacherSetup = () => {
         <div className="bg-slate-950/85 backdrop-blur-lg rounded-3xl p-8 border border-sky-500/20 shadow-lg shadow-sky-500/10">
           {/* Header */}
           <div className="text-center mb-12">
-            <Oribt opration={null} />
+            <Oribt operation={null} />
             <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-white to-sky-400 bg-clip-text text-transparent">
               Crafting Your AI Teacher
             </h1>

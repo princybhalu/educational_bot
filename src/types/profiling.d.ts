@@ -12,9 +12,8 @@ export interface QuestionsTypes {
 }
 
 export interface OrbitProps {
-  opration: 'loading' | 'loading1' | null;
+  operation: 'typing' | 'loading1' | null;
   size?: number;
-  colors?: string[];
 }
 
 export interface ButtonProps {

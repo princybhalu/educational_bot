@@ -2,28 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { OrbitProps } from '../../types/profiling';
 import '../../style/orbit.css';
 
-const Orbit: React.FC<OrbitProps> = ({
-  opration,
-  size = 150,
-  colors = ['#4361ee', '#3498db', '#2ecc71', '#e74c3c', '#4361ee'],
-}) => {
+const Orbit: React.FC<OrbitProps> = ({ operation, size = 150 }) => {
   const [dotIndex, setDotIndex] = useState(0);
 
   // Handle dot animation
   useEffect(() => {
-    if (opration === 'loading1') return;
+    if (operation === 'loading1') return;
 
     const interval = setInterval(() => {
       setDotIndex((prev) => (prev + 1) % 3);
     }, 500);
 
     return () => clearInterval(interval);
-  }, [opration]);
+  }, [operation]);
 
   return (
     <div className="orbit-container" style={{ width: size, height: size }}>
-      <div className={`orbit ${opration === 'loading' ? 'complete' : ''}`}>
-        {opration === 'loading1' ? (
+      <div className={`orbit ${operation === 'typing' ? 'complete' : ''}`}>
+        {operation === 'loading1' ? (
           <>
             {' '}
             <div className="flex gap-2 h-6 items-center px-4">
@@ -43,7 +39,7 @@ const Orbit: React.FC<OrbitProps> = ({
           <div
             className={`orbit-inner`}
             style={{
-              backgroundColor: opration === 'loading' ? '#212121' : '#4361ee',
+              backgroundColor: operation === 'typing' ? '#212121' : '#4361ee',
             }}
           />
         )}

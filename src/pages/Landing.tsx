@@ -1,16 +1,16 @@
-import TopNavbar from '../components/navbar/TopNavbar';
+import TopNavbar from '../components/navbar/top-navbar';
 import React, { FC } from 'react';
 import leftImage from '../assets/landing-page/left-image.png';
 import rightImage from '../assets/landing-page/right-image.png';
 import leftStars from '../assets/landing-page/left-stars.svg';
 import rightStars from '../assets/landing-page/right-stars.svg';
-import IntroductionComponent from '../components/landing-sections/IntroductionComponent';
-import ExamPreparation from '../components/landing-sections/ExamPreparation';
-import BeatExam from '../components/landing-sections/BeatExam';
-import CareerAccordion from '../components/landing-sections/CareerAccordion';
-import PricingPlans from '../components/landing-sections/PricingPlans';
-import AIMentorSection from '../components/landing-sections/AIMentorSection';
-import Approach from '../components/landing-sections/Approach';
+import IntroductionComponent from '../components/landing-sections/introduction-component';
+import ExamPreparation from '../components/landing-sections/exam-preparation';
+import BeatExam from '../components/landing-sections/beat-exam';
+import CareerAccordion from '../components/landing-sections/career-accordion';
+import PricingPlans from '../components/landing-sections/pricing-plans';
+import AIMentorSection from '../components/landing-sections/aI-mentor-section';
+import Approach from '../components/landing-sections/approach';
 import { useNavigate } from 'react-router-dom';
 
 const Landing: FC = () => {
@@ -18,7 +18,7 @@ const Landing: FC = () => {
 
   const handlNavigationToRegister = () => {
     navigate('/register');
-  }
+  };
 
   return (
     <>
@@ -39,7 +39,10 @@ const Landing: FC = () => {
                   Experience education designed for your unique learning style
                   with the power of AI.
                 </p>
-                <div className="text-white bg-richblue-900 px-4 md:px-5 py-2 text-md md:text-lg rounded-lg cursor-pointer" onClick={handlNavigationToRegister}>
+                <div
+                  className="text-white bg-richblue-900 px-4 md:px-5 py-2 text-md md:text-lg rounded-lg cursor-pointer"
+                  onClick={handlNavigationToRegister}
+                >
                   Get Started
                 </div>
               </div>
@@ -73,12 +76,16 @@ const Landing: FC = () => {
           </div>
         </div>
         <IntroductionComponent />
-        <ExamPreparation  handlNavigationToRegister={handlNavigationToRegister}/>
-        <BeatExam  handlNavigationToRegister={handlNavigationToRegister}/>
+        <ExamPreparation
+          handlNavigationToRegister={handlNavigationToRegister}
+        />
+        <BeatExam handlNavigationToRegister={handlNavigationToRegister} />
         <CareerAccordion />
         {/* <PricingPlans /> */}
         {/* <Approach /> */}
-        <AIMentorSection  handlNavigationToRegister={handlNavigationToRegister} />
+        <AIMentorSection
+          handlNavigationToRegister={handlNavigationToRegister}
+        />
       </div>
     </>
   );

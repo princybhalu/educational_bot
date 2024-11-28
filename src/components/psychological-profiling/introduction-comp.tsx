@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import Orbit from '../avatar/Orbit';
+import Orbit from '..//';
 import Button from '../shared/Button';
 import TypingAnimtionCard from '../shared/TypingAnimtionCard';
 import NeuralNetwork from '../background-animations/NeuralNetwork';
 import '../../style/psychological-profile-introduction.css';
-import { OrbitOpration } from '../../utils/enums';
+import { IntroductionScreenSectionName } from '../../utils/enums';
 
 const IntroductionComp: React.FC<{
-  scrollToComponent: (componentId: 'intro' | 'assessment') => void;
+  scrollToComponent: (componentId: string) => void;
   setIsTypingComplete: (isTypingComplete: boolean) => void;
   isTypingComplete: boolean;
 }> = ({ scrollToComponent, isTypingComplete, setIsTypingComplete }) => {
-  const [orbitOpartion, setOrbitOpartion] = useState<'loading' | null>(null);
+  const [orbitOpartion, setOrbitOpartion] = useState<'typing' | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   const infoText =
@@ -20,7 +20,7 @@ const IntroductionComp: React.FC<{
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
-      setOrbitOpartion('loading');
+      setOrbitOpartion('typing');
     }, 2000);
 
     return () => clearTimeout(timer);
@@ -32,14 +32,14 @@ const IntroductionComp: React.FC<{
   };
 
   const redirectToAssessmentChoice = () => {
-    scrollToComponent('assessment');
+    scrollToComponent(IntroductionScreenSectionName.ASSESSMENT);
   };
 
   return (
     <>
       <NeuralNetwork />
       <div className="container">
-        <Orbit opration={orbitOpartion} />
+        <Orbit operation={orbitOpartion} />
         <h1 className="title">
           Let&rsquo;s create your perfect learning journey
         </h1>

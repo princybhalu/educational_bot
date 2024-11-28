@@ -16,7 +16,10 @@ export const PsychologicalProfileRoutesName = {
   AI_CRAFTING: '/psychological-profile/ai-crafting',
 };
 
-export const Introduction;
+export const IntroductionScreenSectionName = {
+  INTRODUCTION: 'introduction',
+  ASSESSMENT: 'assessment',
+};
 
 export const QuestionStatus = {
   ACTIVE: 'active',
@@ -24,8 +27,8 @@ export const QuestionStatus = {
   COMPLETED: 'completed',
 };
 
-export const OrbitOpration = {
-  LOADING: 'loading',
+export const Orbitoperation = {
+  LOADING: 'typing',
 };
 
 export const StatusOfTasksName = {

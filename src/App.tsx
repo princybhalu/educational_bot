@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { routes } from './routes/config/routes';
 import ProtectedRoute from './routes/ProtectedRoute';
 import Layout from './layouts/layouts';
-import NotificationWrapper from './components/notifiction/Notifiction';
+import NotificationWrapper from './components/notifiction/notifiction';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import { store, persistor } from './store';

@@ -1,7 +1,9 @@
-import React from 'react';
 import { ChevronUp, Menu, PlusCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { PsychologicalProfileRoutesName } from '../../utils/enums';
+import {
+  IntroductionScreenSectionName,
+  PsychologicalProfileRoutesName,
+} from '../../utils/enums';
 
 const styles = `
 @keyframes titlePulse {
@@ -36,7 +38,7 @@ const styles = `
 const ChoicePath = ({
   scrollToComponent,
 }: {
-  scrollToComponent: (componentId: 'intro' | 'assessment') => void;
+  scrollToComponent: (componentId: string) => void;
 }) => {
   const navigate = useNavigate();
   return (
@@ -120,7 +122,9 @@ const ChoicePath = ({
         </div>
 
         <button
-          onClick={() => scrollToComponent('intro')}
+          onClick={() =>
+            scrollToComponent(IntroductionScreenSectionName.INTRODUCTION)
+          }
           className="mt-2 md:mt-10 w-full glass-morph text-white/80 border border-[#4361ee4d] py-4 rounded-xl text-base md:text-md transition-all duration-300 hover:bg-[rgba(67,97,238,0.2)] hover:border-[#4361ee80] hover:-translate-y-1 flex items-center justify-center gap-2"
         >
           <ChevronUp className="w-6 h-6" />

@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PsychologicalProfileRoutesName } from '../../utils/enums';
 import { useNavigate } from 'react-router-dom';
 import TypingAnimtionCard from '../../components/shared/TypingAnimtionCard';
-import Orbit from '../../components/avatar/Orbit';
+import Orbit from '../../components/avatar/orbit';
 import '../../style/psychological-profile-introduction.css';
 import NeuralNetwork from '../../components/background-animations/NeuralNetwork';
 import { storeAnalysisData } from '../../store/psychologicalProfileSlice';
@@ -115,7 +115,7 @@ const Quiz: React.FC = () => {
   const [isAiThinking, setIsAiThinking] = useState(false);
   const navigate = useNavigate();
   const [orbitOpartion, setOrbitOpartion] = useState<
-    'loading' | 'loading1' | null
+    'typing' | 'loading1' | null
   >(null);
   const dispatch = useDispatch();
 
@@ -213,7 +213,7 @@ const Quiz: React.FC = () => {
         //     .feedback + ' '
         // );
         SetisVisibleOfFeedback(true);
-        setOrbitOpartion('loading');
+        setOrbitOpartion('typing');
         feedbackInLet =
           res.data.profile_meta[res.data.last_attempted_question].ai_response
             .feedback;
@@ -251,7 +251,7 @@ const Quiz: React.FC = () => {
         feedbackInLet =
           res.data.profile_data[res.data.profile_data.length - 2].ai_response
             .feedback;
-        setOrbitOpartion('loading');
+        setOrbitOpartion('typing');
       }
     } catch (error) {
       console.error('Error submitting answer:', error);
@@ -260,7 +260,7 @@ const Quiz: React.FC = () => {
       // await writeFeedback(errorFeedback);
       SetisVisibleOfFeedback(true);
       feedbackInLet = errorFeedback;
-      setOrbitOpartion('loading');
+      setOrbitOpartion('typing');
     }
   };
 
@@ -395,7 +395,7 @@ const Quiz: React.FC = () => {
       <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
         {/* ava */}
         <div className="avatar-container">
-          <Orbit opration={orbitOpartion} />
+          <Orbit operation={orbitOpartion} />
         </div>
         {/* Feedback Display */}
         <TypingAnimtionCard

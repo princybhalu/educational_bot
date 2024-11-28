@@ -1,30 +1,26 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { PsychologicalProfileRoutesName } from '../../utils/enums';
-import { Sparkles } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import IntroductionComp from '../../components/profiling/IntroductionComp';
-import AssessmentChoice from '../../components/profiling/AssessmentChoice';
+import React, { useState, useRef } from 'react';
+import { IntroductionScreenSectionName } from '../../utils/enums';
+import IntroductionComp from '../../components/psychological-profiling/introduction-comp';
+import AssessmentChoice from '../../components/psychological-profiling/assessment-choice';
 
 const Introduction: React.FC = () => {
   const [isTypingComplete, setIsTypingComplete] = useState<boolean>(false);
-  const [currentComponent, setCurrentComponent] = useState<
-    'intro' | 'assessment'
-  >('intro');
+  const [currentComponent, setCurrentComponent] = useState(
+    IntroductionScreenSectionName.INTRODUCTION
+  );
 
-  const aiMessage =
-    "These questions aren't just to help us understand you better, they are key to how our AI will train teachers to support your learning style. Answering thoroughly will provide the most tailored guidance possible! ";
   const assessmentRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
 
-  const scrollToComponent = (component: 'intro' | 'assessment') => {
+  const scrollToComponent = (component: string) => {
     setCurrentComponent(component);
-    const targetRef = component === 'intro' ? introRef : assessmentRef;
+    const targetRef =
+      component === IntroductionScreenSectionName.INTRODUCTION
+        ? introRef
+        : assessmentRef;
     console.log(targetRef);
     targetRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  console.log('lmaooooooooooo');
 
   return (
     <>

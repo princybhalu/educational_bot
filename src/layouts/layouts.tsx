@@ -57,8 +57,8 @@
 // export default Layout;
 
 import React, { useState, ReactNode } from 'react';
-import Navbar from '../components/navbar/Navbar';
-import LeftSidebar from '../components/left-sidebar/LeftSidebar';
+import Navbar from '../components/navbar/navbar';
+import LeftSidebar from '../components/left-sidebar/left-sidebar';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 

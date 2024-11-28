@@ -2,7 +2,9 @@ import React from 'react';
 import chat from '../../assets/landing-page/chat.png';
 import { useNavigate } from 'react-router-dom';
 
-const AIMentorSection: React.FC<{handlNavigationToRegister : any}> = ({ handlNavigationToRegister }) => {
+const AIMentorSection: React.FC<{ handlNavigationToRegister: any }> = ({
+  handlNavigationToRegister,
+}) => {
   const navigate = useNavigate();
   return (
     <div className="bg-white text-center ">
