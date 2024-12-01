@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { OrbitProps } from '../../types/profiling';
+import { OrbitProps } from '../../types/psychological-profiling';
 import '../../style/orbit.css';
 
 const Orbit: React.FC<OrbitProps> = ({ operation, size = 150 }) => {

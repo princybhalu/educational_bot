@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles } from 'lucide-react';
-import { QuestionsTypes } from '../../types/profiling';
+import { QuestionsTypes } from '../../types/psychological-profiling';
 import {
   AskQuetionApiCall,
   CreateProfileApiCall,
   GetAllQuestionListApiCall,
-} from '../../services/api/profiling';
+} from '../../services/api/psychological-profile';
 import { useDispatch, useSelector } from 'react-redux';
 import { PsychologicalProfileRoutesName } from '../../utils/enums';
 import { useNavigate } from 'react-router-dom';
-import TypingAnimtionCard from '../../components/shared/TypingAnimtionCard';
+import TypingAnimtionCard from '../../components/shared/typing-animtion-card';
 import Orbit from '../../components/avatar/orbit';
 import '../../style/psychological-profile-introduction.css';
-import NeuralNetwork from '../../components/background-animations/NeuralNetwork';
-import { storeAnalysisData } from '../../store/psychologicalProfileSlice';
+import NeuralNetwork from '../../components/background-animations/neural-network';
+import { storeAnalysisData } from '../../store/psychological-profile-slice';
 
 interface QuestionCardProps {
   questionNumber: number;

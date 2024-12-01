@@ -3,12 +3,12 @@ import { RouteConfig } from '../../types/route';
 import { PsychologicalProfileRoutes } from './psychological-profile-routes';
 import { StudyPlannerRoutes } from './study-planner';
 
-const Landing = lazy(() => import('../../pages/Landing'));
+const Landing = lazy(() => import('../../pages/landing'));
 const Login = lazy(() => import('../../pages/login1'));
 const Register = lazy(() => import('../../pages/register1'));
-const Dashboard = lazy(() => import('../../pages/Dashboard'));
-const BasicInfo = lazy(() => import('../../pages/BasicInfo'));
-const NotFound = lazy(() => import('../../components/shared/NotFoundPage'));
+const Dashboard = lazy(() => import('../../pages/dashboard'));
+const BasicInfo = lazy(() => import('../../pages/basic-info'));
+const NotFound = lazy(() => import('../../components/shared/not-found-page'));
 
 export const routes: RouteConfig[] = [
   {

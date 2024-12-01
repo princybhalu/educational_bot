@@ -5,12 +5,12 @@ import '../../style/psychological-profile-introduction.css';
 import {
   CreateProfileApiCall,
   GiveDescriptionApiCall,
-} from 'services/api/profiling';
+} from 'services/api/psychological-profile';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Orbit from '../../components/avatar/orbit';
-import TypingAnimtionCard from '../../components/shared/TypingAnimtionCard';
-import { storeAnalysisData } from 'store/psychologicalProfileSlice';
+import TypingAnimtionCard from '../../components/shared/typing-animtion-card';
+import { storeAnalysisData } from 'store/psychological-profile-slice';
 
 const FreeDescription: React.FC = () => {
   const dispatch = useDispatch();

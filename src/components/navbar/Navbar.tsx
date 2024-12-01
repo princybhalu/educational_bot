@@ -47,7 +47,7 @@ import React from 'react';
 import { Bell, Sun, Moon, Menu, User } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { toggleTheme } from '../../store/themeSlice';
+import { toggleTheme } from '../../store/theme-slice';
 
 interface NavbarProps {
   setIsMobileMenuOpen: (isOpen: boolean) => void;
@@ -81,7 +81,9 @@ const Navbar: React.FC<NavbarProps> = ({
             className="lg:hidden p-2 hover:bg-[rgba(67,97,238,0.15)] rounded-lg"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            <Menu className={`w-5 h-5 md:w-7 md:h-7 ${isDarkMode ? 'text-white' : 'text-gray-900'}`} />
+            <Menu
+              className={`w-5 h-5 md:w-7 md:h-7 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+            />
           </button>
 
           <h1 className="text-lg md:text-xl font-bold bg-gradient-to-r from-[#4361ee] to-[#4cc9f0] bg-clip-text text-transparent">
@@ -137,7 +139,7 @@ const Navbar: React.FC<NavbarProps> = ({
             ) : (
               <User />
             )} */}
-             <User className='w-5 h-5 md:w-7 md:h-7'/>
+            <User className="w-5 h-5 md:w-7 md:h-7" />
           </div>
         </div>
       </div>

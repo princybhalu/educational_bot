@@ -2,8 +2,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storageSession from 'redux-persist/lib/storage/session'; // Use session storage
 import authReducer from './userSlice';
-import PsychologicalProfileReducer from './psychologicalProfileSlice';
-import ThemeColrsReducer from './themeSlice';
+import PsychologicalProfileReducer from './psychological-profile-slice';
+import ThemeColrsReducer from './theme-slice';
 
 const persistConfig = {
   key: 'root',

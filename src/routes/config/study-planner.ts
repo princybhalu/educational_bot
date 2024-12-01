@@ -1,10 +1,10 @@
 import { lazy } from 'react';
 import { RouteConfig } from '../../types/route';
-import StudyPlannerDashboard from 'pages/study-planner/MainPage';
+import StudyPlannerDashboard from 'pages/study-planner/main-page';
 const AddFormOfTask = lazy(
-  () => import('../../pages/study-planner/AddFormOfTask2')
+  () => import('../../pages/study-planner/add-edit-task')
 );
-const ChatScreen = lazy(() => import('../../pages/study-planner/ChatScreen'));
+const ChatScreen = lazy(() => import('../../pages/study-planner/chat-screen'));
 
 export const StudyPlannerRoutes: RouteConfig[] = [
   // {

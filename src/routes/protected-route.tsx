@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAppSelector } from '../store/TypedHooks'; // Ensure you have typed hooks for Redux
+import { useAppSelector } from '../store/typed-hooks'; // Ensure you have typed hooks for Redux
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -35,8 +35,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // If profiling is incomplete, redirect to profiling page
   console.log(profilingIncomplete, hasCompletedProfiling);
-  const routesList = ['/psychological-profile', '/psychological-profile/question-list', '/psychological-profile/user-analysis', '/psychological-profile/free-description', '/psychological-profile/ai-crafting'];
-  if (!routesList.includes(window.location.pathname)  && profilingIncomplete && !hasCompletedProfiling) {
+  const routesList = [
+    '/psychological-profile',
+    '/psychological-profile/question-list',
+    '/psychological-profile/user-analysis',
+    '/psychological-profile/free-description',
+    '/psychological-profile/ai-crafting',
+  ];
+  if (
+    !routesList.includes(window.location.pathname) &&
+    profilingIncomplete &&
+    !hasCompletedProfiling
+  ) {
     //TODO: check user is filled all basic info
     return <Navigate to="/psychological-profile" replace />;
   }

@@ -5,7 +5,7 @@ interface ThemeState {
 }
 
 const initialState: ThemeState = {
-  isDarkMode: true
+  isDarkMode: true,
 };
 
 const themeSlice = createSlice({
@@ -14,8 +14,8 @@ const themeSlice = createSlice({
   reducers: {
     toggleTheme: (state) => {
       state.isDarkMode = !state.isDarkMode;
-    }
-  }
+    },
+  },
 });
 
 export const { toggleTheme } = themeSlice.actions;

@@ -16,13 +16,6 @@ export interface OrbitProps {
   size?: number;
 }
 
-export interface ButtonProps {
-  onClick: () => void;
-  children: React.ReactNode;
-  className?: string;
-  isVisible: boolean;
-}
-
 export interface TypingAnimtionCardProps {
   text: string;
   isVisible: boolean;

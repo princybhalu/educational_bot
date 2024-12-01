@@ -32,7 +32,7 @@ import {
   RemoveTaskApiCall,
   UpdateTaskApiCall,
 } from 'services/api/study-planner';
-import NoDataFound from '../../components/shared/NoDataFound';
+import NoDataFound from '../shared/no-data-found';
 import { saveToLocalStorage } from '../../utils/helperFunc';
 
 const statusConfig = {

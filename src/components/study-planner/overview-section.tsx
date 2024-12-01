@@ -28,7 +28,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { GetTaskBetweenRangeApiCall } from 'services/api/study-planner';
-import NoDataFound from '../../components/shared/NoDataFound';
+import NoDataFound from '../shared/no-data-found';
 import { useNavigate } from 'react-router-dom';
 import { StatusOfTasksName } from '../../utils/enums';
 

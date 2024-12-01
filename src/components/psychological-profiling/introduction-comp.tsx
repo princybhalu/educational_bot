@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Orbit from '..//';
-import Button from '../shared/Button';
-import TypingAnimtionCard from '../shared/TypingAnimtionCard';
-import NeuralNetwork from '../background-animations/NeuralNetwork';
+import Button from '../shared/button';
+import TypingAnimtionCard from '../shared/typing-animtion-card';
+import NeuralNetwork from '../background-animations/neural-network';
 import '../../style/psychological-profile-introduction.css';
 import { IntroductionScreenSectionName } from '../../utils/enums';
 

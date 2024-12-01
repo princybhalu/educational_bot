@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonProps } from '../../types/profiling';
+import { ButtonProps } from '../../types/shared-components';
 
 const Button: React.FC<ButtonProps> = ({
   onClick,

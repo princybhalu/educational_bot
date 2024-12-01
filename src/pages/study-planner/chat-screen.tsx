@@ -30,7 +30,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { Task } from '../../types/study-planner';
-import NoDataFound from '../../components/shared/NoDataFound';
+import NoDataFound from '../../components/shared/no-data-found';
 import {
   getFromLocalStorage,
   saveToLocalStorage,

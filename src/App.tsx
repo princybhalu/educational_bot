@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { routes } from './routes/config/routes';
-import ProtectedRoute from './routes/ProtectedRoute';
+import ProtectedRoute from './routes/protected-route';
 import Layout from './layouts/layouts';
 import NotificationWrapper from './components/notifiction/notifiction';
 import { PersistGate } from 'redux-persist/integration/react';

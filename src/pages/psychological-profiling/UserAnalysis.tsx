@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import NeuralNetwork from '../../components/background-animations/NeuralNetwork';
+import NeuralNetwork from '../../components/background-animations/neural-network';
 import { PsychologicalProfileRoutesName } from '../../utils/enums';
 import {
   FaEdit,
@@ -11,8 +11,8 @@ import {
   FaPlus,
 } from 'react-icons/fa';
 import '../../style/psychological-profile-introduction.css';
-import useTypingPlaceholder from '../../components/shared/useTypingPlaceholder';
-import { AskQuetionApiCall } from 'services/api/profiling';
+import useTypingPlaceholder from '../../components/shared/use-typing-placeholder';
+import { AskQuetionApiCall } from 'services/api/psychological-profile';
 
 interface MetricData {
   text: string;

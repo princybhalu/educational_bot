@@ -3,8 +3,8 @@ import { MoreVertical, Bot } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import Orbit from '../../components/avatar/orbit';
-import OverviewSection from '../../components/study-planner/OverviewSection';
-import TaskSection from '../../components/study-planner/TaskSection';
+import OverviewSection from '../../components/study-planner/overview-section';
+import TaskSection from '../../components/study-planner/task-section';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const TitleSection: React.FC = () => {
