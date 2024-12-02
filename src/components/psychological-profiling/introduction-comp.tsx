@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Orbit from '..//';
+import Orbit from '../avatar/orbit';
 import Button from '../shared/button';
 import TypingAnimtionCard from '../shared/typing-animtion-card';
 import NeuralNetwork from '../background-animations/neural-network';
