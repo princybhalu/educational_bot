@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Oribt from '../../components/avatar/orbit';
 import '../../style/psychological-profile-introduction.css';
+import { useNavigate } from 'react-router-dom';
 
 const AiTeacherSetup = () => {
   const [configProgress, setConfigProgress] = useState(0);
@@ -8,6 +9,8 @@ const AiTeacherSetup = () => {
   const [optimizeProgress, setOptimizeProgress] = useState(0);
   const [activeStep, setActiveStep] = useState(0);
   const [setupComplete, setSetupComplete] = useState(false);
+
+  const navigate = useNavigate();
 
   // Generate grid cells
   const gridCells = Array.from({ length: 48 }).map((_, i) => ({
@@ -314,12 +317,12 @@ const AiTeacherSetup = () => {
             </h1>
 
             {setupComplete && (
-              <a
-                href="/start-learning"
+              <button
                 className="inline-block mt-4 px-6 py-3 bg-sky-500 text-white rounded-full font-semibold hover:bg-sky-600 transition-colors duration-300"
+                onClick={() => navigate('/dashboard')}
               >
                 Start Learning →
-              </a>
+              </button>
             )}
           </div>
 
